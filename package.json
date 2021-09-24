@@ -12,6 +12,6 @@
   "author": "Ashlesh Sortee",
   "license": "ISC",
   "devDependencies": {
-    "@openzeppelin/contracts": "^3.4.0"
+    "@openzeppelin/contracts": "^4.3.2"
   }
 }
