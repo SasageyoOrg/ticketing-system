@@ -8522,7 +8522,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-09-24T09:10:49.923Z",
+  "updatedAt": "2021-09-25T08:32:42.528Z",
   "devdoc": {
     "details": "Collection of functions related to the address type",
     "kind": "dev",

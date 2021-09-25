@@ -8,7 +8,7 @@ COPY contracts ./contracts/
 COPY ./migrations ./migrations/
 
 RUN npm i
-RUN npm install -g truffle
-# RUN npm install -g truffle@5.1.65
+# RUN npm install -g truffle
+RUN npm install -g truffle@5.1.65
 
 CMD ["truffle","migrate", "--reset"]
