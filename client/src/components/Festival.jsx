@@ -67,6 +67,7 @@ class Festival extends Component {
     this.setState(state);
   }
 
+
   render() {
     return (
       <div class="container center" >

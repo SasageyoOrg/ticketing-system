@@ -9,11 +9,12 @@ import renderNotification from '../utils/notification-handler';
 let web3;
 
 class Purchase extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       festivals: [],
+      account: this.props.acc
     };
 
     web3 = new Web3(window.ethereum);
@@ -39,7 +40,14 @@ class Purchase extends Component {
             <td class="center">{web3.utils.fromWei(ticketPrice, 'ether')}</td>
             <td class="center">{totalSupply - saleId}</td>
 
-            <td class="center"><button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, ticketPrice, initiator)}>Buy</button></td>
+            <td class="center">
+            {(this.state.account == "user")
+                ? <button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, ticketPrice, initiator)}>
+                    Buy
+                  </button>
+                : <div></div>
+              }
+            </td>
           </tr>
         );
       }));
@@ -81,7 +89,10 @@ class Purchase extends Component {
               <th key='name' class="center">Name</th>
               <th key='price' class="center">Price(in FEST)</th>
               <th key='left' class="center">Tickets Left</th>
-              <th key='purchase' class="center">Purchase</th>
+              {(this.state.account == "user")
+                ? <th key='purchase' class="center">Purchase</th>
+                : <div></div>
+              }
             </tr>
           </thead>
           <tbody class="striped highlight">
