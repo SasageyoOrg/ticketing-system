@@ -51,7 +51,7 @@ class App extends Component {
     //const network = await web3.eth.net.getNetworkType();
     //console.log(network) // should give you main if you're connected to the main network via metamask...
     const accounts = await web3.eth.getAccounts()
-    if (accounts[0] == "0x43CdA9c0610049499A189D573F23CCb2928E79b4"){
+    if (accounts[0] == "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73"){
       this.setState({account: "organizer"})
     }else{
       this.setState({account: "user"})

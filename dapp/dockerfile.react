@@ -3,12 +3,17 @@ FROM node:alpine
 WORKDIR /app
 
 COPY package.json .
+#COPY wait-for .
 
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh
+RUN apk update && apk upgrade 
+RUN apk add --no-cache bash git openssh
 RUN apk add --update python3 krb5 krb5-libs gcc make g++ krb5-dev
 RUN npm install --no-package-lock --build-from-source --force
 
 # COPY client directory folder
 COPY . .
 
-CMD ["npm","start"]
+RUN chmod +x wait-for
+
+CMD ["npm", "start"]
+#CMD ["./wait-for", "172.16.239.30:8999", "--timeout=0", "--", "npm", "start"]

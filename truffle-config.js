@@ -1,16 +1,20 @@
 module.exports = {
+  // See <http://truffleframework.com/docs/advanced/configuration>
+  // for more about customizing your Truffle configuration!
   networks: {
     development: {
-      host: "ganache",     // Localhost (default: none)
-      port: 8545,            // Standard Ethereum port (default: none)
-      network_id: "2020",    // Any network (default: none)
-    },
+      host: "172.16.239.15",
+      port: 8545,
+      network_id: "1337", // "*" -> Match any network id
+      type: "quorum",
+      gasPrice: 0
+    }
   },
 
   db: {
     enabled: false
   },
-
+  
   compilers: {
     solc: {
       version: "^0.6.0",    // Fetch exact version from solc-bin (default: truffle's version)
@@ -24,4 +28,4 @@ module.exports = {
       }
     }
   }
-}
+};

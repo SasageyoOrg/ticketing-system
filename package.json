@@ -1,5 +1,5 @@
 {
-  "name": "festive-tickets-app",
+  "name": "ticketing-system-app",
   "version": "1.0.0",
   "description": "",
   "main": "truffle-config.js",
@@ -9,7 +9,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Ashlesh Sortee",
   "license": "ISC",
   "devDependencies": {
     "@openzeppelin/contracts": "^3.4.0"
