@@ -1,5 +1,5 @@
 # compiled contracts
-dapp/src/abi/contracts/
+client/src/abi/contracts/
 
 # macOS
 .DS_Store
