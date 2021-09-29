@@ -9,15 +9,17 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract FestivalNFT is Context, AccessControl, ERC721 {
     using Counters for Counters.Counter;
 
+    // _ticketIds -> id biglietto creato dall'organizzatore e messo in vendita
+    // _saleTicketId -> id biglietto quando viene rimesso in vendita da utente nel secondary market
     Counters.Counter private _ticketIds;
     Counters.Counter private _saleTicketId;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     struct TicketDetails {
-        uint256 purchasePrice;
-        uint256 sellingPrice;
-        bool forSale;
+        uint256 purchasePrice;  // prezzo di vendita quando creato
+        uint256 sellingPrice;   // prezzo di rivendita (secondary marketplace)
+        bool forSale;           // si capisce dai 
     }
 
     address private _organiser;
@@ -31,11 +33,11 @@ contract FestivalNFT is Context, AccessControl, ERC721 {
 
     constructor(
         string memory festName,
-        string memory FestSymbol,
+        // string memory FestSymbol,
         uint256 ticketPrice,
         uint256 totalSupply,
         address organiser
-    ) public ERC721(festName, FestSymbol) {
+    ) public ERC721(festName, "EV") {
         _setupRole(MINTER_ROLE, organiser);
 
         _ticketPrice = ticketPrice;
@@ -59,6 +61,7 @@ contract FestivalNFT is Context, AccessControl, ERC721 {
         _;
     }
 
+    // to-do: c'è bisogno??!??!
     modifier isValidSellAmount(uint256 ticketId) {
         uint256 purchasePrice = _ticketDetails[ticketId].purchasePrice;
         uint256 sellingPrice = _ticketDetails[ticketId].sellingPrice;
@@ -120,9 +123,11 @@ contract FestivalNFT is Context, AccessControl, ERC721 {
      * Update ticket details
      */
     function transferTicket(address buyer) public {
+        // to-do: da controllare perchè 2 ID?! -> quando comprato e quando venduto
         _saleTicketId.increment();
         uint256 saleTicketId = _saleTicketId.current();
 
+        // può darsi che se metto in vendita nel secondary non posso riacquistarlo 
         require(
             msg.sender == ownerOf(saleTicketId),
             "Only initial purchase allowed"
@@ -144,6 +149,7 @@ contract FestivalNFT is Context, AccessControl, ERC721 {
      * Remove ticket from the seller and from sale
      * Update ticket details
      */
+     // qui compro dal secondary market
     function secondaryTransferTicket(address buyer, uint256 saleTicketId)
         public
         isValidSellAmount(saleTicketId)
@@ -174,6 +180,7 @@ contract FestivalNFT is Context, AccessControl, ERC721 {
      * Validate that the selling price shouldn't exceed 110% of purchase price
      * Organiser can not use secondary market sale
      */
+    // qui metto in vendita l'event nel secondary market
     function setSaleDetails(
         uint256 ticketId,
         uint256 sellingPrice,

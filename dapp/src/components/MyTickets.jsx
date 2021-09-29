@@ -45,6 +45,7 @@ class MyTickets extends Component {
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
+      // const initiator = await web3.eth.accounts[0];
       const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
       const festDetails = await festivalFactory.methods.getFestDetails(activeFests[0]).call({ from: initiator });
       const renderData = await Promise.all(activeFests.map(async (fest, i) => {
@@ -53,12 +54,14 @@ class MyTickets extends Component {
           <option key={fest} value={fest} >{festDetails[0]}</option>
         )
       }));
-
+      
       this.setState({ fests: renderData, fest: activeFests[0], marketplace: festDetails[4] });
       this.updateTickets();
     } catch (err) {
-      renderNotification('danger', 'Error', 'Error while updating the fetivals');
-      console.log('Error while updating the fetivals', err);
+      renderNotification('danger', 'Error', 'Error while updating the events');
+      console.log('Error while updating the events', err);
+      console.log(err);
+      //console.log(web3.eth.getCoinbase());
     }
   }
 
@@ -73,7 +76,7 @@ class MyTickets extends Component {
 
       this.setState({ tickets: renderData, ticket: tickets[0] });
     } catch (err) {
-      renderNotification('danger', 'Error', 'Error in updating the ticket for festival');
+      renderNotification('danger', 'Error', 'Error in updating the ticket for the event');
       console.log('Error in updating the ticket', err);
     }
   }
@@ -92,8 +95,8 @@ class MyTickets extends Component {
 
       this.setState({ marketplace: festDetails[4] });
     } catch (err) {
-      console.log('Error while tickets for festival', err.message);
-      renderNotification('danger', 'Error', 'Error while tickets for festival');
+      console.log('Error while tickets for the event', err.message);
+      renderNotification('danger', 'Error', 'Error while tickets for the event');
     }
   }
 

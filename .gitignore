@@ -1,6 +1,8 @@
 # compiled contracts
 dapp/src/abi/contracts/
 
+package-lock.json
+
 # macOS
 .DS_Store
 

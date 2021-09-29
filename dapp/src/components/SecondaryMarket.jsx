@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import festivalFactory from '../proxies/FestivalFactory';
 import FestivalNFT from '../proxies/FestivalNFT';
 import FestivalMarketplace from '../proxies/FestivalMarketplace';
-import festToken from '../proxies/FestToken';
+//import festToken from '../proxies/FestToken';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -68,7 +68,7 @@ class SecondaryMarket extends Component {
     try {
       const { marketplace } = this.state;
       const marketplaceInstance = await FestivalMarketplace(marketplace);
-      await festToken.methods.approve(marketplace, sellingPrice).send({ from: initiator, gas: 6700000 });
+      //await festToken.methods.approve(marketplace, sellingPrice).send({ from: initiator, gas: 6700000 });
       await marketplaceInstance.methods.secondaryPurchase(ticketId).send({ from: initiator, gas: 6700000 });
       await this.updateTickets()
 

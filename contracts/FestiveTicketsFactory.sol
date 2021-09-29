@@ -6,9 +6,10 @@ import "./FestivalNFT.sol";
 import "./FestivalMarketplace.sol";
 
 contract FestiveTicketsFactory is Ownable {
+    
     struct Festival {
         string festName;
-        string festSymbol;
+        //string festSymbol;
         uint256 ticketPrice;
         uint256 totalSupply;
         address marketplace;
@@ -21,30 +22,30 @@ contract FestiveTicketsFactory is Ownable {
 
     // Creates new NFT and a marketplace for its purchase
     function createNewFest(
-        FestToken token,
+        // FestToken token,
         string memory festName,
-        string memory festSymbol,
+        // string memory festSymbol,
         uint256 ticketPrice,
         uint256 totalSupply
     ) public onlyOwner returns (address) {
         FestivalNFT newFest =
             new FestivalNFT(
                 festName,
-                festSymbol,
+                // festSymbol,
                 ticketPrice,
                 totalSupply,
                 msg.sender
             );
 
-        FestivalMarketplace newMarketplace =
-            new FestivalMarketplace(token, newFest);
+        //FestivalMarketplace newMarketplace = new FestivalMarketplace(token, newFest);
+        // token non serve più perchè eliminato da costruttore FestivalMarketplace
+        FestivalMarketplace newMarketplace = new FestivalMarketplace(newFest);
 
         address newFestAddress = address(newFest);
 
         activeFests.push(newFestAddress);
         activeFestsMapping[newFestAddress] = Festival({
             festName: festName,
-            festSymbol: festSymbol,
             ticketPrice: ticketPrice,
             totalSupply: totalSupply,
             marketplace: address(newMarketplace)
@@ -66,7 +67,7 @@ contract FestiveTicketsFactory is Ownable {
         view
         returns (
             string memory,
-            string memory,
+            //string memory,
             uint256,
             uint256,
             address
@@ -74,7 +75,7 @@ contract FestiveTicketsFactory is Ownable {
     {
         return (
             activeFestsMapping[festAddress].festName,
-            activeFestsMapping[festAddress].festSymbol,
+            //activeFestsMapping[festAddress].festSymbol,
             activeFestsMapping[festAddress].ticketPrice,
             activeFestsMapping[festAddress].totalSupply,
             activeFestsMapping[festAddress].marketplace

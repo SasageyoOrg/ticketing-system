@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import festivalFactory from '../proxies/FestivalFactory';
 import FestivalNFT from '../proxies/FestivalNFT';
 import FestivalMarketplace from '../proxies/FestivalMarketplace';
-import festToken from '../proxies/FestToken';
+//import festToken from '../proxies/FestToken';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -30,7 +30,8 @@ class Purchase extends Component {
       const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
       const fests = await Promise.all(activeFests.map(async fest => {
         const festDetails = await festivalFactory.methods.getFestDetails(fest).call({ from: initiator });
-        const [festName, festSymbol, ticketPrice, totalSupply, marketplace] = Object.values(festDetails);
+        //const [festName, festSymbol, ticketPrice, totalSupply, marketplace] = Object.values(festDetails);
+        const [festName, ticketPrice, totalSupply, marketplace] = Object.values(festDetails);
         const nftInstance = await FestivalNFT(fest);
         const saleId = await nftInstance.methods.getNextSaleTicketId().call({ from: initiator });
 
@@ -55,20 +56,20 @@ class Purchase extends Component {
       this.setState({ festivals: fests });
     } catch (err) {
       renderNotification('danger', 'Error', err.message);
-      console.log('Error while updating the fetivals', err);
+      console.log('Error while updating the events', err);
     }
   }
 
   onPurchaseTicket = async (marketplace, ticketPrice, initiator) => {
     try {
       const marketplaceInstance = await FestivalMarketplace(marketplace);
-      await festToken.methods.approve(marketplace, ticketPrice).send({ from: initiator, gas: 6700000 });
+      //await festToken.methods.approve(marketplace, ticketPrice).send({ from: initiator, gas: 6700000 });
       await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000 });
       await this.updateFestivals();
 
-      renderNotification('success', 'Success', `Ticket for the Festival purchased successfully!`);
+      renderNotification('success', 'Success', `Ticket for the event purchased successfully!`);
     } catch (err) {
-      console.log('Error while creating new festival', err);
+      console.log('Error while creating new event', err);
       renderNotification('danger', 'Error', err.message);
     }
   }
@@ -87,7 +88,7 @@ class Purchase extends Component {
           <thead>
             <tr>
               <th key='name' class="center">Name</th>
-              <th key='price' class="center">Price(in FEST)</th>
+              <th key='price' class="center">Price(in ETH)</th>
               <th key='left' class="center">Tickets Left</th>
               {(this.state.account == "user")
                 ? <th key='purchase' class="center">Purchase</th>
