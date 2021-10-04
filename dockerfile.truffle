@@ -13,6 +13,6 @@ RUN npm install -g truffle@5.1.65
 
 # RUN npm i @truffle/hdwallet-provider
 
-#RUN truffle compile
+# RUN truffle compile
 
 CMD ["truffle", "migrate", "--network", "development", "--reset"]

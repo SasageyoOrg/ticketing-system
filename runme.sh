@@ -26,8 +26,8 @@ start() {
     docker-compose build --pull
     docker-compose up --detach
     # decommentare per visualizzare i log del service truffle o react (disabilitati dal --detach sopra)
-    #docker-compose logs -f truffle
-    docker-compose logs -f react
+    docker-compose logs -f truffle
+    #docker-compose logs -f react
 
     #docker-compose --profile dapp up
 
