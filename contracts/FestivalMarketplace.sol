@@ -2,6 +2,7 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import "./FestivalNFT.sol";
 import "./FestToken.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract FestivalMarketplace {
     FestToken private _token;

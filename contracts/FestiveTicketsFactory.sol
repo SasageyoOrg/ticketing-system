@@ -1,10 +1,11 @@
 pragma solidity >=0.4.22 <0.9.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./FestivalNFT.sol";
 import "./FestivalMarketplace.sol";
 
-contract FestiveTicketsFactory is Ownable {
+contract FestiveTicketsFactory is AccessControl {
+    bytes32 public constant ORGANISER_ROLE = keccak256("ORGANISER_ROLE");
     struct Festival {
         string festName;
         string festSymbol;
@@ -18,6 +19,11 @@ contract FestiveTicketsFactory is Ownable {
 
     event Created(address ntfAddress, address marketplaceAddress);
 
+    constructor(address organiser){
+        _setupRole(ORGANISER_ROLE, organiser);
+    }
+
+
     // Creates new NFT and a marketplace for its purchase
     function createNewFest(
         FestToken token,
@@ -26,6 +32,9 @@ contract FestiveTicketsFactory is Ownable {
         uint256 ticketPrice,
         uint256 totalSupply
     ) public onlyOwner returns (address) {
+        
+        require(hasRole(ORGANISER_ROLE, msg.sender), "Caller is not allowed");
+
         FestivalNFT newFest =
             new FestivalNFT(
                 festName,

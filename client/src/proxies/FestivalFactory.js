@@ -6,6 +6,7 @@ const provider = new Provider();
 class FestivalFactory {
   constructor() {
     const web3 = provider.web3;
+    // console.log("this is the actual provider: ", web3)
     const deploymentKey = Object.keys(FestivalFactoryABI.networks)[0];
 
     this.instance = new web3.eth.Contract(
