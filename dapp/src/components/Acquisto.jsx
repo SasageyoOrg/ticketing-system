@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/FestivalFactory';
-import FestivalNFT from '../proxies/FestivalNFT';
-import FestivalMarketplace from '../proxies/FestivalMarketplace';
-//import festToken from '../proxies/FestToken';
+import festivalFactory from '../proxies/CreazioneEvento';
+import FestivalNFT from '../proxies/NFTEvento';
+import FestivalMarketplace from '../proxies/Biglietteria';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -44,7 +43,7 @@ class Purchase extends Component {
             <td class="center">
             {(this.state.account == "user")
                 ? <button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, ticketPrice, initiator)}>
-                    Buy
+                    Acquista
                   </button>
                 : <div></div>
               }
@@ -67,7 +66,7 @@ class Purchase extends Component {
       await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000 });
       await this.updateFestivals();
 
-      renderNotification('success', 'Success', `Ticket for the event purchased successfully!`);
+      renderNotification('success', 'Successo', `Biglietto dell'evento acquistato correttamente.`);
     } catch (err) {
       console.log('Error while creating new event', err);
       renderNotification('danger', 'Error', err.message);
@@ -83,15 +82,15 @@ class Purchase extends Component {
   render() {
     return (
       <div class="container " class="col s12 m6 offset-m3 l4 offset-l4 z-depth-6 card-panel">
-        <h4 class="center">Purchase Tickets</h4>
+        <h4 class="center">Acquista biglietti</h4>
         <table id='requests' class="responsive-table striped" >
           <thead>
             <tr>
-              <th key='name' class="center">Name</th>
-              <th key='price' class="center">Price(in ETH)</th>
-              <th key='left' class="center">Tickets Left</th>
+              <th key='name' class="center">Evento</th>
+              <th key='price' class="center">Prezzo (ETH)</th>
+              <th key='left' class="center">Biglietti rimanenti</th>
               {(this.state.account == "user")
-                ? <th key='purchase' class="center">Purchase</th>
+                ? <th key='purchase' class="center"></th>
                 : <div></div>
               }
             </tr>

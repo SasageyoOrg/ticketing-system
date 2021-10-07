@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "./FestivalNFT.sol";
+import "./EventoNFT.sol";
 
-contract FestivalMarketplace {
-    FestivalNFT private _festival;
+contract Biglietteria {
+    EventoNFT private _festival;
 
     address private _organiser;
 
-    constructor(FestivalNFT festival) public {
+    constructor(EventoNFT festival) public {
         _festival = festival;
         _organiser = _festival.getOrganiser();
     }

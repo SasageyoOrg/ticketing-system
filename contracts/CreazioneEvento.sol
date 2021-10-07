@@ -2,10 +2,10 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./FestivalNFT.sol";
-import "./FestivalMarketplace.sol";
+import "./EventoNFT.sol";
+import "./Biglietteria.sol";
 
-contract FestiveTicketsFactory is Ownable {
+contract CreazioneEvento is Ownable {
     
     struct Festival {
         string festName;
@@ -28,18 +28,17 @@ contract FestiveTicketsFactory is Ownable {
         uint256 ticketPrice,
         uint256 totalSupply
     ) public onlyOwner returns (address) {
-        FestivalNFT newFest =
-            new FestivalNFT(
+        EventoNFT newFest =
+            new EventoNFT(
                 festName,
-                // festSymbol,
                 ticketPrice,
                 totalSupply,
                 msg.sender
             );
 
-        //FestivalMarketplace newMarketplace = new FestivalMarketplace(token, newFest);
-        // token non serve più perchè eliminato da costruttore FestivalMarketplace
-        FestivalMarketplace newMarketplace = new FestivalMarketplace(newFest);
+        //Biglietteria newMarketplace = new Biglietteria(token, newFest);
+        // token non serve più perchè eliminato da costruttore Biglietteria
+        Biglietteria newMarketplace = new Biglietteria(newFest);
 
         address newFestAddress = address(newFest);
 

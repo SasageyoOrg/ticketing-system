@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/FestivalFactory';
-//import festToken from '../proxies/FestToken';
-import FestivalNFT from '../proxies/FestivalNFT';
+import festivalFactory from '../proxies/CreazioneEvento';
+import FestivalNFT from '../proxies/NFTEvento';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -36,7 +35,7 @@ class Festival extends Component {
         supply
       ).send({ from: organiser, gas: 6700000 });
 
-      renderNotification('success', 'Success', `Event created successfully!`);
+      renderNotification('success', 'Successo', `Evento creato correttamente!`);
 
       const nftInstance = await FestivalNFT(ntfAddress);
       const batches = Math.ceil(supply / 30);
@@ -75,13 +74,13 @@ class Festival extends Component {
         <div class="row">
           <div class="container ">
             <div class="container ">
-              <h5 style={{ padding: "30px 0px 0px 10px" }}>Create new Event</h5>
+              <h5 style={{ padding: "30px 0px 0px 10px" }}>Creazione Evento</h5>
               <form class="" onSubmit={this.onCreateFestival}>
-                <label class="left">Fest Name</label><input id="name" class="validate" placeholder="Fest Name" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
-                <label class="left">Ticket Price</label><input id="price" placeholder="Ticket Price" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
-                <label class="left">Total Supply</label><input id="supply" placeholder="Total SUpply" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
+                <label class="left">Nome Evento</label><input id="name" class="validate" placeholder="es. Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
+                <label class="left">Prezzo del biglietto</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
+                <label class="left">Nr. di biglietti</label><input id="supply" placeholder="es. 100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
 
-                <button type="submit" className="custom-btn login-btn">Create Event</button>
+                <button type="submit" className="custom-btn login-btn">Crea evento</button>
               </form>
             </div>
           </div>

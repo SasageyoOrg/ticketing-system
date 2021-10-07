@@ -25,10 +25,12 @@ start() {
     sleep 1
     docker-compose build --pull
     docker-compose up --detach
-    # decommentare per visualizzare i log del service truffle o react (disabilitati dal --detach sopra)
-    docker-compose logs -f truffle
-    #docker-compose logs -f react
 
+    # decommentare per visualizzare i log del service react/truffle (disabilitati dal --detach sopra)
+    docker-compose logs -f react
+
+    # decommentare per avviare il servizio 'react' 
+    # nota: necessario il campo 'profiles' impostato su "dapp" nel service 'react' (docker-compose.yml)
     #docker-compose --profile dapp up
 
     # \START

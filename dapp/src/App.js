@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch, Redirect} from 'react-router-dom';
 import ReactNotification from 'react-notifications-component';
 //import Web3 from 'web3';
-import Festival from './components/Festival';
-import Purchase from './components/Purchase';
-import MyTickets from './components/MyTickets';
-import SecondaryMarket from './components/SecondaryMarket';
+import Festival from './components/Evento';
+import Purchase from './components/Acquisto';
+import MyTickets from './components/Biglietti';
+import SecondaryMarket from './components/Rivendita';
+
+import './App.css'
 
 let web3
 
@@ -16,7 +18,11 @@ const Web3Quorum = require("web3js-quorum");
 //web3.priv.generateAndSendRawTransaction(options);
 
 class App extends Component {
-  state = {account: ''}
+  state = {
+    account: '',
+    accountAddress: '0x',
+    accountBalance: '0',
+  }
 
   constructor() {
     super();
@@ -66,6 +72,12 @@ class App extends Component {
     }else{
       this.setState({account: "user"})
     }
+
+    this.setState({accountAddress: accounts[0]})
+
+    var balance = await web3.eth.getBalance(accounts[0]); 
+    balance = web3.utils.fromWei(balance);
+    this.setState({accountBalance: balance})
   }
 
   render() {
@@ -74,7 +86,7 @@ class App extends Component {
     if (this.state.account == "organizer") {
       nav = (
         <div>
-          <li> <Link to="/createFestival">Add Festival</Link> </li>
+          <li> <Link to="/createFestival">Crea evento</Link> </li>
           <li> <Link to="/buyTickets">Market</Link> </li>
         </div>
       )
@@ -82,9 +94,11 @@ class App extends Component {
     }else{
       nav = (
         <div>
-          <li> <Link to="/buyTickets">Buy Tickets</Link> </li>
-          <li> <Link to="/market">Your Market</Link> </li>
-          <li> <Link to="/tickets">MyTickets</Link> </li>
+          <li> <Link to="/buyTickets">Acquista biglietti</Link> </li>
+          <li> <Link to="/market">Rivendita</Link> </li>
+          <li> <Link to="/tickets">I miei biglietti</Link> </li>
+          <li> <span class="user_addressbox">Account: <b>{this.state.accountAddress.substring(0,8)}...</b></span></li>
+          <li> <span class="user_balancebox">Saldo: <b>{this.state.accountBalance} ETH</b></span></li>
         </div>
       )
       path = "/tickets"
@@ -95,7 +109,7 @@ class App extends Component {
           <ReactNotification />
           <nav style={{ padding: '0px 30px 0px 30px' }}>
             <div class="nav-wrapper" >
-              <a href="/buyTickets" class="brand-logo left">Festival Marketplace</a>
+              <a href="/" class="brand-logo left">Biglietteria Online</a>
               <ul class="right hide-on-med-and-down 10" >
                 {nav}
               </ul>

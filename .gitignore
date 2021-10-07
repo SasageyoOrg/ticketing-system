@@ -6,6 +6,9 @@ dapp/src/abi/contracts/
 
 package-lock.json
 
+# VSC
+.vscode
+
 # macOS
 .DS_Store
 

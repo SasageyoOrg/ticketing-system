@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* custom */
+.user_addressbox {
+  background: rgba(255,255,255,0.4);
+  padding: 8px;
+  border-radius: 6px;
+}
+.user_balancebox {
+  background:rgba(0, 117, 155, 0.4); 
+  padding: 8px;
+  border-radius: 6px;
+  margin-left: 15px;
+}

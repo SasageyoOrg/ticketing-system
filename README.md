@@ -14,11 +14,12 @@
       restart       Launch commands "./runme.sh remove" and "./runme.sh start"
         ``` 
 4. Configure Metamask with RPC url `http://localhost:8545`
-5. Import the accounts in Metamask by taking the private keys below (set one account to organiser and the others as customers):
+5. Import the accounts in Metamask by taking the private keys below:
     ```
-    8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63
-    c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
-    ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f
+    Organizzatore   -> 0x60bbe10a196a4e71451c0f6e9ec9beab454c2a5ac0542aa5b8b733ff5719fec3
+    Rivenditore     -> 0x526ba301ffd7369d010a07c2d44167e4e7c1b7ff1dd85b475b708a1078d04450
+    Controllore     -> 0xde405e2f3cea4da31ea886d9f93f8855f8925b35f39f8d01ddc08b588be118fe
+    Cliente         -> 0xeccc28aa6410da0d6bd19efdef33b5b7b9e2c5adcd9e8ab899d3369aaa386e72
     ```
 6. Cakeshop will be accessible at `http://localhost:8999/`
 7. Block Explorer will be accessible at `http://localhost:25000/`

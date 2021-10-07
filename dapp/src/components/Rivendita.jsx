@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/FestivalFactory';
-import FestivalNFT from '../proxies/FestivalNFT';
-import FestivalMarketplace from '../proxies/FestivalMarketplace';
-//import festToken from '../proxies/FestToken';
+import festivalFactory from '../proxies/CreazioneEvento';
+import FestivalNFT from '../proxies/NFTEvento';
+import FestivalMarketplace from '../proxies/Biglietteria';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -51,7 +50,7 @@ class SecondaryMarket extends Component {
               <td class="center">{ticketId}</td>
               <td class="center">{web3.utils.fromWei(sellingPrice, 'ether')}</td>
 
-              <td class="center"><button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, ticketId, sellingPrice, initiator)}>Buy</button></td>
+              <td class="center"><button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, ticketId, sellingPrice, initiator)}>Compra</button></td>
             </tr>
           );
         }
@@ -126,23 +125,23 @@ class SecondaryMarket extends Component {
           <div class="container ">
             <div class="container ">
 
-              <h5 style={{ padding: "30px 0px 0px 10px" }}>Secondary Marketplace</h5>
+              <h4 style={{ padding: "30px 0px 0px 10px" }}>Mercato secondario</h4>
 
-              <label class="left">Festival</label>
+              <label class="left">Evento</label>
               <select className="browser-default" name='fest' value={this.state.fest || undefined} onChange={this.onFestivalChangeHandler}>
-                <option value="" disabled >Select Festival</option>
+                <option value="" disabled >Seleziona l'evento</option>
                 {this.state.fests}
               </select><br /><br />
 
-              <h4 class="center">Purchase Tickets</h4>
+              <h5 class="center">Acquista biglietti</h5>
 
               <table id='requests' class="responsive-table striped" >
                 <thead>
                   <tr>
-                    <th key='name' class="center">Fest Name</th>
-                    <th key='ticketId' class="center">Ticket Id</th>
-                    <th key='cost' class="center">Cost(in FEST)</th>
-                    <th key='purchase' class="center">Purchase</th>
+                    <th key='name' class="center">Evento</th>
+                    <th key='ticketId' class="center">ID del biglietto</th>
+                    <th key='cost' class="center">Costo (ETH)</th>
+                    <th key='purchase' class="center">Acquista</th>
                   </tr>
                 </thead>
                 <tbody class="striped highlight">

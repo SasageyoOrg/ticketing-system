@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/FestivalFactory';
-import FestivalNFT from '../proxies/FestivalNFT';
+import festivalFactory from '../proxies/CreazioneEvento';
+import FestivalNFT from '../proxies/NFTEvento';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -45,7 +45,6 @@ class MyTickets extends Component {
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      // const initiator = await web3.eth.accounts[0];
       const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
       const festDetails = await festivalFactory.methods.getFestDetails(activeFests[0]).call({ from: initiator });
       const renderData = await Promise.all(activeFests.map(async (fest, i) => {
@@ -58,10 +57,9 @@ class MyTickets extends Component {
       this.setState({ fests: renderData, fest: activeFests[0], marketplace: festDetails[4] });
       this.updateTickets();
     } catch (err) {
-      renderNotification('danger', 'Error', 'Error while updating the events');
+      // todo: correggere bug quando account non ha tickets
+      // renderNotification('danger', 'Error', 'Error while updating the events');
       console.log('Error while updating the events', err);
-      console.log(err);
-      //console.log(web3.eth.getCoinbase());
     }
   }
 
@@ -116,24 +114,24 @@ class MyTickets extends Component {
         <div class="row">
           <div class="container ">
             <div class="container ">
-              <h5 style={{ padding: "30px 0px 0px 10px" }}>My Tickets</h5>
+              <h5 style={{ padding: "30px 0px 0px 10px" }}>I miei biglietti</h5>
               <form class="" onSubmit={this.onListForSale}>
 
-                <label class="left">Festival</label>
+                <label class="left">Evento</label>
                 <select className="browser-default" name='fest' value={this.state.fest || undefined} onChange={this.onFestivalChangeHandler}>
-                  <option value="" disabled >Select Festival</option>
+                  <option value="" disabled >Seleziona l'evento</option>
                   {this.state.fests}
                 </select><br /><br />
 
-                <label class="left">Ticket Id</label>
+                <label class="left">Biglietto</label>
                 <select className="browser-default" name='ticket' value={this.state.ticket || undefined} onChange={this.selectHandler}>
-                  <option value="" disabled>Select Ticket</option>
+                  <option value="" disabled>Seleziona il biglietto</option>
                   {this.state.tickets}
                 </select><br /><br />
 
-                <label class="left">Sale Price</label><input id="price" placeholder="Sale Price" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
+                <label class="left">Prezzo di rivendita</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
 
-                <button type="submit" className="custom-btn login-btn">List for Sale</button>
+                <button type="submit" className="custom-btn login-btn">Rivendi</button>
               </form>
             </div>
           </div>

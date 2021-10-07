@@ -1,9 +1,6 @@
 ---
 version: '3.6'
 
-
-
-
 x-quorum-def:
   &quorum-def
   restart: "on-failure"
@@ -89,8 +86,7 @@ x-quorum-rpcnode-def:
       cp /quorum/$${QUORUM_CONS_ALGO:-istanbul}Genesis.json /config/genesis.json
       cp -r /quorum/* /data;
       geth --datadir=/data init /config/genesis.json;
-      cp /config/keys/accountkey /data/keystore/key;
-      cp /config/keys/account2key /data/keystore/key2;
+      cp /config/keys/key* /data/keystore/
       cp /config/keys/nodekey /data/geth/nodekey;
       geth \
       --datadir /data \
@@ -104,11 +100,10 @@ x-quorum-rpcnode-def:
       --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpccorsdomain "*" --rpcvhosts "*" --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,$$QUORUM_CONSENSUS \
       --port 30303 \
       --identity node$${NODE_ID}-$$QUORUM_CONSENSUS \
-      --unlock "0,1" \
+      --unlock "0,1,2,3" \
       --allow-insecure-unlock \
       --password /config/passwords.txt \
       &> /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log | tee -a /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log
-
 
 x-quorum-member-def:
   &quorum-member-def
@@ -176,8 +171,6 @@ x-quorum-member-def:
       --allow-insecure-unlock \
       --password /config/passwords.txt \
       &> /var/log/quorum/geth-$$(hostname -i).log | tee -a /var/log/quorum/geth-$$(hostname -i).log
-
-
 
 
 x-tessera-def:
@@ -264,7 +257,6 @@ x-tessera-def:
           /tessera/bin/tessera -configfile /data/tm/tessera-config-09.json &> /var/log/tessera/tessera-$$HOSTNAME.log | tee -a /var/log/tessera/tessera-$$HOSTNAME.log
 
 
-
 x-cakeshop-def:
   &cakeshop-def
   image: quorumengineering/cakeshop:${QUORUM_CAKESHOP_VERSION:-0.11.0}
@@ -291,12 +283,7 @@ x-cakeshop-def:
       ;;
 
 
-
-
-
-
 services:
-
   validator1:
     << : *quorum-def
     ports:
@@ -388,7 +375,6 @@ services:
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.15
-
 
   member1tessera:
     << : *tessera-def
@@ -501,9 +487,6 @@ services:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.18
 
-
-
-
   cakeshop:
     << : *cakeshop-def
     hostname: cakeshop
@@ -517,7 +500,8 @@ services:
         ipv4_address: 172.16.239.30
 
   explorer:
-    build: block-explorer-light
+    build: 
+      dockerfile: dockerfile.explorer
     image: quorum-dev-quickstart/block-explorer-light:develop
     depends_on:
       - rpcnode
@@ -527,8 +511,6 @@ services:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.31
 
-
-
   truffle:
     build:
       context: .
@@ -537,17 +519,20 @@ services:
       - member1quorum
       - member2quorum
       - member3quorum
+      - validator1
+      - validator2
+      - validator3
+      - validator4
+      - rpcnode
     volumes:
       - ./dapp/src/abi:/app/build/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.51
 
-        
   react:
     #profiles: ["dapp"]
     build: 
-      context: dapp/.
       dockerfile: dockerfile.react
     volumes:
       - ./dapp/src:/app/src
@@ -560,7 +545,6 @@ services:
         ipv4_address: 172.16.239.61
     
 
-
 networks:
   quorum-dev-quickstart:
     driver: bridge
@@ -568,6 +552,7 @@ networks:
       driver: default
       config:
       - subnet: 172.16.239.0/24
+
 
 volumes:
   cakeshop:

@@ -1,7 +1,7 @@
 {
   "name": "ticketing-system-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "UNIVPM - Software Cybersecurity 2020/2021",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"

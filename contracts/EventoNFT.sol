@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract FestivalNFT is Context, AccessControl, ERC721 {
+contract EventoNFT is Context, AccessControl, ERC721 {
     using Counters for Counters.Counter;
 
     // _ticketIds -> id biglietto creato dall'organizzatore e messo in vendita

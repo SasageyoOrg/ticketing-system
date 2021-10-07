@@ -1,4 +1,4 @@
-export const festivalNFTABI = [
+export const EventoNFTABI = [
   {
     "inputs": [
       {
