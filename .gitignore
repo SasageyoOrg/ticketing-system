@@ -2,6 +2,8 @@
 # TODO: da valutare se toglierlo perchè blocca il bind docker
 dapp/src/abi/contracts/
 
+.quorumDevQuickstart.lock
+
 package-lock.json
 
 # macOS

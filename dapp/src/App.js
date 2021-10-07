@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch, Redirect} from 'react-router-dom';
 import ReactNotification from 'react-notifications-component';
-import Web3 from 'web3';
+//import Web3 from 'web3';
 import Festival from './components/Festival';
 import Purchase from './components/Purchase';
 import MyTickets from './components/MyTickets';
 import SecondaryMarket from './components/SecondaryMarket';
 
 let web3
+
+const Web3 = require("web3");
+const Web3Quorum = require("web3js-quorum");
+
+//const web3 = new Web3Quorum(new Web3("http://localhost:22000"));
+//web3.priv.generateAndSendRawTransaction(options);
 
 class App extends Component {
   state = {account: ''}
@@ -18,11 +24,13 @@ class App extends Component {
 
     new Promise((resolve, reject) => {
       if (typeof window.ethereum !== 'undefined') {
-        web3 = new Web3(window.ethereum);
+        //web3 = new Web3(window.ethereum);
+        web3 = new Web3Quorum(new Web3(window.ethereum));
         window.ethereum.enable()
           .then(() => {
             resolve(
-              new Web3(window.ethereum)
+              new Web3Quorum(new Web3(window.ethereum))
+              //new Web3(window.ethereum)
             );
           })
           .catch(e => {
@@ -32,10 +40,12 @@ class App extends Component {
       }
       if (typeof window.web3 !== 'undefined') {
         return resolve(
-          new Web3(window.web3.currentProvider)
+          //new Web3(window.web3.currentProvider)
+          new Web3Quorum(new Web3(window.web3.currentProvider))
         );
       }
-      resolve(new Web3('http://127.0.0.1:8545'));
+      resolve(new Web3Quorum(new Web3('http://127.0.0.1:8545')))
+      //resolve(new Web3('http://127.0.0.1:8545'));
     });
 
     this.loadBlockChain()
@@ -51,7 +61,7 @@ class App extends Component {
     //const network = await web3.eth.net.getNetworkType();
     //console.log(network) // should give you main if you're connected to the main network via metamask...
     const accounts = await web3.eth.getAccounts()
-    if (accounts[0] == "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73"){
+    if (accounts[0] === "0xC9C913c8c3C1Cd416d80A0abF475db2062F161f6"){
       this.setState({account: "organizer"})
     }else{
       this.setState({account: "user"})

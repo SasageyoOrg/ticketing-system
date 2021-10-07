@@ -3,8 +3,8 @@ module.exports = {
   // for more about customizing your Truffle configuration!
   networks: {
     development: {
-      host: "172.16.239.15",
-      port: 8545,
+      host: "172.16.239.15", // rpcnode
+      port: 8545, // 8545
       network_id: "1337", // "*" -> Match any network id
       type: "quorum",
       gasPrice: 0

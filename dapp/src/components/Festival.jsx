@@ -17,13 +17,15 @@ class Festival extends Component {
       price: null,
       suppply: null,
     };
-
+    
     web3 = new Web3(window.ethereum);
   }
 
   onCreateFestival = async (e) => {
     try {
       e.preventDefault();
+
+      // console.log(web3.eth.getCoinbase());
 
       const organiser = await web3.eth.getCoinbase();
       // const { name, symbol, price, supply } = this.state;

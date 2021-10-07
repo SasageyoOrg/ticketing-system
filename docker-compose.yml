@@ -56,6 +56,59 @@ x-quorum-def:
       --password /config/passwords.txt \
       &> /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log | tee -a /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log
 
+x-quorum-rpcnode-def:
+  &quorum-rpcnode-def
+  restart: "on-failure"
+  image: quorumengineering/quorum:${QUORUM_VERSION:-2.7.0}
+  expose:
+    - 30303
+    - 8545
+    - 9545
+  labels:
+    com.quorum.consensus: ${QUORUM_CONSENSUS:-istanbul}
+  healthcheck:
+    test: ["CMD", "wget", "--spider", "--proxy", "off", "http://localhost:8545"]
+    interval: 3s
+    timeout: 3s
+    retries: 10
+    start_period: 5s
+  environment:
+    - QUORUM_CONSENSUS=${QUORUM_CONS_ALGO:-istanbul}
+  entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      CONSENSUS_ARGS="--istanbul.blockperiod 5 --mine --minerthreads 1 --miner.gasprice 0 --emitcheckpoints"
+      if [ "raft" == $$QUORUM_CONSENSUS ];
+      then
+        CONSENSUS_ARGS="--raft --raftblocktime 300 --raftport 53000"
+      fi
+
+      mkdir -p /config /data /var/log/quorum/;
+      cp /quorum/passwords.txt /config/passwords.txt
+      cp /quorum/$${QUORUM_CONS_ALGO:-istanbul}Genesis.json /config/genesis.json
+      cp -r /quorum/* /data;
+      geth --datadir=/data init /config/genesis.json;
+      cp /config/keys/accountkey /data/keystore/key;
+      cp /config/keys/account2key /data/keystore/key2;
+      cp /config/keys/nodekey /data/geth/nodekey;
+      geth \
+      --datadir /data \
+      --nodiscover \
+      --permissioned \
+      --verbosity 5 \
+      $$CONSENSUS_ARGS \
+      --syncmode full --nousb \
+      --metrics --pprof --pprofaddr 0.0.0.0 --pprofport 9545 \
+      --networkid $${QUORUM_NETWORK_ID:-1337} \
+      --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpccorsdomain "*" --rpcvhosts "*" --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,$$QUORUM_CONSENSUS \
+      --port 30303 \
+      --identity node$${NODE_ID}-$$QUORUM_CONSENSUS \
+      --unlock "0,1" \
+      --allow-insecure-unlock \
+      --password /config/passwords.txt \
+      &> /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log | tee -a /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log
+
 
 x-quorum-member-def:
   &quorum-member-def
@@ -317,7 +370,7 @@ services:
         ipv4_address: 172.16.239.14
 
   rpcnode:
-    << : *quorum-def
+    << : *quorum-rpcnode-def
     container_name: rpcnode
     ports:
       - 8545:8545/tcp

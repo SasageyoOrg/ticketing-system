@@ -40,6 +40,11 @@
       "comment" : "private key and this comment are ignored.  In a real chain, the private key should NOT be stored",
       "balance" : "90000000000000000000000"
     },
+    "0x4d929E07c173ceA67f8008bb19A151e0564e1362" : {
+      "privateKey" : "0x526ba301ffd7369d010a07c2d44167e4e7c1b7ff1dd85b475b708a1078d04450",
+      "comment" : "private key and this comment are ignored.  In a real chain, the private key should NOT be stored",
+      "balance" : "500000000000000000000"
+    },
     "0xed9d02e382b34818e88b88a309c7fe71e65f419d": {
       "balance": "1000000000000000000000000000"
     },
@@ -56,9 +61,8 @@
       "balance": "1000000000000000000000000000"
     },
     "0xC9C913c8c3C1Cd416d80A0abF475db2062F161f6": {
-      "privateKey" : "a07509b1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3",
       "comment" : "private key and this comment are ignored.  In a real chain, the private key should NOT be stored",
-      "balance" : "300000000000000000"
+      "balance" : "300000000000000000000"
     }
   },
   "number": "0x0",
