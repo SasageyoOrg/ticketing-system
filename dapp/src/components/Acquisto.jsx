@@ -15,7 +15,7 @@ class Purchase extends Component {
       festivals: [],
       account: this.props.acc,
     };
-
+    
     web3 = new Web3(window.ethereum);
   }
 
@@ -63,7 +63,8 @@ class Purchase extends Component {
     try {
       const marketplaceInstance = await FestivalMarketplace(marketplace);
       //await festToken.methods.approve(marketplace, ticketPrice).send({ from: initiator, gas: 6700000 });
-      await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000 });
+      //await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000, value: ticketPrice });
+      await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, value: ticketPrice });
       await this.updateFestivals();
 
       renderNotification('success', 'Successo', `Biglietto dell'evento acquistato correttamente.`);

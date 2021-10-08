@@ -18,13 +18,18 @@ contract Biglietteria {
     // Purchase tickets from the organiser directly
     function purchaseTicket() public payable {
         address buyer = msg.sender;
-        
-        // send ETH from buyer (msg.sender) to the organiser 
-        payable(_organiser).transfer(msg.value);
 
+        //require(msg.value == _festival.getTicketPrice(), "Messaggio di provaaaaa");
+
+        // send ETH from buyer (msg.sender) to the organiser 
+        (bool sent, bytes memory data) = payable(_organiser).call{value: msg.value}("");
+        //(bool sent, bytes memory data) = address(this).call{value: msg.value}("");
+
+        require(sent, "Failed to send Ether");
         //_token.transferFrom(buyer, _organiser, _festival.getTicketPrice());
 
-        _festival.transferTicket(buyer);
+        bool ticketTransfered = _festival.transferTicket(buyer);
+        require(ticketTransfered, "Failed ticket transfer");
     }
 
     // ...

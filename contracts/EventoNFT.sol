@@ -122,7 +122,7 @@ contract EventoNFT is Context, AccessControl, ERC721 {
      * Adds buyer to tickets mapping
      * Update ticket details
      */
-    function transferTicket(address buyer) public {
+    function transferTicket(address buyer) public returns (bool){
         // to-do: da controllare perchè 2 ID?! -> quando comprato e quando venduto
         _saleTicketId.increment();
         uint256 saleTicketId = _saleTicketId.current();
@@ -139,6 +139,7 @@ contract EventoNFT is Context, AccessControl, ERC721 {
             customers.push(buyer);
         }
         purchasedTickets[buyer].push(saleTicketId);
+        return true;
     }
 
     /*
