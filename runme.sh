@@ -71,7 +71,7 @@ remove() {
 if [ $# -eq 0 ] 
 then
     # nessun argomento, comportamento default
-    echo "error. retry."
+    echo "Error, retry with a parameter: es. ./runme.sh start"
 elif [ "$1" = "start" ]; 
 then
     start

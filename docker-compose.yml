@@ -502,6 +502,7 @@ services:
 
   explorer:
     build: 
+      context: config/block-explorer-light
       dockerfile: dockerfile.explorer
     image: quorum-dev-quickstart/block-explorer-light:develop
     depends_on:
@@ -534,6 +535,7 @@ services:
   react:
     #profiles: ["dapp"]
     build: 
+      context: dapp
       dockerfile: dockerfile.react
     volumes:
       - ./dapp/src:/app/src
