@@ -1,5 +1,5 @@
 import Provider from './Provider';
-import FestivalFactoryABI from '../abi/contracts/FestiveTicketsFactory.json';
+import FestivalFactoryABI from '../abi/contracts/CreazioneEvento.json';
 
 const provider = new Provider();
 

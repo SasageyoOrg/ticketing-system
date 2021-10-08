@@ -1,6 +1,6 @@
 # compiled contracts 
 # TODO: da valutare se toglierlo perchè blocca il bind docker
-dapp/src/abi/contracts/
+dapp/src/abi/contracts/*.json
 
 .quorumDevQuickstart.lock
 
@@ -13,7 +13,7 @@ package-lock.json
 .DS_Store
 
 # Logs
-# logs
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*

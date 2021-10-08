@@ -298,7 +298,7 @@ services:
     volumes:
       - ./config/goquorum:/quorum
       - ./config/nodes/validator1:/config/keys
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.11
@@ -316,7 +316,7 @@ services:
     volumes:
       - ./config/goquorum:/quorum
       - ./config/nodes/validator2:/config/keys
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.12
@@ -334,7 +334,7 @@ services:
     volumes:
       - ./config/goquorum:/quorum
       - ./config/nodes/validator3:/config/keys
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.13
@@ -352,7 +352,7 @@ services:
     volumes:
       - ./config/goquorum:/quorum
       - ./config/nodes/validator4:/config/keys
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.14
@@ -372,7 +372,7 @@ services:
     volumes:
       - ./config/goquorum:/quorum
       - ./config/nodes/rpcnode:/config/keys
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.15
@@ -387,7 +387,7 @@ services:
     volumes:
       - ./config/nodes/member1:/config/keys
       - member1volume:/data
-      - ./logs/tessera:/var/log/tessera/
+      - tesseralogs:/var/log/tessera/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.26
@@ -409,7 +409,7 @@ services:
       - ./config/goquorum:/quorum
       - ./config/nodes/member1:/config/keys
       - member1volume:/data
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.16
@@ -424,7 +424,7 @@ services:
     volumes:
       - ./config/nodes/member2:/config/keys
       - member2volume:/data
-      - ./logs/tessera:/var/log/tessera/
+      - tesseralogs:/var/log/tessera/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.27
@@ -446,7 +446,7 @@ services:
       - ./config/goquorum:/quorum
       - ./config/nodes/member2:/config/keys
       - member2volume:/data
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.17
@@ -461,7 +461,7 @@ services:
     volumes:
       - ./config/nodes/member3:/config/keys
       - member3volume:/data
-      - ./logs/tessera:/var/log/tessera/
+      - tesseralogs:/var/log/tessera/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.28
@@ -483,7 +483,7 @@ services:
       - ./config/goquorum:/quorum
       - ./config/nodes/member3:/config/keys
       - member3volume:/data
-      - ./logs/quorum:/var/log/quorum/
+      - quorumlogs:/var/log/quorum/
     networks:
       quorum-dev-quickstart:
         ipv4_address: 172.16.239.18
@@ -560,4 +560,6 @@ volumes:
   member1volume:
   member2volume:
   member3volume:
+  quorumlogs:
+  tesseralogs:
   ethlogger:

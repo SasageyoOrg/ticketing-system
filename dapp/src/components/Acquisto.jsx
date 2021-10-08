@@ -41,7 +41,7 @@ class Purchase extends Component {
             <td class="center">{totalSupply - saleId}</td>
 
             <td class="center">
-            {(this.state.account == "user")
+            {(this.state.account.type == "cliente")
                 ? <button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, ticketPrice, initiator)}>
                     Acquista
                   </button>
@@ -100,7 +100,7 @@ class Purchase extends Component {
               <th key='name' class="center">Evento</th>
               <th key='price' class="center">Prezzo (ETH)</th>
               <th key='left' class="center">Biglietti rimanenti</th>
-              {(this.state.account == "user")
+              {(this.state.account.type == "cliente")
                 ? <th key='purchase' class="center"></th>
                 : <div></div>
               }

@@ -9,7 +9,7 @@ let web3;
 class MyTickets extends Component {
   constructor() {
     super();
-
+    
     this.state = {
       tickets: [],
       fests: [],
@@ -45,17 +45,17 @@ class MyTickets extends Component {
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
-      const festDetails = await festivalFactory.methods.getFestDetails(activeFests[0]).call({ from: initiator });
-      const renderData = await Promise.all(activeFests.map(async (fest, i) => {
-        const festDetails = await festivalFactory.methods.getFestDetails(activeFests[i]).call({ from: initiator });
-        return (
-          <option key={fest} value={fest} >{festDetails[0]}</option>
-        )
-      }));
-      
-      this.setState({ fests: renderData, fest: activeFests[0], marketplace: festDetails[4] });
-      this.updateTickets();
+        const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
+        const festDetails = await festivalFactory.methods.getFestDetails(activeFests[0]).call({ from: initiator });
+        const renderData = await Promise.all(activeFests.map(async (fest, i) => {
+          const festDetails = await festivalFactory.methods.getFestDetails(activeFests[i]).call({ from: initiator });
+          return (
+            <option key={fest} value={fest} >{festDetails[0]}</option>
+          )
+        }));
+        
+        this.setState({ fests: renderData, fest: activeFests[0], marketplace: festDetails[4] });
+        this.updateTickets();
     } catch (err) {
       // todo: correggere bug quando account non ha tickets
       // renderNotification('danger', 'Error', 'Error while updating the events');
@@ -128,10 +128,6 @@ class MyTickets extends Component {
                   <option value="" disabled>Seleziona il biglietto</option>
                   {this.state.tickets}
                 </select><br /><br />
-
-                <label class="left">Prezzo di rivendita</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
-
-                <button type="submit" className="custom-btn login-btn">Rivendi</button>
               </form>
             </div>
           </div>
