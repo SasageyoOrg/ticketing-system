@@ -41,7 +41,7 @@ class Purchase extends Component {
             <td class="center">{totalSupply - saleId}</td>
 
             <td class="center">
-            {(this.state.account.type == "cliente")
+            {(this.state.account.type === "cliente")
                 ? <button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, ticketPrice, initiator)}>
                     Acquista
                   </button>
@@ -64,7 +64,18 @@ class Purchase extends Component {
       const marketplaceInstance = await FestivalMarketplace(marketplace);
       //await festToken.methods.approve(marketplace, ticketPrice).send({ from: initiator, gas: 6700000 });
       //await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000, value: ticketPrice });
-      await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, value: ticketPrice });
+      await marketplaceInstance.methods
+        .purchaseTicket()
+        .send({ 
+          from: initiator, 
+          value: ticketPrice
+        })
+        .once("receipt", (receipt) => {
+          console.log(receipt);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       await this.updateFestivals();
 
       renderNotification('success', 'Successo', `Biglietto dell'evento acquistato correttamente.`);
@@ -83,7 +94,7 @@ class Purchase extends Component {
   render() {
     let pageTitle
 
-    if (this.state.account.type == "organizzatore") {
+    if (this.state.account.type === "organizzatore") {
       pageTitle = (
         <h4 class="center">Eventi disponibili</h4>
       );
@@ -93,7 +104,7 @@ class Purchase extends Component {
       );
     }
     return (
-      <div class="container " class="col s12 m6 offset-m3 l4 offset-l4 z-depth-6 card-panel">
+      <div class="container">
         {pageTitle}
         <table id='requests' class="responsive-table striped" >
           <thead>
@@ -101,7 +112,7 @@ class Purchase extends Component {
               <th key='name' class="center">Evento</th>
               <th key='price' class="center">Prezzo (ETH)</th>
               <th key='left' class="center">Biglietti rimanenti</th>
-              {(this.state.account.type == "cliente")
+              {(this.state.account.type === "cliente")
                 ? <th key='purchase' class="center"></th>
                 : <div></div>
               }

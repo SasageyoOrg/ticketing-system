@@ -12,9 +12,8 @@ class Festival extends Component {
 
     this.state = {
       name: null,
-      //symbol: null,
       price: null,
-      suppply: null,
+      supply: null,
     };
     
     web3 = new Web3(window.ethereum);
@@ -24,19 +23,19 @@ class Festival extends Component {
     try {
       e.preventDefault();
 
-      // console.log(web3.eth.getCoinbase());
-
+      // recupera indirizzo account organizzatore
       const organiser = await web3.eth.getCoinbase();
-      // const { name, symbol, price, supply } = this.state;
       const { name, price, supply } = this.state;
+      // invocazione del metodo dello smart contract
       const { events: { Created: { returnValues: { ntfAddress, marketplaceAddress } } } } = await festivalFactory.methods.createNewFest(
         name,
         web3.utils.toWei(price, 'ether'),
         supply
       ).send({ from: organiser, gas: 6700000 });
-
+      // notifica di successo
       renderNotification('success', 'Successo', `Evento creato correttamente!`);
-
+      
+      // processo di bulk minting
       const nftInstance = await FestivalNFT(ntfAddress);
       const batches = Math.ceil(supply / 30);
       let batchSupply = 30;
@@ -44,20 +43,25 @@ class Festival extends Component {
       let prevCount = 0
 
       if (supply < 30) {
-        const res = await nftInstance.methods.bulkMintTickets(supply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
+        // minting dei tickets
+        await nftInstance.methods.bulkMintTickets(supply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
       } else {
+        // minting a blocchi di 30 tickets
         for (let i = 0; i < batches; i++) {
           prevCount = curCount;
           curCount += 30;
           if (supply < curCount) {
             batchSupply = supply - prevCount;
           }
-          const res = await nftInstance.methods.bulkMintTickets(batchSupply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
+
+          await nftInstance.methods.bulkMintTickets(batchSupply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
         }
       }
+
+      
     } catch (err) {
-      console.log('Error while creating new event', err);
-      renderNotification('danger', 'Error', `${err.message}`);
+      console.log('Errore: ', err);
+      renderNotification('danger', 'Errore', 'Si è verificato un problema durante il caricamento del nuovo evento');
     }
   }
 
@@ -70,22 +74,16 @@ class Festival extends Component {
 
   render() {
     return (
-      <div class="container center" >
-        <div class="row">
-          <div class="container ">
-            <div class="container ">
-              <h5 style={{ padding: "30px 0px 0px 10px" }}>Creazione Evento</h5>
-              <form class="" onSubmit={this.onCreateFestival}>
-                <label class="left">Nome Evento</label><input id="name" class="validate" placeholder="es. Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
-                <label class="left">Prezzo del biglietto</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
-                <label class="left">Nr. di biglietti</label><input id="supply" placeholder="es. 100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
+      <div class="container" >
+          <h4 class="center">Creazione Evento</h4>
+          <form class="" onSubmit={this.onCreateFestival}>
+            <label class="left">Nome Evento</label><input id="name" placeholder="es. Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
+            <label class="left">Prezzo del biglietto</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
+            <label class="left">Nr. di biglietti</label><input id="supply" placeholder="es. 100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
 
-                <button type="submit" className="custom-btn login-btn">Crea evento</button>
-              </form>
-            </div>
-          </div>
+            <button type="submit" className="custom-btn login-btn">Crea evento</button>
+          </form>
         </div>
-      </div >
     )
   }
 }

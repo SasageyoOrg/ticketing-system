@@ -7,11 +7,6 @@ export const EventoNFTABI = [
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "FestSymbol",
-        "type": "string"
-      },
-      {
         "internalType": "uint256",
         "name": "ticketPrice",
         "type": "uint256"

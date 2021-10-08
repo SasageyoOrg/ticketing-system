@@ -1,19 +1,6 @@
 import React, { Component } from 'react';
-import Web3 from 'web3';
-import renderNotification from '../utils/notification-handler';
-
-let web3;
 
 class Guest extends Component {
-  constructor() {
-    super();
-
-    web3 = new Web3(window.ethereum);
-  }
-
-  async componentDidMount() {
-
-    }
 
   render() {
     return (
