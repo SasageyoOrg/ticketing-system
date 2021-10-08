@@ -101,6 +101,7 @@ x-quorum-rpcnode-def:
       --port 30303 \
       --identity node$${NODE_ID}-$$QUORUM_CONSENSUS \
       --unlock "0,1,2,3" \
+      --cache 4096 \
       --allow-insecure-unlock \
       --password /config/passwords.txt \
       &> /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log | tee -a /var/log/quorum/geth-$$HOSTNAME-$$(hostname -i).log

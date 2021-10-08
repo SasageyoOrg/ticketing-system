@@ -13,7 +13,7 @@ class Purchase extends Component {
 
     this.state = {
       festivals: [],
-      account: this.props.acc
+      account: this.props.acc,
     };
 
     web3 = new Web3(window.ethereum);
@@ -80,9 +80,20 @@ class Purchase extends Component {
   }
 
   render() {
+    let pageTitle
+
+    if (this.state.account.type == "organizzatore") {
+      pageTitle = (
+        <h4 class="center">Eventi disponibili</h4>
+      );
+    } else {
+      pageTitle = (
+        <h4 class="center">Acquista biglietti</h4>
+      );
+    }
     return (
       <div class="container " class="col s12 m6 offset-m3 l4 offset-l4 z-depth-6 card-panel">
-        <h4 class="center">Acquista biglietti</h4>
+        {pageTitle}
         <table id='requests' class="responsive-table striped" >
           <thead>
             <tr>

@@ -17,7 +17,6 @@
 5. Import the accounts in Metamask by taking the private keys below:
     ```
     Organizzatore   -> 0x60bbe10a196a4e71451c0f6e9ec9beab454c2a5ac0542aa5b8b733ff5719fec3
-    Rivenditore     -> 0x526ba301ffd7369d010a07c2d44167e4e7c1b7ff1dd85b475b708a1078d04450
     Controllore     -> 0xde405e2f3cea4da31ea886d9f93f8855f8925b35f39f8d01ddc08b588be118fe
     Cliente         -> 0xeccc28aa6410da0d6bd19efdef33b5b7b9e2c5adcd9e8ab899d3369aaa386e72
     ```
