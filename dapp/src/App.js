@@ -12,6 +12,7 @@ import Festival from "./components/Evento";
 import Purchase from "./components/Acquisto";
 import MyTickets from "./components/Biglietti";
 import SecondaryMarket from "./components/Rivendita";
+import Guest from "./components/Visitatore";
 
 import "./App.css";
 
@@ -101,7 +102,7 @@ class App extends Component {
           },
         }));
         break;
-      default:
+      case "0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001":
         this.setState((prevState) => ({
           account: {
             ...prevState.account,
@@ -109,15 +110,15 @@ class App extends Component {
           },
         }));
         break;
+      default:
+        this.setState((prevState) => ({
+          account: {
+            ...prevState.account,
+            type: "visitatore",
+          },
+        }));
+        break;
     }
-
-    /*
-    if (accounts[0] === "0xC9C913c8c3C1Cd416d80A0abF475db2062F161f6"){
-      this.setState({account: "organizer"})
-    }else{
-      this.setState({account: "user"})
-    }
-    */
 
     this.setState((prevState) => ({
       account: {
@@ -166,7 +167,11 @@ class App extends Component {
         </div>
       );
       path = "/createFestival";
-    } else {
+    } else if(this.state.account.type == "controllore") {
+      nav = (
+        <div></div>
+      );
+    } else if(this.state.account.type == "cliente") {
       nav = (
         <div>
           <li>
@@ -192,6 +197,15 @@ class App extends Component {
         </div>
       );
       path = "/tickets";
+    } else {
+      nav = (
+        <div>
+          <li>
+            <span class="user_addressbox">Visitatore</span>
+          </li>
+        </div>
+      );
+      path = "/guest";
     }
     return (
       <Router>
@@ -207,7 +221,7 @@ class App extends Component {
           </nav>
           <Switch>
             <Route path="/createFestival" component={Festival} />
-
+            <Route path="/guest" component={Guest} />
             <Route
               path="/buyTickets"
               render={(props) => (
