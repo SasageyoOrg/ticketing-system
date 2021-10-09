@@ -6,6 +6,7 @@ import Festival from "./components/Evento";
 import Purchase from "./components/Acquisto";
 import MyTickets from "./components/Biglietti";
 import Guest from "./components/Visitatore";
+import renderNotification from './utils/notification-handler';
 
 // stili
 import "./App.css";
@@ -52,13 +53,16 @@ class App extends Component {
       resolve(new Web3('http://127.0.0.1:8545'));
     });
 
-    // funzione async di gestione della blockchain
-    this.loadBlockChain();
+    // check if there's web3 and window.ethereum
+    if(window.ethereum !== undefined && web3 !== undefined) {
+      // funzione async di gestione della blockchain
+      this.loadBlockChain();
 
-    // refresh della pagina al cambio account (tramite Metamask)
-    window.ethereum.on("accountsChanged", function () {
-      window.location.reload();
-    });
+      // refresh della pagina al cambio account (tramite Metamask)
+      window.ethereum.on("accountsChanged", function () {
+        window.location.reload();
+      });
+    }
 
   }
 
@@ -101,10 +105,16 @@ class App extends Component {
     }));
 
     // valorizza 'this.state.account.balance'
-    var balance = await web3.eth.getBalance(accounts[0]);
-    this.setState((prevState) => ({
-      account: {...prevState.account, balance: web3.utils.fromWei(balance)}
-    }));
+    try {
+      var balance = await web3.eth.getBalance(accounts[0]);
+      this.setState((prevState) => ({
+        account: {...prevState.account, balance: web3.utils.fromWei(balance)}
+      }));
+    } catch(err) {
+      renderNotification('danger', 'Errore', 'Ops, qualcosa è andato storto. Controlla lo stato della rete.');
+      console.log("Failed with error: " + err);
+      console.log(err.message);
+    }
   }
 
   render() {

@@ -55,34 +55,35 @@ class MyTickets extends Component {
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      const activeFests = await festivalFactory.methods
-        .getActiveFests()
-        .call({ from: initiator });
-      const festDetails = await festivalFactory.methods
-        .getFestDetails(activeFests[0])
-        .call({ from: initiator });
-      const renderData = await Promise.all(
-        activeFests.map(async (fest, i) => {
-          const festDetails = await festivalFactory.methods
-            .getFestDetails(activeFests[i])
-            .call({ from: initiator });
-          return (
-            <option key={fest} value={fest}>
-              {festDetails[0]}
-            </option>
-          );
-        })
-      );
+      const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
 
-      this.setState({
-        fests: renderData,
-        fest: activeFests[0],
-        marketplace: festDetails[4],
-      });
-      this.updateTickets();
+      // controllo quanti eventi sono stati ricavati e procedo se >= 1
+      if(activeFests.length > 0) {
+        const festDetails = await festivalFactory.methods.getFestDetails(activeFests[0]).call({ from: initiator });
+        const renderData = await Promise.all(
+          activeFests.map(async (fest, i) => {
+            const festDetails = await festivalFactory.methods
+              .getFestDetails(activeFests[i])
+              .call({ from: initiator });
+            return (
+              <option key={fest} value={fest}>
+                {festDetails[0]}
+              </option>
+            );
+          })
+        );
+
+        this.setState({
+          fests: renderData,
+          fest: activeFests[0],
+          marketplace: festDetails[4],
+        });
+
+        this.updateTickets();
+      }
     } catch (err) {
       // TODO: bug da risolvere
-      //renderNotification("danger", "Error", "Error while updating the events");
+      renderNotification("danger", "Error", "Error while updating the events");
       console.log("Error while updating the events", err);
     }
   };
@@ -103,7 +104,7 @@ class MyTickets extends Component {
       this.setState({ tickets: renderData, ticket: tickets[0] });
     } catch (e) {
       // TODO: bug da risolvere
-      // renderNotification("danger","Error","Error in updating the ticket for the event");
+      renderNotification("danger","Error","Error in updating the ticket for the event");
       console.log("Error in updating the ticket", e);
       console.log(e);
     }

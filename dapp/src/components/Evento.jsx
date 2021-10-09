@@ -14,12 +14,16 @@ class Festival extends Component {
       name: null,
       price: null,
       supply: null,
+      buyButtonText: "Pubblica evento"
     };
     
     web3 = new Web3(window.ethereum);
   }
 
   onCreateFestival = async (e) => {
+    // indicazione di caricamento nel bottone
+    this.setState({buyButtonText: "Pubblico..."});
+
     try {
       e.preventDefault();
 
@@ -32,8 +36,12 @@ class Festival extends Component {
         web3.utils.toWei(price, 'ether'),
         supply
       ).send({ from: organiser, gas: 6700000 });
+      
       // notifica di successo
       renderNotification('success', 'Successo', `Evento creato correttamente!`);
+
+      // indicazione di caricamento nel bottone
+      this.setState({buyButtonText: "Pubblica evento"});
       
       // processo di bulk minting
       const nftInstance = await FestivalNFT(ntfAddress);
@@ -81,7 +89,7 @@ class Festival extends Component {
             <label class="left">Prezzo del biglietto</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
             <label class="left">Nr. di biglietti</label><input id="supply" placeholder="es. 100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
 
-            <button type="submit" className="custom-btn login-btn">Crea evento</button>
+            <button type="submit" className="custom-btn login-btn">{this.state.buyButtonText}</button>
           </form>
         </div>
     )
