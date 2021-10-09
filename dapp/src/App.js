@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch, Redirect} from "react-router-dom";
 import ReactNotification from "react-notifications-component";
 import Web3 from 'web3';
-import Festival from "./components/Evento";
+import Evento from "./components/Evento";
 import Purchase from "./components/Acquisto";
 import MyTickets from "./components/Biglietti";
 import Guest from "./components/Visitatore";
@@ -85,7 +85,7 @@ class App extends Component {
         break;
       case "0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001":
         this.setState((prevState) => ({
-          account: {...prevState.account, type: "cliente"},
+          account: { ...prevState.account, type: "organizzatore"},
         }));
         break;
       default:
@@ -115,7 +115,7 @@ class App extends Component {
         <div>
           <li>
             {" "}
-            <Link to="/createFestival">Crea evento</Link>{" "}
+            <Link to="/creaEvento">Crea evento</Link>{" "}
           </li>
           <li>
             {" "}
@@ -135,7 +135,7 @@ class App extends Component {
           </li>
         </div>
       );
-      path = "/createFestival";
+      path = "/creaEvento";
     } else if(this.state.account.type === "controllore") {
       nav = (
         <div></div>
@@ -189,7 +189,7 @@ class App extends Component {
             </div>
           </nav>
           <Switch>
-            <Route path="/createFestival" component={Festival} />
+            <Route path="/creaEvento" component={Evento} />
             <Route path="/guest" component={Guest} />
             <Route
               path="/buyTickets"

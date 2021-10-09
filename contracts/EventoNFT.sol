@@ -9,45 +9,45 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract EventoNFT is Context, AccessControl, ERC721 {
     using Counters for Counters.Counter;
 
-    // _ticketIds -> id biglietto creato dall'organizzatore e messo in vendita
+    // _idBiglietti -> id biglietto creato dall'organizzatore e messo in vendita
     // _saleTicketId -> id biglietto quando viene rimesso in vendita da utente nel secondary market
-    Counters.Counter private _ticketIds;
+    Counters.Counter private _idBiglietti;
     Counters.Counter private _saleTicketId;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     struct TicketDetails {
-        uint256 purchasePrice;  // prezzo di vendita quando creato
-        uint256 sellingPrice;   // prezzo di rivendita (secondary marketplace)
+        uint256 prezzoAcquisto;  // prezzo di vendita quando creato
+        uint256 prezzoRivendita;   // prezzo di rivendita (secondary biglietteria)
         bool forSale;           // si capisce dai 
     }
 
-    address private _organiser;
-    address[] private customers;
-    uint256[] private ticketsForSale;
-    uint256 private _ticketPrice;
-    uint256 private _totalSupply;
+    address private _organizzatore;
+    address[] private clienti;
+    uint256[] private bigliettiInVendita;
+    uint256 private _prezzoBiglietto;
+    uint256 private _bigliettiDisponibili;
 
-    mapping(uint256 => TicketDetails) private _ticketDetails;
-    mapping(address => uint256[]) private purchasedTickets;
+    mapping(uint256 => TicketDetails) private _dettagliBiglietto;
+    mapping(address => uint256[]) private bigliettiAcquistati;
 
     constructor(
-        string memory festName,
+        string memory nomeEvento,
         // string memory FestSymbol,
-        uint256 ticketPrice,
-        uint256 totalSupply,
-        address organiser
-    ) public ERC721(festName, "EV") {
-        _setupRole(MINTER_ROLE, organiser);
+        uint256 prezzoBiglietto,
+        uint256 bigliettiDisponibili,
+        address organizzatore
+    ) public ERC721(nomeEvento, "EV") {
+        _setupRole(MINTER_ROLE, organizzatore);
 
-        _ticketPrice = ticketPrice;
-        _totalSupply = totalSupply;
-        _organiser = organiser;
+        _prezzoBiglietto = prezzoBiglietto;
+        _bigliettiDisponibili = bigliettiDisponibili;
+        _organizzatore = organizzatore;
     }
 
     modifier isValidTicketCount {
         require(
-            _ticketIds.current() < _totalSupply,
+            _idBiglietti.current() < _bigliettiDisponibili,
             "Maximum ticket limit exceeded!"
         );
         _;
@@ -62,21 +62,21 @@ contract EventoNFT is Context, AccessControl, ERC721 {
     }
 
     // to-do: c'è bisogno??!??!
-    modifier isValidSellAmount(uint256 ticketId) {
-        uint256 purchasePrice = _ticketDetails[ticketId].purchasePrice;
-        uint256 sellingPrice = _ticketDetails[ticketId].sellingPrice;
+    modifier isValidSellAmount(uint256 idBiglietto) {
+        uint256 prezzoAcquisto = _dettagliBiglietto[idBiglietto].prezzoAcquisto;
+        uint256 prezzoRivendita = _dettagliBiglietto[idBiglietto].prezzoRivendita;
 
         require(
-            purchasePrice + ((purchasePrice * 110) / 100) > sellingPrice,
+            prezzoAcquisto + ((prezzoAcquisto * 110) / 100) > prezzoRivendita,
             "Re-selling price is more than 110%"
         );
         _;
     }
 
     /*
-     * Mint new tickets and assign it to operator
+     * Mint new biglietti and assign it to operator
      * Access controlled by minter only
-     * Returns new ticketId
+     * Returns new idBiglietto
      */
     function mint(address operator)
         internal
@@ -84,21 +84,21 @@ contract EventoNFT is Context, AccessControl, ERC721 {
         isMinterRole
         returns (uint256)
     {
-        _ticketIds.increment();
-        uint256 newTicketId = _ticketIds.current();
-        _mint(operator, newTicketId);
+        _idBiglietti.increment();
+        uint256 idNuovoBiglietto = _idBiglietti.current();
+        _mint(operator, idNuovoBiglietto);
 
-        _ticketDetails[newTicketId] = TicketDetails({
-            purchasePrice: _ticketPrice,
-            sellingPrice: 0,
+        _dettagliBiglietto[idNuovoBiglietto] = TicketDetails({
+            prezzoAcquisto: _prezzoBiglietto,
+            prezzoRivendita: 0,
             forSale: false
         });
 
-        return newTicketId;
+        return idNuovoBiglietto;
     }
 
     /*
-     * Bulk mint specified number of tickets to assign it to a operator
+     * Bulk mint specified number of biglietti to assign it to a operator
      * Modifier to check the ticket count is less than total supply
      */
     function bulkMintTickets(uint256 numOfTickets, address operator)
@@ -107,8 +107,8 @@ contract EventoNFT is Context, AccessControl, ERC721 {
         isValidTicketCount
     {
         require(
-            (ticketCounts() + numOfTickets) <= 1000,
-            "Number of tickets exceeds maximum ticket count"
+            (countBiglietti() + numOfTickets) <= 1000,
+            "Number of biglietti exceeds maximum ticket count"
         );
 
         for (uint256 i = 0; i < numOfTickets; i++) {
@@ -117,12 +117,12 @@ contract EventoNFT is Context, AccessControl, ERC721 {
     }
 
     /*
-     * Primary purchase for the tickets
-     * Adds new customer if not exists
-     * Adds buyer to tickets mapping
+     * Primary purchase for the biglietti
+     * Adds new cliente if not exists
+     * Adds acquirente to biglietti mapping
      * Update ticket details
      */
-    function transferTicket(address buyer) public returns (bool){
+    function trasferisciBiglietto(address acquirente) public returns (bool){
         // to-do: da controllare perchè 2 ID?! -> quando comprato e quando venduto
         _saleTicketId.increment();
         uint256 saleTicketId = _saleTicketId.current();
@@ -133,45 +133,45 @@ contract EventoNFT is Context, AccessControl, ERC721 {
             "Only initial purchase allowed"
         );
 
-        transferFrom(ownerOf(saleTicketId), buyer, saleTicketId);
+        transferFrom(ownerOf(saleTicketId), acquirente, saleTicketId);
 
-        if (!isCustomerExist(buyer)) {
-            customers.push(buyer);
+        if (!clienteEsistente(acquirente)) {
+            clienti.push(acquirente);
         }
-        purchasedTickets[buyer].push(saleTicketId);
+        bigliettiAcquistati[acquirente].push(saleTicketId);
         return true;
     }
 
     /*
-     * Secondary purchase for the tickets
+     * Secondary purchase for the biglietti
      * Modifier to validate that the selling price shouldn't exceed 110% of purchase price for peer to peer transfers
-     * Adds new customer if not exists
-     * Adds buyer to tickets mapping
-     * Remove ticket from the seller and from sale
+     * Adds new cliente if not exists
+     * Adds acquirente to biglietti mapping
+     * Remove ticket from the venditore and from sale
      * Update ticket details
      */
      // qui compro dal secondary market
-    function secondaryTransferTicket(address buyer, uint256 saleTicketId)
+    function secondaryTransferTicket(address acquirente, uint256 saleTicketId)
         public
         isValidSellAmount(saleTicketId)
     {
-        address seller = ownerOf(saleTicketId);
-        uint256 sellingPrice = _ticketDetails[saleTicketId].sellingPrice;
+        address venditore = ownerOf(saleTicketId);
+        uint256 prezzoRivendita = _dettagliBiglietto[saleTicketId].prezzoRivendita;
 
-        transferFrom(seller, buyer, saleTicketId);
+        transferFrom(venditore, acquirente, saleTicketId);
 
-        if (!isCustomerExist(buyer)) {
-            customers.push(buyer);
+        if (!clienteEsistente(acquirente)) {
+            clienti.push(acquirente);
         }
 
-        purchasedTickets[buyer].push(saleTicketId);
+        bigliettiAcquistati[acquirente].push(saleTicketId);
 
-        removeTicketFromCustomer(seller, saleTicketId);
-        removeTicketFromSale(saleTicketId);
+        rimuoviBigliettoCliente(venditore, saleTicketId);
+        rimuoviBigliettoRivendita(saleTicketId);
 
-        _ticketDetails[saleTicketId] = TicketDetails({
-            purchasePrice: sellingPrice,
-            sellingPrice: 0,
+        _dettagliBiglietto[saleTicketId] = TicketDetails({
+            prezzoAcquisto: prezzoRivendita,
+            prezzoRivendita: 0,
             forSale: false
         });
     }
@@ -183,93 +183,93 @@ contract EventoNFT is Context, AccessControl, ERC721 {
      */
     // qui metto in vendita l'event nel secondary market
     function setSaleDetails(
-        uint256 ticketId,
-        uint256 sellingPrice,
+        uint256 idBiglietto,
+        uint256 prezzoRivendita,
         address operator
     ) public {
-        uint256 purchasePrice = _ticketDetails[ticketId].purchasePrice;
+        uint256 prezzoAcquisto = _dettagliBiglietto[idBiglietto].prezzoAcquisto;
 
         require(
-            purchasePrice + ((purchasePrice * 110) / 100) > sellingPrice,
+            prezzoAcquisto + ((prezzoAcquisto * 110) / 100) > prezzoRivendita,
             "Re-selling price is more than 110%"
         );
 
-        // Should not be an organiser
+        // Should not be an organizzatore
         require(
             !hasRole(MINTER_ROLE, _msgSender()),
             "Functionality only allowed for secondary market"
         );
 
-        _ticketDetails[ticketId].sellingPrice = sellingPrice;
-        _ticketDetails[ticketId].forSale = true;
+        _dettagliBiglietto[idBiglietto].prezzoRivendita = prezzoRivendita;
+        _dettagliBiglietto[idBiglietto].forSale = true;
 
-        if (!isSaleTicketAvailable(ticketId)) {
-            ticketsForSale.push(ticketId);
+        if (!bigliettoInRivendita(idBiglietto)) {
+            bigliettiInVendita.push(idBiglietto);
         }
 
-        approve(operator, ticketId);
+        approve(operator, idBiglietto);
     }
 
     // Get ticket actual price
-    function getTicketPrice() public view returns (uint256) {
-        return _ticketPrice;
+    function getPrezzoBiglietto() public view returns (uint256) {
+        return _prezzoBiglietto;
     }
 
-    // Get organiser's address
-    function getOrganiser() public view returns (address) {
-        return _organiser;
+    // Get organizzatore's address
+    function getOrganizzatore() public view returns (address) {
+        return _organizzatore;
     }
 
-    // Get current ticketId
-    function ticketCounts() public view returns (uint256) {
-        return _ticketIds.current();
+    // Get current idBiglietto
+    function countBiglietti() public view returns (uint256) {
+        return _idBiglietti.current();
     }
 
-    // Get next sale ticketId
+    // Get next sale idBiglietto
     function getNextSaleTicketId() public view returns (uint256) {
         return _saleTicketId.current();
     }
 
     // Get selling price for the ticket
-    function getSellingPrice(uint256 ticketId) public view returns (uint256) {
-        return _ticketDetails[ticketId].sellingPrice;
+    function getPrezzoRivendita(uint256 idBiglietto) public view returns (uint256) {
+        return _dettagliBiglietto[idBiglietto].prezzoRivendita;
     }
 
-    // Get all tickets available for sale
-    function getTicketsForSale() public view returns (uint256[] memory) {
-        return ticketsForSale;
+    // Get all biglietti available for sale
+    function getBigliettiInVendita() public view returns (uint256[] memory) {
+        return bigliettiInVendita;
     }
 
     // Get ticket details
-    function getTicketDetails(uint256 ticketId)
+    function getDettagliBiglietto(uint256 idBiglietto)
         public
         view
         returns (
-            uint256 purchasePrice,
-            uint256 sellingPrice,
+            uint256 prezzoAcquisto,
+            uint256 prezzoRivendita,
             bool forSale
         )
     {
         return (
-            _ticketDetails[ticketId].purchasePrice,
-            _ticketDetails[ticketId].sellingPrice,
-            _ticketDetails[ticketId].forSale
+            _dettagliBiglietto[idBiglietto].prezzoAcquisto,
+            _dettagliBiglietto[idBiglietto].prezzoRivendita,
+            _dettagliBiglietto[idBiglietto].forSale
         );
     }
 
-    // Get all tickets owned by a customer
-    function getTicketsOfCustomer(address customer)
+    // Get all biglietti owned by a cliente
+    function getBigliettiCliente(address cliente)
         public
         view
         returns (uint256[] memory)
     {
-        return purchasedTickets[customer];
+        return bigliettiAcquistati[cliente];
     }
 
-    // Utility function to check if customer exists to avoid redundancy
-    function isCustomerExist(address buyer) internal view returns (bool) {
-        for (uint256 i = 0; i < customers.length; i++) {
-            if (customers[i] == buyer) {
+    // Utility function to check if cliente exists to avoid redundancy
+    function clienteEsistente(address acquirente) internal view returns (bool) {
+        for (uint256 i = 0; i < clienti.length; i++) {
+            if (clienti[i] == acquirente) {
                 return true;
             }
         }
@@ -277,47 +277,47 @@ contract EventoNFT is Context, AccessControl, ERC721 {
     }
 
     // Utility function used to check if ticket is already for sale
-    function isSaleTicketAvailable(uint256 ticketId)
+    function bigliettoInRivendita(uint256 idBiglietto)
         internal
         view
         returns (bool)
     {
-        for (uint256 i = 0; i < ticketsForSale.length; i++) {
-            if (ticketsForSale[i] == ticketId) {
+        for (uint256 i = 0; i < bigliettiInVendita.length; i++) {
+            if (bigliettiInVendita[i] == idBiglietto) {
                 return true;
             }
         }
         return false;
     }
 
-    // Utility function to remove ticket owned by customer from customer to ticket mapping
-    function removeTicketFromCustomer(address customer, uint256 ticketId)
+    // Utility function to remove ticket owned by cliente from cliente to ticket mapping
+    function rimuoviBigliettoCliente(address cliente, uint256 idBiglietto)
         internal
     {
-        uint256 numOfTickets = purchasedTickets[customer].length;
+        uint256 numOfTickets = bigliettiAcquistati[cliente].length;
 
         for (uint256 i = 0; i < numOfTickets; i++) {
-            if (purchasedTickets[customer][i] == ticketId) {
+            if (bigliettiAcquistati[cliente][i] == idBiglietto) {
                 for (uint256 j = i + 1; j < numOfTickets; j++) {
-                    purchasedTickets[customer][j - 1] = purchasedTickets[
-                        customer
+                    bigliettiAcquistati[cliente][j - 1] = bigliettiAcquistati[
+                        cliente
                     ][j];
                 }
-                purchasedTickets[customer].pop();
+                bigliettiAcquistati[cliente].pop();
             }
         }
     }
 
     // Utility function to remove ticket from sale list
-    function removeTicketFromSale(uint256 ticketId) internal {
-        uint256 numOfTickets = ticketsForSale.length;
+    function rimuoviBigliettoRivendita(uint256 idBiglietto) internal {
+        uint256 numOfTickets = bigliettiInVendita.length;
 
         for (uint256 i = 0; i < numOfTickets; i++) {
-            if (ticketsForSale[i] == ticketId) {
+            if (bigliettiInVendita[i] == idBiglietto) {
                 for (uint256 j = i + 1; j < numOfTickets; j++) {
-                    ticketsForSale[j - 1] = ticketsForSale[j];
+                    bigliettiInVendita[j - 1] = bigliettiInVendita[j];
                 }
-                ticketsForSale.pop();
+                bigliettiInVendita.pop();
             }
         }
     }

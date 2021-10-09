@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/CreazioneEvento';
-import FestivalNFT from '../proxies/NFTEvento';
+import creazioneEvento from '../proxies/CreazioneEvento';
+import EventoNFT from '../proxies/NFTEvento';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -19,24 +19,24 @@ class Festival extends Component {
     web3 = new Web3(window.ethereum);
   }
 
-  onCreateFestival = async (e) => {
+  onCreateEvent = async (e) => {
     try {
       e.preventDefault();
 
       // recupera indirizzo account organizzatore
-      const organiser = await web3.eth.getCoinbase();
+      const organizzatore = await web3.eth.getCoinbase();
       const { name, price, supply } = this.state;
       // invocazione del metodo dello smart contract
-      const { events: { Created: { returnValues: { ntfAddress, marketplaceAddress } } } } = await festivalFactory.methods.createNewFest(
+      const { events: { Created: { returnValues: { ntfAddress, addressBiglietteria } } } } = await creazioneEvento.methods.createNewFest(
         name,
         web3.utils.toWei(price, 'ether'),
         supply
-      ).send({ from: organiser, gas: 6700000 });
+      ).send({ from: organizzatore, gas: 6700000 });
       // notifica di successo
       renderNotification('success', 'Successo', `Evento creato correttamente!`);
       
       // processo di bulk minting
-      const nftInstance = await FestivalNFT(ntfAddress);
+      const nftInstance = await EventoNFT(ntfAddress);
       const batches = Math.ceil(supply / 30);
       let batchSupply = 30;
       let curCount = 0
@@ -44,7 +44,7 @@ class Festival extends Component {
 
       if (supply < 30) {
         // minting dei tickets
-        await nftInstance.methods.bulkMintTickets(supply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
+        await nftInstance.methods.bulkMintTickets(supply, addressBiglietteria).send({ from: organizzatore, gas: 6700000 });
       } else {
         // minting a blocchi di 30 tickets
         for (let i = 0; i < batches; i++) {
@@ -54,7 +54,7 @@ class Festival extends Component {
             batchSupply = supply - prevCount;
           }
 
-          await nftInstance.methods.bulkMintTickets(batchSupply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
+          await nftInstance.methods.bulkMintTickets(batchSupply, addressBiglietteria).send({ from: organizzatore, gas: 6700000 });
         }
       }
 
@@ -76,7 +76,7 @@ class Festival extends Component {
     return (
       <div class="container" >
           <h4 class="center">Creazione Evento</h4>
-          <form class="" onSubmit={this.onCreateFestival}>
+          <form class="" onSubmit={this.onCreateEvent}>
             <label class="left">Nome Evento</label><input id="name" placeholder="es. Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
             <label class="left">Prezzo del biglietto</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
             <label class="left">Nr. di biglietti</label><input id="supply" placeholder="es. 100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />

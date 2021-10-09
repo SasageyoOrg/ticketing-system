@@ -3,22 +3,22 @@ export const EventoNFTABI = [
     "inputs": [
       {
         "internalType": "string",
-        "name": "festName",
+        "name": "nomeEvento",
         "type": "string"
       },
       {
         "internalType": "uint256",
-        "name": "ticketPrice",
+        "name": "prezzoBiglietto",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "totalSupply",
+        "name": "bigliettiDisponibili",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "organiser",
+        "name": "organizzatore",
         "type": "address"
       }
     ],
@@ -290,7 +290,7 @@ export const EventoNFTABI = [
   },
   {
     "inputs": [],
-    "name": "getOrganiser",
+    "name": "getOrganizzatore",
     "outputs": [
       {
         "internalType": "address",
@@ -324,11 +324,11 @@ export const EventoNFTABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "ticketId",
+        "name": "idBiglietto",
         "type": "uint256"
       }
     ],
-    "name": "getSellingPrice",
+    "name": "getPrezzoRivendita",
     "outputs": [
       {
         "internalType": "uint256",
@@ -343,20 +343,20 @@ export const EventoNFTABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "ticketId",
+        "name": "idBiglietto",
         "type": "uint256"
       }
     ],
-    "name": "getTicketDetails",
+    "name": "getDettagliBiglietto",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "purchasePrice",
+        "name": "prezzoAcquisto",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "sellingPrice",
+        "name": "prezzoRivendita",
         "type": "uint256"
       },
       {
@@ -370,7 +370,7 @@ export const EventoNFTABI = [
   },
   {
     "inputs": [],
-    "name": "getTicketPrice",
+    "name": "getPrezzoBiglietto",
     "outputs": [
       {
         "internalType": "uint256",
@@ -383,7 +383,7 @@ export const EventoNFTABI = [
   },
   {
     "inputs": [],
-    "name": "getTicketsForSale",
+    "name": "getBigliettiInVendita",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -398,11 +398,11 @@ export const EventoNFTABI = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "customer",
+        "name": "cliente",
         "type": "address"
       }
     ],
-    "name": "getTicketsOfCustomer",
+    "name": "getBigliettiCliente",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -638,12 +638,12 @@ export const EventoNFTABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "ticketId",
+        "name": "idBiglietto",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "sellingPrice",
+        "name": "prezzoRivendita",
         "type": "uint256"
       },
       {
@@ -691,7 +691,7 @@ export const EventoNFTABI = [
   },
   {
     "inputs": [],
-    "name": "ticketCounts",
+    "name": "countBiglietti",
     "outputs": [
       {
         "internalType": "uint256",
@@ -752,14 +752,14 @@ export const EventoNFTABI = [
         "type": "address"
       }
     ],
-    "name": "transferTicket",
+    "name": "trasferisciBiglietto",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
 
-export const festivalMarketplaceABI = [
+export const biglietteriaABI = [
   {
     "inputs": [
       {
@@ -768,8 +768,8 @@ export const festivalMarketplaceABI = [
         "type": "address"
       },
       {
-        "internalType": "contract FestivalNFT",
-        "name": "festival",
+        "internalType": "contract EventoNFT",
+        "name": "evento",
         "type": "address"
       }
     ],
@@ -787,7 +787,7 @@ export const festivalMarketplaceABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "ticketId",
+        "name": "idBiglietto",
         "type": "uint256"
       }
     ],

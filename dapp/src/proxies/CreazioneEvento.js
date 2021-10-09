@@ -1,23 +1,23 @@
 import Provider from './Provider';
-import FestivalFactoryABI from '../abi/contracts/CreazioneEvento.json';
+import CreazioneEventoABI from '../abi/contracts/CreazioneEvento.json';
 
 const provider = new Provider();
 
-class FestivalFactory {
+class CreazioneEvento {
   constructor() {
     const web3 = provider.web3;
-    const deploymentKey = Object.keys(FestivalFactoryABI.networks)[0];
+    const deploymentKey = Object.keys(CreazioneEventoABI.networks)[0];
 
     this.instance = new web3.eth.Contract(
-      FestivalFactoryABI.abi,
-      FestivalFactoryABI.networks[deploymentKey].address,
+      CreazioneEventoABI.abi,
+      CreazioneEventoABI.networks[deploymentKey].address,
     );
   }
 
   getInstance = () => this.instance;
 }
 
-const festivalFactory = new FestivalFactory();
-Object.freeze(festivalFactory);
+const creazioneEvento = new CreazioneEvento();
+Object.freeze(creazioneEvento);
 
-export default festivalFactory.getInstance();
+export default creazioneEvento.getInstance();

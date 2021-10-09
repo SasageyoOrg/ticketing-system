@@ -1,12 +1,12 @@
 import Provider from './Provider';
-import { festivalMarketplaceABI } from '../constants';
+import { biglietteriaABI } from '../constants';
 
 const provider = new Provider();
 
-const FestivalMarketplace = (contractAddress) => {
+const Biglietteria = (contractAddress) => {
   const web3 = provider.web3;
 
-  return new web3.eth.Contract(festivalMarketplaceABI, contractAddress);
+  return new web3.eth.Contract(biglietteriaABI, contractAddress);
 };
 
-export default FestivalMarketplace;
+export default Biglietteria;

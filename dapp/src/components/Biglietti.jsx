@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import festivalFactory from "../proxies/CreazioneEvento";
-import FestivalNFT from "../proxies/NFTEvento";
+import creazioneEvento from "../proxies/CreazioneEvento";
+import EventoNFT from "../proxies/NFTEvento";
 import renderNotification from "../utils/notification-handler";
 
 let web3;
@@ -11,12 +11,12 @@ class MyTickets extends Component {
     super();
 
     this.state = {
-      tickets: [],
-      fests: [],
-      ticket: null,
-      fest: null,
-      marketplace: null,
-      price: null,
+      biglietti: [],
+      eventi: [],
+      biglietto: null,
+      evento: null,
+      biglietteria: null,
+      prezzo: null,
       test: null,
     };
 
@@ -24,17 +24,17 @@ class MyTickets extends Component {
   }
 
   async componentDidMount() {
-    await this.updateFestivals();
+    await this.aggiornaEventi();
   }
 
   onListForSale = async (e) => {
     try {
       e.preventDefault();
       const initiator = await web3.eth.getCoinbase();
-      const { ticket, price, marketplace } = this.state;
-      const nftInstance = await FestivalNFT(this.state.fest);
+      const { biglietto, prezzo, biglietteria } = this.state;
+      const nftInstance = await EventoNFT(this.state.evento);
       await nftInstance.methods
-        .setSaleDetails(ticket, web3.utils.toWei(price, "ether"), marketplace)
+        .setSaleDetails(biglietto, web3.utils.toWei(prezzo, "ether"), biglietteria)
         .send({ from: initiator, gas: 6700000 });
 
       renderNotification(
@@ -52,34 +52,38 @@ class MyTickets extends Component {
     }
   };
 
-  updateFestivals = async () => {
+  aggiornaEventi = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      const activeFests = await festivalFactory.methods
-        .getActiveFests()
+      const eventiAttivi = await creazioneEvento.methods
+        .getEventiAttivi()
         .call({ from: initiator });
-      const festDetails = await festivalFactory.methods
-        .getFestDetails(activeFests[0])
+
+      const dettagliEvento = await creazioneEvento.methods
+        .getDettagliEvento(eventiAttivi[0])
         .call({ from: initiator });
+
       const renderData = await Promise.all(
-        activeFests.map(async (fest, i) => {
-          const festDetails = await festivalFactory.methods
-            .getFestDetails(activeFests[i])
+        eventiAttivi.map(async (evento, i) => {
+          const dettagliEvento = await creazioneEvento.methods
+            .getDettagliEvento(eventiAttivi[i])
             .call({ from: initiator });
+
+
           return (
-            <option key={fest} value={fest}>
-              {festDetails[0]}
+            <option key={evento} value={evento}>
+              {dettagliEvento[0]}
             </option>
           );
         })
       );
 
       this.setState({
-        fests: renderData,
-        fest: activeFests[0],
-        marketplace: festDetails[4],
+        eventi: renderData,
+        evento: eventiAttivi[0],
+        biglietteria: dettagliEvento[4],
       });
-      this.updateTickets();
+      this.aggiornaBiglietti();
     } catch (err) {
       // TODO: bug da risolvere
       //renderNotification("danger", "Error", "Error while updating the events");
@@ -87,24 +91,24 @@ class MyTickets extends Component {
     }
   };
 
-  updateTickets = async () => {
+  aggiornaBiglietti = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      const nftInstance = await FestivalNFT(this.state.fest);
-      const tickets = await nftInstance.methods
-        .getTicketsOfCustomer(initiator)
+      const nftInstance = await EventoNFT(this.state.evento);
+      const biglietti = await nftInstance.methods
+        .getBigliettiCliente(initiator)
         .call({ from: initiator });
-      const renderData = tickets.map((ticket, i) => (
-        <option key={ticket} value={ticket}>
-          {ticket}
+      const renderData = biglietti.map((biglietto, i) => (
+        <option key={biglietto} value={biglietto}>
+          {biglietto}
         </option>
       ));
 
-      this.setState({ tickets: renderData, ticket: tickets[0] });
+      this.setState({ biglietti: renderData, biglietto: biglietti[0] });
     } catch (e) {
       // TODO: bug da risolvere
-      // renderNotification("danger","Error","Error in updating the ticket for the event");
-      console.log("Error in updating the ticket", e);
+      // renderNotification("danger","Error","Error in updating the biglietto for the event");
+      console.log("Error in updating the biglietto", e);
       console.log(e);
     }
   };
@@ -115,27 +119,27 @@ class MyTickets extends Component {
       state[e.target.name] = e.target.value;
       this.setState(state);
 
-      const { fest } = this.state;
-      await this.updateTickets(fest);
+      const { evento } = this.state;
+      await this.aggiornaBiglietti(evento);
 
       const initiator = await web3.eth.getCoinbase();
-      const festDetails = await festivalFactory.methods
-        .getFestDetails(fest)
+      const dettagliEvento = await creazioneEvento.methods
+        .getDettagliEvento(evento)
         .call({ from: initiator });
 
-      this.setState({ marketplace: festDetails[4] });
+      this.setState({ biglietteria: dettagliEvento[4] });
     } catch (err) {
-      console.log("Error while tickets for the event", err.message);
+      console.log("Error while bigliettos for the event", err.message);
       renderNotification(
         "danger",
         "Error",
-        "Error while tickets for the event"
+        "Error while bigliettos for the event"
       );
     }
   };
 
   selectHandler = (e) => {
-    this.setState({ ticket: e.target.value });
+    this.setState({ biglietto: e.target.value });
   };
 
   inputChangedHandler = (e) => {
@@ -155,14 +159,14 @@ class MyTickets extends Component {
                 <label class="left">Evento</label>
                 <select
                   className="browser-default"
-                  name="fest"
-                  value={this.state.fest || undefined}
-                  onChange={this.onFestivalChangeHandler}
+                  name="evento"
+                  value={this.state.evento || undefined}
+                  onChange={this.onEventChangeHandler}
                 >
                   <option value="" disabled>
                     Seleziona l'evento
                   </option>
-                  {this.state.fests}
+                  {this.state.eventi}
                 </select>
                 <br />
                 <br />
@@ -170,14 +174,14 @@ class MyTickets extends Component {
                 <label class="left">Biglietto</label>
                 <select
                   className="browser-default"
-                  name="ticket"
-                  value={this.state.ticket || undefined}
+                  name="biglietto"
+                  value={this.state.biglietto || undefined}
                   onChange={this.selectHandler}
                 >
                   <option value="" disabled>
                     Seleziona il biglietto
                   </option>
-                  {this.state.tickets}
+                  {this.state.biglietti}
                 </select>
                 <br />
                 <br />

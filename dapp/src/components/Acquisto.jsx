@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/CreazioneEvento';
-import FestivalNFT from '../proxies/NFTEvento';
-import FestivalMarketplace from '../proxies/Biglietteria';
+import creazioneEvento from '../proxies/CreazioneEvento';
+import EventoNFT from '../proxies/NFTEvento';
+import Biglietteria from '../proxies/Biglietteria';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -12,7 +12,7 @@ class Purchase extends Component {
     super(props);
 
     this.state = {
-      festivals: [],
+      eventi: [],
       account: this.props.acc,
     };
     
@@ -26,23 +26,23 @@ class Purchase extends Component {
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
-      const fests = await Promise.all(activeFests.map(async fest => {
-        const festDetails = await festivalFactory.methods.getFestDetails(fest).call({ from: initiator });
-        //const [festName, festSymbol, ticketPrice, totalSupply, marketplace] = Object.values(festDetails);
-        const [festName, ticketPrice, totalSupply, marketplace] = Object.values(festDetails);
-        const nftInstance = await FestivalNFT(fest);
+      const eventiAttivi = await creazioneEvento.methods.getEventiAttivi().call({ from: initiator });
+      const eventi = await Promise.all(eventiAttivi.map(async evento => {
+        const dettagliEvento = await creazioneEvento.methods.getDettagliEvento(evento).call({ from: initiator });
+        //const [eventoName, simboloEvento, prezzoBiglietto, bigliettiDisponibili, biglietteria] = Object.values(dettagliEvento);
+        const [nomeEvento, prezzoBiglietto, bigliettiDisponibili, biglietteria] = Object.values(dettagliEvento);
+        const nftInstance = await EventoNFT(evento);
         const saleId = await nftInstance.methods.getNextSaleTicketId().call({ from: initiator });
 
         return (
-          <tr key={fest}>
-            <td class="center">{festName}</td>
-            <td class="center">{web3.utils.fromWei(ticketPrice, 'ether')}</td>
-            <td class="center">{totalSupply - saleId}</td>
+          <tr key={evento}>
+            <td class="center">{nomeEvento}</td>
+            <td class="center">{web3.utils.fromWei(prezzoBiglietto, 'ether')}</td>
+            <td class="center">{bigliettiDisponibili - saleId}</td>
 
             <td class="center">
             {(this.state.account.type === "cliente")
-                ? <button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, ticketPrice, initiator)}>
+                ? <button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, biglietteria, prezzoBiglietto, initiator)}>
                     Acquista
                   </button>
                 : <div></div>
@@ -52,23 +52,23 @@ class Purchase extends Component {
         );
       }));
 
-      this.setState({ festivals: fests });
+      this.setState({ eventi: eventi });
     } catch (err) {
       renderNotification('danger', 'Error', err.message);
       console.log('Error while updating the events', err);
     }
   }
 
-  onPurchaseTicket = async (marketplace, ticketPrice, initiator) => {
+  onPurchaseTicket = async (biglietteria, prezzoBiglietto, initiator) => {
     try {
-      const marketplaceInstance = await FestivalMarketplace(marketplace);
-      //await festToken.methods.approve(marketplace, ticketPrice).send({ from: initiator, gas: 6700000 });
-      //await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000, value: ticketPrice });
-      await marketplaceInstance.methods
+      const biglietteriaInstance = await Biglietteria(biglietteria);
+      //await eventoToken.methods.approve(biglietteria, prezzoBiglietto).send({ from: initiator, gas: 6700000 });
+      //await biglietteriaInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000, value: prezzoBiglietto });
+      await biglietteriaInstance.methods
         .purchaseTicket()
         .send({ 
           from: initiator, 
-          value: ticketPrice
+          value: prezzoBiglietto
         })
         .once("receipt", (receipt) => {
           console.log(receipt);
@@ -119,7 +119,7 @@ class Purchase extends Component {
             </tr>
           </thead>
           <tbody class="striped highlight">
-            {this.state.festivals}
+            {this.state.eventi}
           </tbody>
         </table>
       </div >
