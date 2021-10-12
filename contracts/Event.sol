@@ -12,18 +12,18 @@ contract Event is Context, AccessControl, ERC721 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     struct TicketDetails {
-        string memory state;
+        string state;
     }
 
     // counter dei tickets 
     Counters.Counter private _ticketIds;
     
-    uint private _eventID                                     // id dell'evento
+    uint private _eventID;                                    // id dell'evento
     uint256 private _ticketPrice;                             // prezzo
     uint256 private _totalSupply;                             // biglietti rimanenti
     uint256 private _eventDate;                               // data del evento
-    address private _organizer;                               // organizzatore
-    address[] private _soldTicketsList                        // address biglietti acquistati
+    address private _reseller;                               // organizzatore
+    address[] private _soldTicketsList;                        // address biglietti acquistati
     
     mapping(uint256 => TicketDetails) private _ticketDetails; // dettagli dei biglietti
     mapping(address => uint256[]) private _purchasedTickets;  // biglietti acquistati
@@ -33,7 +33,7 @@ contract Event is Context, AccessControl, ERC721 {
     address[] private _customers;      //clienti
 
     constructor(
-        uint eventID
+        uint eventID,
         string memory eventName,    // nome dell'evento
         string memory eventSymbol,  // simbolo dell'evento
         uint256 ticketPrice,        // prezzo di un biglietto
@@ -44,11 +44,11 @@ contract Event is Context, AccessControl, ERC721 {
 
       _setupRole(MINTER_ROLE, reseller);
 
-      _eventID = eventID
-      _ticketPrice = ticketPrice
-      _totalSupply = totalSupply
-      _eventDate = eventDate
-      _organizer = organizer
+      _eventID = eventID;
+      _ticketPrice = ticketPrice;
+      _totalSupply = totalSupply;
+      _eventDate = eventDate;
+      _reseller = reseller;
     }
 
     modifier isValidTicketCount {
@@ -72,7 +72,7 @@ contract Event is Context, AccessControl, ERC721 {
      * Access controlled by minter only
      * Returns new ticketId
      */
-    function deployTicket(address reseller, address buyer) internal virtual isMinterRole returns (bool) {
+    function deployTicket(address reseller, address buyer) public virtual isMinterRole returns (bool) {
         _ticketIds.increment();
         uint256 newTicketId = _ticketIds.current();
         _mint(reseller, newTicketId);
@@ -121,7 +121,7 @@ contract Event is Context, AccessControl, ERC721 {
   
      // Get all tickets owned by a customer
     function getTicketsOfCustomer(address customer) public view returns (uint256[] memory) {
-        return purchasedTickets[customer];
+        return _purchasedTickets[customer];
     }
 
 
