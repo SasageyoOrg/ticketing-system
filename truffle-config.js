@@ -1,11 +1,11 @@
 module.exports = {
   networks: {
     development: {
-      host: "172.16.239.15", // rpcnode
-      port: 8545, // 8545
-      network_id: "1337", // "*" -> Match any network id
-      type: "quorum",
-      gasPrice: 0
+      host: "localhost", // rpcnode
+      port: 7545, // 8545
+      network_id: "5777", // "*" -> Match any network id
+      //type: "quorum",
+      //gasPrice: 0,
     }
   },
 
@@ -26,4 +26,5 @@ module.exports = {
       }
     }
   }
+
 };

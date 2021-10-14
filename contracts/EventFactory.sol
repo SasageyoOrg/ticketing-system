@@ -4,8 +4,18 @@ pragma solidity >=0.4.22 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Event.sol";
 
-contract EventFactory is Ownable {
+contract EventFactory is Ownable, AccessControl {
     
+    bytes32 public constant ORGANIZER_ROLE = keccak256("ORGANIZER_ROLE");
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+
+    address _reseller;
+    constructor(address organizer, address reseller) public {
+        _setupRole(ORGANIZER_ROLE, organizer);
+        _setupRole(MINTER_ROLE, reseller);
+        _reseller = reseller;
+    }
+
     struct EventStruct {
         uint eventID;            // id dell'evento
         string eventName;       // Nome Evento
@@ -26,10 +36,11 @@ contract EventFactory is Ownable {
     }
 
     // Get dettagli evento
-    function getEventDetails(address eventAddress) public view returns (uint, string memory, uint256, uint256, uint256){
+    function getEventDetails(address eventAddress) public view returns (uint, string memory, string memory, uint256, uint256, uint256){
         return (
             eventListMapping[eventAddress].eventID,
             eventListMapping[eventAddress].eventName,
+            eventListMapping[eventAddress].eventSymbol,
             eventListMapping[eventAddress].ticketPrice,
             eventListMapping[eventAddress].totalSupply,
             eventListMapping[eventAddress].eventDate
@@ -37,14 +48,17 @@ contract EventFactory is Ownable {
     }
 
     // Creazione nuovo evento
-    event Created(address ntfAddress);
+    event Created(address eventAddress);
+
     function createNewEvent(string memory eventName, 
                             string memory eventSymbol,
                             uint256 ticketPrice, 
                             uint256 totalSupply, 
-                            uint256 eventDate) 
-    public onlyOwner returns (address) {
-        
+                            uint256 eventDate) public onlyOwner returns (address) {
+
+        // Controllo se l'operatore e' un organizzatore
+        require(hasRole(ORGANIZER_ROLE, msg.sender), "Caller is not allowed");
+
         uint eventID = eventList.length + 1;
 
         Event newEvent = new Event( 
@@ -54,7 +68,8 @@ contract EventFactory is Ownable {
             ticketPrice,
             totalSupply,
             eventDate,
-            msg.sender
+            msg.sender,
+            _reseller
         );
 
         address newEventAddress = address(newEvent);

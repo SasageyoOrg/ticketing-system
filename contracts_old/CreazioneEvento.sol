@@ -7,6 +7,7 @@ import "./Biglietteria.sol";
 
 contract CreazioneEvento is Ownable {
     
+    
     struct Festival {
         string festName;
         //string festSymbol;
