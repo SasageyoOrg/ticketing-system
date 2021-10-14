@@ -1,11 +1,12 @@
 module.exports = {
   networks: {
     development: {
-      host: "localhost", // rpcnode
-      port: 7545, // 8545
-      network_id: "5777", // "*" -> Match any network id
-      //type: "quorum",
-      //gasPrice: 0,
+      // host: "172.16.239.15", // quorum rpcnode
+      host : "localhost",
+      port: 8545, // 8545
+      network_id: "1337", // "*" -> Match any network id
+      type: "quorum",
+      gasPrice: 0
     }
   },
 

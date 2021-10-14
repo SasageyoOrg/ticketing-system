@@ -1,6 +1,6 @@
-const organizer = "0x17274D794A0238707298380f4E1B4b304F51e8ed";
-const client  = "0x1F4d13c54a8EddCf556f0EC6d23f21A7A4700429";
-const client2 = "0x16AA3348cE191DB5F63D28F427A243c18c332536";
+const organizer = "0xC9C913c8c3C1Cd416d80A0abF475db2062F161f6";
+const client  = "0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001";
+const client2 = "0x81559247E62fDb78A43e9535f064ED62B11B6830";
 
 const Event = artifacts.require("Event");
 const EventFactory = artifacts.require("EventFactory");

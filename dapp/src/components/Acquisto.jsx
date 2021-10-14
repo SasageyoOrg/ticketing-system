@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/CreazioneEvento';
-import FestivalNFT from '../proxies/NFTEvento';
-import FestivalMarketplace from '../proxies/Biglietteria';
+import festivalFactory from '../proxies/EventFactory';
+import FestivalNFT from '../proxies/Event';
+import FestivalMarketplace from '../proxies/Reseller';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -26,6 +26,45 @@ class Purchase extends Component {
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
+
+      // recupero lista degli eventi
+      const eventList = await festivalFactory.methods.getEventList().call({ from: initiator }); 
+
+      // mappo ciascun evento
+      const events = await Promise.all(eventList.map(async event => {
+        // recupero dettagli evento
+        const eventDetails = await festivalFactory.methods.getEventDetails(event).call({ from: initiator });
+        const [eventID, eventName, eventSymbol, eventPrice, eventSupply, eventDate] = Object.values(eventDetails);
+        // istanza dell'evento
+        // const eventInstance = await FestivalNFT(event);
+
+        //console.log(eventInstance);
+        
+
+        // html rendering
+        return (
+          <tr key={event}>
+            <td class="center">{eventName}</td>
+            <td class="center">{eventSymbol}</td>
+            <td class="center">{web3.utils.fromWei(eventPrice, 'ether')}</td>
+            <td class="center">{eventSupply}</td>
+            <td class="center">{eventDate}</td>
+
+            <td class="center">
+            {(this.state.account.type === "cliente")
+                ? //<button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, ticketPrice, initiator)}>
+                  <button type="submit" className="custom-btn login-btn">    
+                  Acquista
+                  </button>
+                : <div></div>
+              }
+            </td>
+          </tr>
+        );
+
+      }));
+
+      /*
       const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
       const fests = await Promise.all(activeFests.map(async fest => {
         const festDetails = await festivalFactory.methods.getFestDetails(fest).call({ from: initiator });
@@ -51,8 +90,9 @@ class Purchase extends Component {
           </tr>
         );
       }));
+      */
 
-      this.setState({ festivals: fests });
+      this.setState({ festivals: events });
     } catch (err) {
       renderNotification('danger', 'Error', err.message);
       console.log('Error while updating the events', err);
@@ -110,8 +150,10 @@ class Purchase extends Component {
           <thead>
             <tr>
               <th key='name' class="center">Evento</th>
+              <th key='symbol' class="center">Simbolo</th>
               <th key='price' class="center">Prezzo (ETH)</th>
               <th key='left' class="center">Biglietti rimanenti</th>
+              <th key='date' class="center">Data</th>
               {(this.state.account.type === "cliente")
                 ? <th key='purchase' class="center"></th>
                 : <div></div>

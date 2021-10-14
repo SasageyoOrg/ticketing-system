@@ -1,4 +1,4 @@
-const organizer = "0x17274D794A0238707298380f4E1B4b304F51e8ed";
+const organizer = "0xC9C913c8c3C1Cd416d80A0abF475db2062F161f6";
 
 const EventFactory  = artifacts.require("EventFactory");
 const Reseller      = artifacts.require("Reseller");

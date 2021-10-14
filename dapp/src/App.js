@@ -129,7 +129,7 @@ class App extends Component {
           </li>
           <li>
             {" "}
-            <Link to="/buyTickets">Market</Link>{" "}
+            <Link to="/market">Market</Link>{" "}
           </li>
           <li>
             {" "}
@@ -202,14 +202,14 @@ class App extends Component {
             <Route path="/createFestival" component={Festival} />
             <Route path="/guest" component={Guest} />
             <Route
-              path="/buyTickets"
+              path="/market"
               render={(props) => (
                 <Purchase {...props} acc={this.state.account} />
               )}
             />
             <Route path="/tickets" component={MyTickets} />
           </Switch>
-          <Redirect to={path} />
+          <Redirect to={"/market"} />
         </div>
       </Router>
     );
