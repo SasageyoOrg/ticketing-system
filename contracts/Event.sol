@@ -77,6 +77,7 @@ contract Event is Context, AccessControl, ERC721 {
       _;
     }
 
+
     /*
      * Mint new tickets and assign it to reseller
      * Access controlled by minter only
@@ -115,6 +116,10 @@ contract Event is Context, AccessControl, ERC721 {
         }*/
 
         return true;
+    }
+
+    function getRemainingTickets() public view returns (uint){
+        return _totalSupply - _ticketIds.current();
     }
 
     // Utility function to check if customer exists to avoid redundancy

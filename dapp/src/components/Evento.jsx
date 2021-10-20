@@ -3,7 +3,6 @@ import Web3 from 'web3';
 import festivalFactory from '../proxies/EventFactory'
 import FestivalNFT from '../proxies/Event';
 import renderNotification from '../utils/notification-handler';
-
 let web3;
 
 class Festival extends Component {
@@ -42,7 +41,7 @@ class Festival extends Component {
         },
       } = await festivalFactory.methods
         .createNewEvent(name, symbol, web3.utils.toWei(price, "ether"), supply, date)
-        .send({ from: organiser });
+        .send({ from: organiser, gas: 6700000 });
       
       // notifica di successo
       renderNotification('success', 'Successo', `Evento creato correttamente!`);
@@ -52,7 +51,7 @@ class Festival extends Component {
 
     } catch (err) {
       console.log('Errore: ', err);
-      renderNotification('danger', 'Errore', 'Si è verificato un problema durante il caricamento del nuovo evento');
+      //renderNotification('danger', 'Errore', 'Si è verificato un problema durante il caricamento del nuovo evento');
     }
   }
 

@@ -6,8 +6,8 @@ import Festival from "./components/Evento";
 import Purchase from "./components/Acquisto";
 import MyTickets from "./components/Biglietti";
 import Guest from "./components/Visitatore";
-import renderNotification from './utils/notification-handler';
-
+import Controller from "./components/Controllore";
+// import renderNotification from './utils/notification-handler';
 // stili
 import "./App.css";
 
@@ -111,7 +111,7 @@ class App extends Component {
         account: {...prevState.account, balance: web3.utils.fromWei(balance)}
       }));
     } catch(err) {
-      renderNotification('danger', 'Errore', 'Ops, qualcosa è andato storto. Controlla lo stato della rete.');
+      //renderNotification('danger', 'Errore', 'Ops, qualcosa è andato storto. Controlla lo stato della rete.');
       console.log("Failed with error: " + err);
       console.log(err.message);
     }
@@ -148,14 +148,15 @@ class App extends Component {
       path = "/createFestival";
     } else if(this.state.account.type === "controllore") {
       nav = (
-        <div></div>
+        <div>Controlla Biglietti</div>
       );
+      path='/controller'
     } else if(this.state.account.type === "cliente") {
       nav = (
         <div>
           <li>
             {" "}
-            <Link to="/buyTickets">Acquista biglietti</Link>{" "}
+            <Link to="/market">Acquista biglietti</Link>{" "}
           </li>
           <li>
             {" "}
@@ -208,8 +209,9 @@ class App extends Component {
               )}
             />
             <Route path="/tickets" component={MyTickets} />
+            <Route path="/controller" component={Controller} />
           </Switch>
-          <Redirect to={"/market"} />
+          <Redirect to={path} />
         </div>
       </Router>
     );

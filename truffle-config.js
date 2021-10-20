@@ -1,8 +1,8 @@
 module.exports = {
   networks: {
     development: {
-      // host: "172.16.239.15", // quorum rpcnode
-      host : "localhost",
+      host: "172.16.239.15", // quorum rpcnode
+      // host : "localhost",
       port: 8545, // 8545
       network_id: "1337", // "*" -> Match any network id
       type: "quorum",
@@ -13,7 +13,7 @@ module.exports = {
   db: {
     enabled: false
   },
-  
+
   compilers: {
     solc: {
       version: "^0.6.0",    // Fetch exact version from solc-bin (default: truffle's version)

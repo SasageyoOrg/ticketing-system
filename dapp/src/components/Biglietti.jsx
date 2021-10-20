@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import festivalFactory from "../proxies/EventFactory"
-import FestivalNFT from "../proxies/Event"
-import renderNotification from "../utils/notification-handler";
+import eventFactory from "../proxies/EventFactory"
+import EventNFT from "../proxies/Event"
+// import renderNotification from "../utils/notification-handler";
 
 let web3;
 
@@ -27,47 +27,49 @@ class MyTickets extends Component {
     await this.updateFestivals();
   }
 
-  onListForSale = async (e) => {
-    try {
-      e.preventDefault();
-      const initiator = await web3.eth.getCoinbase();
-      const { ticket, price, marketplace } = this.state;
-      const nftInstance = await FestivalNFT(this.state.fest);
-      await nftInstance.methods
-        .setSaleDetails(ticket, web3.utils.toWei(price, "ether"), marketplace)
-        .send({ from: initiator, gas: 6700000 });
 
-      renderNotification(
-        "success",
-        "Success",
-        `Ticket is listed for sale in secondary market!`
-      );
-    } catch (err) {
-      console.log("Error while lisitng for sale", err);
-      renderNotification(
-        "danger",
-        "Error",
-        err.message.split(" ").slice(8).join(" ")
-      );
-    }
-  };
+  // Rivendita
+  // onListForSale = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     const initiator = await web3.eth.getCoinbase();
+  //     const { ticket, price, marketplace } = this.state;
+  //     const eventInstance = await EventNFT(this.state.fest);
+  //     await eventInstance.methods
+  //       .setSaleDetails(ticket, web3.utils.toWei(price, "ether"), marketplace)
+  //       .send({ from: initiator, gas: 6700000 });
+
+  //     //renderNotification(
+  //       "success",
+  //       "Success",
+  //       `Ticket is listed for sale in secondary market!`
+  //     );
+  //   } catch (err) {
+  //     console.log("Error while lisitng for sale", err);
+  //     //renderNotification(
+  //       "danger",
+  //       "Error",
+  //       err.message.split(" ").slice(8).join(" ")
+  //     );
+  //   }
+  // };
 
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
+      const eventsList = await eventFactory.methods.getEventList().call({ from: initiator });
 
       // controllo quanti eventi sono stati ricavati e procedo se >= 1
-      if(activeFests.length > 0) {
-        const festDetails = await festivalFactory.methods.getFestDetails(activeFests[0]).call({ from: initiator });
+      if(eventsList.length > 0) {
+        const eventDetails = await eventFactory.methods.getEventDetails(eventsList[0]).call({ from: initiator });
         const renderData = await Promise.all(
-          activeFests.map(async (fest, i) => {
-            const festDetails = await festivalFactory.methods
-              .getFestDetails(activeFests[i])
+          eventsList.map(async (fest, i) => {
+            const eventDetails = await eventFactory.methods
+              .getEventDetails(eventsList[i])
               .call({ from: initiator });
             return (
               <option key={fest} value={fest}>
-                {festDetails[0]}
+                {eventDetails[1]}
               </option>
             );
           })
@@ -75,15 +77,15 @@ class MyTickets extends Component {
 
         this.setState({
           fests: renderData,
-          fest: activeFests[0],
-          marketplace: festDetails[4],
+          fest: eventsList[0],
+          marketplace: eventDetails[4],
         });
 
         this.updateTickets();
       }
     } catch (err) {
       // TODO: bug da risolvere
-      renderNotification("danger", "Error", "Error while updating the events");
+      //renderNotification("danger", "Error", "Error while updating the events");
       console.log("Error while updating the events", err);
     }
   };
@@ -91,8 +93,8 @@ class MyTickets extends Component {
   updateTickets = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
-      const nftInstance = await FestivalNFT(this.state.fest);
-      const tickets = await nftInstance.methods
+      const eventInstance = await EventNFT(this.state.fest);
+      const tickets = await eventInstance.methods
         .getTicketsOfCustomer(initiator)
         .call({ from: initiator });
       const renderData = tickets.map((ticket, i) => (
@@ -104,7 +106,7 @@ class MyTickets extends Component {
       this.setState({ tickets: renderData, ticket: tickets[0] });
     } catch (e) {
       // TODO: bug da risolvere
-      renderNotification("danger","Error","Error in updating the ticket for the event");
+      //renderNotification("danger","Error","Error in updating the ticket for the event");
       console.log("Error in updating the ticket", e);
       console.log(e);
     }
@@ -120,18 +122,18 @@ class MyTickets extends Component {
       await this.updateTickets(fest);
 
       const initiator = await web3.eth.getCoinbase();
-      const festDetails = await festivalFactory.methods
-        .getFestDetails(fest)
+      const eventDetails = await eventFactory.methods
+        .getEventDetails(fest)
         .call({ from: initiator });
 
-      this.setState({ marketplace: festDetails[4] });
+      this.setState({ marketplace: eventDetails[4] });
     } catch (err) {
       console.log("Error while tickets for the event", err.message);
-      renderNotification(
+      /* renderNotification(
         "danger",
         "Error",
         "Error while tickets for the event"
-      );
+      ); */
     }
   };
 

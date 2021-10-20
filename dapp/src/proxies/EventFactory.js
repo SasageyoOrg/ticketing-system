@@ -5,6 +5,7 @@ const provider = new Provider();
 
 class EventFactory {
   constructor() {
+
     const web3 = provider.web3;
     const deploymentKey = Object.keys(EventFactoryABI.networks)[0];
 
@@ -12,6 +13,7 @@ class EventFactory {
       EventFactoryABI.abi,
       EventFactoryABI.networks[deploymentKey].address,
     );
+
   }
 
   getInstance = () => this.instance;
@@ -19,5 +21,7 @@ class EventFactory {
 
 const eventFactory = new EventFactory();
 Object.freeze(eventFactory);
+
+console.log(eventFactory);
 
 export default eventFactory.getInstance();
