@@ -108,7 +108,7 @@ class MyTickets extends Component {
           
           return (
             <option key={ticket} value={ticket}>
-              {ticket + " - " + ((ticketState === "rifiutato") ? "esibito" : "rifiutato")}
+              {ticket + " - " + ticketState}
             </option>
           );
         })
@@ -263,7 +263,6 @@ class MyTickets extends Component {
                 </select>
                 <br />
                 <br />
-                <label class="left">Esibisci</label>
                 <button 
                   type="button" 
                   className="custom-btn login-btn"
