@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import festivalFactory from "../proxies/CreazioneEvento";
-import FestivalNFT from "../proxies/NFTEvento";
+import festivalFactory from "../proxies/EventFactory"
+import FestivalNFT from "../proxies/Event"
 import renderNotification from "../utils/notification-handler";
 
 let web3;

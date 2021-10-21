@@ -1,0 +1,101 @@
+
+k8s:
+  sep_deployment_files: true
+  service:
+    type: NodePort
+  storage:
+    Type: PVC
+    Capacity: 200Mi
+cakeshop:
+  version: 0.12.1
+  Docker_Repo: quorumengineering
+  service:
+    type: NodePort
+    nodePort: 8999
+genesis:
+  consensus: istanbul
+  Quorum_Version: 21.4.0
+  Tm_Version: 21.1.1
+  Chain_Id: 10
+nodes:
+  
+  - Node_UserIdent: "%QUORUM-NODE1_SERVICE_HOST%"
+    Key_Dir_Base: 7nodes
+    Key_Dir: key1
+    Permissioned_Nodes_File: out/config/permissioned-nodes.json
+    quorum:
+      quorum:
+        consensus: istanbul
+        Quorum_Version: 21.4.0
+        Docker_Repo: quorumengineering
+      tm:
+        Name: tessera
+        Tm_Version: 21.1.1
+        Docker_Repo: quorumengineering
+        Tessera_Config_Dir: out/config
+    geth:
+      network:
+        id: 10
+        public: false
+      verbosity: 9
+      Geth_Startup_Params: --rpccorsdomain=\"*\" --rpcvhosts=\"*\" --wsorigins=\"*\"
+  - Node_UserIdent: "%QUORUM-NODE2_SERVICE_HOST%"
+    Key_Dir_Base: 7nodes
+    Key_Dir: key2
+    Permissioned_Nodes_File: out/config/permissioned-nodes.json
+    quorum:
+      quorum:
+        consensus: istanbul
+        Quorum_Version: 21.4.0
+        Docker_Repo: quorumengineering
+      tm:
+        Name: tessera
+        Tm_Version: 21.1.1
+        Docker_Repo: quorumengineering
+        Tessera_Config_Dir: out/config
+    geth:
+      network:
+        id: 10
+        public: false
+      verbosity: 9
+      Geth_Startup_Params: --rpccorsdomain=\"*\" --rpcvhosts=\"*\" --wsorigins=\"*\"
+  - Node_UserIdent: "%QUORUM-NODE3_SERVICE_HOST%"
+    Key_Dir_Base: 7nodes
+    Key_Dir: key3
+    Permissioned_Nodes_File: out/config/permissioned-nodes.json
+    quorum:
+      quorum:
+        consensus: istanbul
+        Quorum_Version: 21.4.0
+        Docker_Repo: quorumengineering
+      tm:
+        Name: tessera
+        Tm_Version: 21.1.1
+        Docker_Repo: quorumengineering
+        Tessera_Config_Dir: out/config
+    geth:
+      network:
+        id: 10
+        public: false
+      verbosity: 9
+      Geth_Startup_Params: --rpccorsdomain=\"*\" --rpcvhosts=\"*\" --wsorigins=\"*\"
+  - Node_UserIdent: "%QUORUM-NODE4_SERVICE_HOST%"
+    Key_Dir_Base: 7nodes
+    Key_Dir: key4
+    Permissioned_Nodes_File: out/config/permissioned-nodes.json
+    quorum:
+      quorum:
+        consensus: istanbul
+        Quorum_Version: 21.4.0
+        Docker_Repo: quorumengineering
+      tm:
+        Name: tessera
+        Tm_Version: 21.1.1
+        Docker_Repo: quorumengineering
+        Tessera_Config_Dir: out/config
+    geth:
+      network:
+        id: 10
+        public: false
+      verbosity: 9
+      Geth_Startup_Params: --rpccorsdomain=\"*\" --rpcvhosts=\"*\" --wsorigins=\"*\"

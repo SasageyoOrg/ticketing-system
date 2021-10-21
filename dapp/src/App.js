@@ -24,6 +24,7 @@ class App extends Component {
       address: "0xXXXXXXXX",   
       balance: "000", 
     },
+    contractBalance: 0
   };
 
   constructor() {
@@ -72,7 +73,7 @@ class App extends Component {
 
     // switching sull'account attivo per verificare i privilegi
     switch (accounts[0]) {
-      case "0xC9C913c8c3C1Cd416d80A0abF475db2062F161f6":
+      case "0xed9d02e382b34818e88B88a309c7fe71E65f419d":
         this.setState((prevState) => ({
           account: {...prevState.account, type: "organizzatore"},
         }));
@@ -115,6 +116,11 @@ class App extends Component {
       console.log("Failed with error: " + err);
       console.log(err.message);
     }
+
+    var contractBalance = await web3.eth.getBalance("0x9d13C6D3aFE1721BEef56B55D303B09E021E27ab");
+    contractBalance = web3.utils.fromWei(contractBalance);
+    this.setState({contractBalance});
+
   }
 
   render() {
@@ -129,7 +135,7 @@ class App extends Component {
           </li>
           <li>
             {" "}
-            <Link to="/buyTickets">Market</Link>{" "}
+            <Link to="/market">Market</Link>{" "}
           </li>
           <li>
             {" "}
@@ -155,7 +161,7 @@ class App extends Component {
         <div>
           <li>
             {" "}
-            <Link to="/buyTickets">Acquista biglietti</Link>{" "}
+            <Link to="/market">Acquista biglietti</Link>{" "}
           </li>
           <li>
             {" "}
@@ -192,6 +198,9 @@ class App extends Component {
           <ReactNotification />
           <nav style={{ padding: "0px 30px 0px 30px" }}>
             <div class="nav-wrapper">
+              <a href="#" class="reseller_balancebox">
+                Saldo: <b>{this.state.contractBalance} ETH</b>
+              </a>
               <a href="/" class="brand-logo left">
                 Biglietteria Online
               </a>
@@ -202,14 +211,14 @@ class App extends Component {
             <Route path="/createFestival" component={Festival} />
             <Route path="/guest" component={Guest} />
             <Route
-              path="/buyTickets"
+              path="/market"
               render={(props) => (
                 <Purchase {...props} acc={this.state.account} />
               )}
             />
             <Route path="/tickets" component={MyTickets} />
           </Switch>
-          <Redirect to={path} />
+          <Redirect to={"/market"} />
         </div>
       </Router>
     );

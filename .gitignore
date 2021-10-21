@@ -1,10 +1,6 @@
-# compiled contracts 
-# TODO: da valutare se toglierlo perchè blocca il bind docker
-dapp/src/abi/contracts/*.json
-
-.quorumDevQuickstart.lock
-
 package-lock.json
+
+node_modules
 
 # VSC
 .vscode

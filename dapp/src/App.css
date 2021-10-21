@@ -53,3 +53,9 @@
 .guest-message {
   padding-top: 100px;
 }
+.reseller_balancebox {
+  background: rgba(255,255,255,0.4);
+  padding: 8px;
+  border-radius: 6px;
+  margin-right: 10px;
+}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import festivalFactory from '../proxies/CreazioneEvento';
-import FestivalNFT from '../proxies/NFTEvento';
+import festivalFactory from '../proxies/EventFactory'
+import FestivalNFT from '../proxies/Event';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -9,11 +9,13 @@ let web3;
 class Festival extends Component {
   constructor() {
     super();
-
+    
     this.state = {
       name: null,
+      symbol: null,
       price: null,
       supply: null,
+      date: null,
       buyButtonText: "Pubblica evento"
     };
     
@@ -29,44 +31,23 @@ class Festival extends Component {
 
       // recupera indirizzo account organizzatore
       const organiser = await web3.eth.getCoinbase();
-      const { name, price, supply } = this.state;
+      const { name, symbol, price, supply, date } = this.state;
+
       // invocazione del metodo dello smart contract
-      const { events: { Created: { returnValues: { ntfAddress, marketplaceAddress } } } } = await festivalFactory.methods.createNewFest(
-        name,
-        web3.utils.toWei(price, 'ether'),
-        supply
-      ).send({ from: organiser, gas: 6700000 });
+      const newEventAddress = await festivalFactory.methods
+        .createNewEvent(name, symbol, web3.utils.toWei(price, "ether"), supply, date)
+        //.send({ from: organiser, gas: 450000 })
+        .send({ from: organiser})
+        .then((receipt) => {
+          console.log(receipt);
+        });
       
       // notifica di successo
       renderNotification('success', 'Successo', `Evento creato correttamente!`);
 
       // indicazione di caricamento nel bottone
       this.setState({buyButtonText: "Pubblica evento"});
-      
-      // processo di bulk minting
-      const nftInstance = await FestivalNFT(ntfAddress);
-      const batches = Math.ceil(supply / 30);
-      let batchSupply = 30;
-      let curCount = 0
-      let prevCount = 0
 
-      if (supply < 30) {
-        // minting dei tickets
-        await nftInstance.methods.bulkMintTickets(supply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
-      } else {
-        // minting a blocchi di 30 tickets
-        for (let i = 0; i < batches; i++) {
-          prevCount = curCount;
-          curCount += 30;
-          if (supply < curCount) {
-            batchSupply = supply - prevCount;
-          }
-
-          await nftInstance.methods.bulkMintTickets(batchSupply, marketplaceAddress).send({ from: organiser, gas: 6700000 });
-        }
-      }
-
-      
     } catch (err) {
       console.log('Errore: ', err);
       renderNotification('danger', 'Errore', 'Si è verificato un problema durante il caricamento del nuovo evento');
@@ -85,9 +66,11 @@ class Festival extends Component {
       <div class="container" >
           <h4 class="center">Creazione Evento</h4>
           <form class="" onSubmit={this.onCreateFestival}>
-            <label class="left">Nome Evento</label><input id="name" placeholder="es. Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
-            <label class="left">Prezzo del biglietto</label><input id="price" placeholder="ETH" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
-            <label class="left">Nr. di biglietti</label><input id="supply" placeholder="es. 100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
+            <label class="left">Nome Evento</label><input id="name" placeholder="Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
+            <label class="left">Simbolo Evento</label><input id="symbol" placeholder="SK" type="text" class="validate" name="symbol" onChange={this.inputChangedHandler} /><br /><br />
+            <label class="left">Prezzo del biglietto</label><input id="price" placeholder="10" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
+            <label class="left">Nr. di biglietti</label><input id="supply" placeholder="100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
+            <label class="left">Data</label><input id="date" placeholder="101022" type="text" className="input-control" name="date" onChange={this.inputChangedHandler}></input><br /><br />
 
             <button type="submit" className="custom-btn login-btn">{this.state.buyButtonText}</button>
           </form>
