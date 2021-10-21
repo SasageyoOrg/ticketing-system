@@ -1,18 +1,24 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch, Redirect} from "react-router-dom";
 import ReactNotification from "react-notifications-component";
-import Web3 from 'web3';
+import renderNotification from './utils/notification-handler';
+import "./App.css";
+
+// Componenti
 import Festival from "./components/Evento";
 import Purchase from "./components/Acquisto";
 import MyTickets from "./components/Biglietti";
 import Guest from "./components/Visitatore";
-import renderNotification from './utils/notification-handler';
+import Controllore from "./components/Controllore";
+
+
+import Web3 from 'web3';
+let web3;
 
 // stili
-import "./App.css";
+
 
 // web3
-let web3;
 
 // const Web3 = require("web3");
 // const Web3Quorum = require("web3js-quorum");
@@ -156,6 +162,8 @@ class App extends Component {
       nav = (
         <div></div>
       );
+      path = "/checkTickets";
+
     } else if(this.state.account.type === "cliente") {
       nav = (
         <div>
@@ -176,7 +184,7 @@ class App extends Component {
           <li>
             {" "}
             <span class="user_balancebox">
-              Saldo: <b>{this.state.account.balance} ETH</b>
+              Saldo: <b>{this.state.account.balance.substring(0, 5)} ETH</b>
             </span>
           </li>
         </div>
@@ -217,8 +225,9 @@ class App extends Component {
               )}
             />
             <Route path="/tickets" component={MyTickets} />
+            <Route path="/checkTickets" component={Controllore} />
           </Switch>
-          <Redirect to={"/market"} />
+          <Redirect to={path} />
         </div>
       </Router>
     );

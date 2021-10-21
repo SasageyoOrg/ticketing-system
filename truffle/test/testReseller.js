@@ -96,9 +96,16 @@ contract("Reseller", async (accounts) => {
     // console.log(tmp2_1)
     
     const reseller = await Reseller.deployed();
+    // esibisco il ticket
     await reseller.checkIN(eventList[0], client, 1);
+    var ticketState = await eventIstance.getTicketState(1);
+    console.log(ticketState);
+    // controllore verifica il ticket
     var lollo = await eventIstance.checkTicket(1);
+    ticketState = await eventIstance.getTicketState(1);
     // console.log(lollo);
+    console.log(ticketState);
+
 
     // await reseller.checkIN(eventList[0], client2, 1);
     // 0x1F4d13c54a8EddCf556f0EC6d23f21A7A4700429

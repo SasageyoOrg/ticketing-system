@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import Web3 from 'web3';
+import renderNotification from '../utils/notification-handler.js';
+
 import festivalFactory from '../proxies/EventFactory';
 import EventNFT from '../proxies/Event';
 import Reseller from '../proxies/Reseller';
-import renderNotification from '../utils/notification-handler.js';
+
+import Web3 from 'web3';
 let web3;
 
 class Purchase extends Component {
-
 
   constructor(props) {
     super(props);
@@ -25,7 +26,7 @@ class Purchase extends Component {
     await this.updateFestivals();
   }
 
-
+  // TODO: rinominare in updateEvents
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
@@ -81,7 +82,7 @@ class Purchase extends Component {
 
       this.setState({ festivals: events });
     } catch (err) {
-      //renderNotification('danger', 'Error', err.message);
+      renderNotification('danger', 'Error', 'Impossibile recuperare gli eventi. Sono stati creati ?');
       console.log('Error while updating the events', err);
     }
   }

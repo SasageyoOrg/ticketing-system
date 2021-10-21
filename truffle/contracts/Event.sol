@@ -31,10 +31,13 @@ contract Event is Context, AccessControl, ERC721 {
     // address[] private _soldTicketsList;                        // address biglietti acquistati
     
     mapping(uint256 => TicketDetails) private _ticketDetails; // dettagli dei biglietti
-    mapping(address => uint256[]) public _purchasedTickets;  // biglietti acquistati
+
+    mapping(address => uint256[]) public _purchasedTicketsMapping;  // biglietti acquistati
+    uint256[] private _purchasedTicketsIds;
 
     // biglietti esibiti da verificare
-    mapping(uint256 => address) public _ticketsToCheck;  // biglietti da verificare
+    mapping(uint256 => address) public _ticketsToCheckAddresses;  // biglietti da verificare
+    uint256[] private _ticketsToCheckIds;
 
     //TODO: da valutare se serve...
     //uint256[] private soldTickets;    //lista biglietti venduti
@@ -104,7 +107,7 @@ contract Event is Context, AccessControl, ERC721 {
             buyer: buyer
         });
 
-        _purchasedTickets[buyer].push(newTicketId);
+        _purchasedTicketsMapping[buyer].push(newTicketId);
 
         // trasferisce la proprietà del ticket dal reseller al cliente
         transferFrom(ownerOf(newTicketId), buyer, newTicketId);
@@ -126,40 +129,6 @@ contract Event is Context, AccessControl, ERC721 {
         }
         return false;
     }*/
-
-    // TODO: funzioni utility da controllare!
-    // Get ticket actual price
-    function getTicketPrice() public view returns (uint256) {
-        return _ticketPrice;
-    }
-
-    // // Get current ticketId
-    // function ticketCounts() public view returns (uint256) {
-    //     return _ticketIds.current();
-    // }
-
-    // // Get selling price for the ticket
-    // function getSellingPrice(uint256 ticketId) public view returns (uint256) {
-    //     return _ticketDetails[ticketId].sellingPrice;
-    // }
-
-    // // Get all tickets available for sale
-    // function getTicketsForSale() public view returns (uint256[] memory) {
-    //     return ticketsForSale;
-    // }
-
-    // Get ticket state from tickerID
-    function getTicketState(uint256 ticketID) public view returns (string memory) {
-        return _ticketDetails[ticketID].state;
-    }
-  
-         // Get76omer
-    function getPurchasedTicketsOfCustomer(address customer) public view returns (uint256[] memory) {
-        return _purchasedTickets[customer];
-    }
-
-
-
     // Inserisce il biglietto nella list dei biglietti da obliterare
     function setTTC(address customer, uint256 ticketID) public {
         bool isBuyer = false;
@@ -178,35 +147,81 @@ contract Event is Context, AccessControl, ERC721 {
         require(isBuyer, 'Non hai acquistato questo biglietto');
 
 
-        _ticketsToCheck[ticketID] = customer;
+        _ticketsToCheckAddresses[ticketID] = customer;
+        _ticketsToCheckIds.push(ticketID);
+        
         _ticketDetails[ticketID].state = 'rifiutato';  //il bilgietto inizialmente è rifiutato
     }
 
     // Customer shows ticket to the controller
     function checkTicket(uint256 ticketID) public returns (bool) { 
 
-        address exposer = _ticketsToCheck[ticketID];
+        address exposer = _ticketsToCheckAddresses[ticketID];
 
-        require(_purchasedTickets[exposer].length != 0, "Il customer non ha acquistato biglietti.");
+        require(_purchasedTicketsMapping[exposer].length != 0, "Il customer non ha acquistato biglietti.");
 
         bool isBuyer = false;
-        
 
-        for (uint256 i = 0; i < _purchasedTickets[exposer].length; i++) {
-            if (_purchasedTickets[exposer][i] == ticketID) {
+        for (uint256 i = 0; i < _purchasedTicketsMapping[exposer].length; i++) {
+            if (_purchasedTicketsMapping[exposer][i] == ticketID) {
                 isBuyer = true;
             }
         }
+
         require(isBuyer, "Il biglietto esibito e' stato acquistato da un altro cliente");
 
         _ticketDetails[ticketID].state = 'accettato';
 
-
         return isBuyer;
+    }
+
+    // GETTERS ==================================================================
+
+    // TODO: funzioni utility da controllare!
+    // Get ticket actual price
+
+    // // Get current ticketId
+    // function ticketCounts() public view returns (uint256) {
+    //     return _ticketIds.current();
+    // }
+
+    // // Get selling price for the ticket
+    // function getSellingPrice(uint256 ticketId) public view returns (uint256) {
+    //     return _ticketDetails[ticketId].sellingPrice;
+    // }
+
+    // // Get all tickets available for sale
+    // function getTicketsForSale() public view returns (uint256[] memory) {
+    //     return ticketsForSale;
+    // }
+
+    function getTicketPrice() public view returns (uint256) {
+        return _ticketPrice;
+    }
+
+    // Get ticket state from tickerID
+    function getTicketState(uint256 ticketID) public view returns (string memory) {
+        return _ticketDetails[ticketID].state;
+    }
+
+    function getPurchasedTicketsOfCustomer(address customer) public view returns (uint256[] memory) {
+        return _purchasedTicketsMapping[customer];
     }
 
     function getRemainingTickets() public view returns (uint){
         return _totalSupply - _ticketIds.current();
+    }
+    
+    function getTicketsToCheck() public view returns(uint256[] memory){
+        return _ticketsToCheckIds;
+    }
+
+    function getTicketsToCheckExposer(uint256 ticketId) public view returns(address){
+        return _ticketsToCheckAddresses[ticketId];
+    }
+
+    function getPurchasedTickets() public view returns(uint256[] memory){
+        return _purchasedTicketsIds;
     }
     
 }
