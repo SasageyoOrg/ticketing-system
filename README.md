@@ -16,9 +16,20 @@
 4. Configure Metamask with RPC url `http://localhost:8545`
 5. Import the accounts in Metamask by taking the private keys below:
     ```
-    Organizzatore   -> 0x60bbe10a196a4e71451c0f6e9ec9beab454c2a5ac0542aa5b8b733ff5719fec3
-    Controllore     -> 0xde405e2f3cea4da31ea886d9f93f8855f8925b35f39f8d01ddc08b588be118fe
-    Cliente         -> 0xeccc28aa6410da0d6bd19efdef33b5b7b9e2c5adcd9e8ab899d3369aaa386e72
+    Event Manager          ->   Address: 0xed9d02e382b34818e88B88a309c7fe71E65f419d
+                                PK: 0xe6181caaffff94a09d7e332fc8da9884d99902c7874eb74354bdcadf411929f1
+
+
+    Ticket Inspector       ->   Address:0x81559247E62fDb78A43e9535f064ED62B11B6830
+                                PK: 0xde405e2f3cea4da31ea886d9f93f8855f8925b35f39f8d01ddc08b588be118fe
+
+
+    Ticket Buyer           ->   Address: 0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001
+                                PK: 0xeccc28aa6410da0d6bd19efdef33b5b7b9e2c5adcd9e8ab899d3369aaa386e72
+                                
+
+    Visitor                ->   Address: 0x4d929E07c173ceA67f8008bb19A151e0564e1362
+                                PK: 0x526ba301ffd7369d010a07c2d44167e4e7c1b7ff1dd85b475b708a1078d04450
     ```
 6. Cakeshop will be accessible at `http://localhost:8999/`
 7. Block Explorer will be accessible at `http://localhost:25000/`

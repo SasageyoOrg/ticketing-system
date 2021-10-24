@@ -164,7 +164,7 @@ class MyTickets extends Component {
         <div class="row">
           <div class="container ">
             <div class="container ">
-              <h5 style={{ padding: "30px 0px 0px 10px" }}>I miei biglietti</h5>
+              <h5 style={{ padding: "30px 0px 0px 10px" }}>Controllo biglietti</h5>
               <form class="" onSubmit={this.onListForSale}>
                 <label class="left">Evento</label>
                 <select

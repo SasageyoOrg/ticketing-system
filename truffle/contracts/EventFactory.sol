@@ -18,7 +18,7 @@ contract EventFactory is Ownable, AccessControl {
 
     struct EventStruct {
         uint eventID;            // id dell'evento
-        string eventName;       // Nome Evento
+        string eventName;        // Nome Evento
         string eventSymbol;
         uint256 ticketPrice;    // Prezzo dei ticket dell'evento
         uint256 totalSupply;    // Numero di Ticket disponibili alla creazione
@@ -27,6 +27,8 @@ contract EventFactory is Ownable, AccessControl {
 
     address[] private eventList;    // Lista address degli eventi
     mapping(address => EventStruct) private eventListMapping;
+
+    mapping(bytes32 => bool) private eventExists;
 
     /* ===============================Functions=============================== */
 
@@ -47,6 +49,8 @@ contract EventFactory is Ownable, AccessControl {
         );
     }
 
+
+
     // Creazione nuovo evento
     event Created(address eventAddress);
 
@@ -54,13 +58,18 @@ contract EventFactory is Ownable, AccessControl {
                             string memory eventSymbol,
                             uint256 ticketPrice, 
                             uint256 totalSupply, 
-                            uint256 eventDate) public onlyOwner returns (address) {
+                            uint256 eventDate, 
+                            string memory eventPK) public onlyOwner returns (address) {
+
 
         // Controllo se l'operatore e' un organizzatore
-        require(hasRole(ORGANIZER_ROLE, msg.sender), "Caller is not allowed");
+        require(hasRole(ORGANIZER_ROLE, msg.sender), "Utente NON AUTORIZZATO!");
+
+        bytes32 eventPKenc = keccak256(abi.encodePacked(eventPK, "PK_key"));
+        // Controllo se l'event esiste in base al eventPK
+        require(!eventExists[eventPKenc], "Evento con dettagli simili gia' esistente!");
 
         uint eventID = eventList.length + 1;
-
         Event newEvent = new Event( 
             eventID,
             eventName,
@@ -71,10 +80,8 @@ contract EventFactory is Ownable, AccessControl {
             msg.sender,
             _reseller
         );
-
         address newEventAddress = address(newEvent);
         eventList.push(newEventAddress);
-
         eventListMapping[newEventAddress] = EventStruct({
             eventID: eventID,
             eventName: eventName,
@@ -83,7 +90,7 @@ contract EventFactory is Ownable, AccessControl {
             totalSupply: totalSupply,
             eventDate: eventDate
         });
-
+        eventExists[eventPKenc] = true;
         emit Created(newEventAddress);
 
         return newEventAddress;

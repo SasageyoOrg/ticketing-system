@@ -16,7 +16,9 @@ class Purchase extends Component {
     this.state = {
       festivals: [],
       account: this.props.acc,
-      eventAddrs : []
+      eventAddrs : [],
+      buttonText: "Acquista",
+      buttonEnabled: true
     };
     web3 = new Web3(window.ethereum);
   }
@@ -61,7 +63,8 @@ class Purchase extends Component {
                 //<button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, eventPrice, initiator)}>
                 <button
                   type="submit"
-                  className="custom-btn login-btn"
+                  className="btn waves-effect waves-light"
+                  disabled={!this.state.buttonEnabled}
                   onClick={this.onPurchaseTicket.bind(
                     this,
                     eventID,
@@ -69,7 +72,7 @@ class Purchase extends Component {
                     initiator
                   )}
                 >
-                  Acquista
+                  {this.state.buttonText}
                 </button>
               ) : (
                 <div></div>
@@ -90,6 +93,11 @@ class Purchase extends Component {
 
 
   onPurchaseTicket = async (eventID, eventPrice, initiator) => {
+    this.setState({ buttonText: "Acquisto in corso..." });
+    this.setState({ buttonEnabled: false });
+    await this.updateFestivals();
+
+
     try {
       // const marketplaceInstance = await Reseller();
 
@@ -110,15 +118,22 @@ class Purchase extends Component {
           // console.log(err);
         });
 
-
+        
+      this.setState({ buttonText: "Acquista" });
+      this.setState({ buttonEnabled: true });
       await this.updateFestivals();
+      this.props.loadBlockChain();
 
       renderNotification('success', 'Successo', `Biglietto dell'evento acquistato correttamente.`);
       
     } catch (err) {
       console.log('Error while creating new event', err);
       renderNotification('danger', 'Error', err.message);
+      this.setState({ buttonText: "Acquista" });
+      this.setState({ buttonEnabled: true });
     }
+
+    
   }
 
 

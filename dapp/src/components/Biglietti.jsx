@@ -20,6 +20,10 @@ class MyTickets extends Component {
       marketplace: null,
       price: null,
       test: null,
+
+
+      buttonText: "Esibisci",
+      buttonEnabled: true
     };
 
     web3 = new Web3(window.ethereum);
@@ -179,6 +183,8 @@ class MyTickets extends Component {
   };
 
   checkIn = async (event, ticketID) => {
+    this.setState({ buttonText: "Esibizione del biglietto..." });
+    this.setState({ buttonEnabled: false });
     try {
       const initiator = await web3.eth.getCoinbase();
       
@@ -219,8 +225,13 @@ class MyTickets extends Component {
       // await this.updateFestivals();
 
       // renderNotification('success', 'Successo', `Biglietto dell'evento acquistato correttamente.`);
+      this.setState({ buttonText: "Esibito" });
+      this.setState({ buttonEnabled: true });
+
       
     } catch (err) {
+      this.setState({ buttonText: "Esibisci" });
+      this.setState({ buttonEnabled: true });
       console.log('Error while showing the ticket', err);
       renderNotification('danger', 'Error', err.message);
     }
@@ -265,14 +276,15 @@ class MyTickets extends Component {
                 <br />
                 <button 
                   type="button" 
-                  className="custom-btn login-btn"
+                  className="btn waves-effect waves-light"
+                  disabled={!this.state.buttonEnabled}
                   onClick={this.checkIn.bind(
                     this,
                     this.state.fest,
                     this.state.ticket
                   )}
                 >
-                Esibisci</button>
+                {this.state.buttonText}</button>
               </form>
             </div>
           </div>

@@ -2,6 +2,9 @@ package-lock.json
 
 node_modules
 
+truffle/build/*
+dapp/src/abi/*
+
 # VSC
 .vscode
 

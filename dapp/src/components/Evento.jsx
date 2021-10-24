@@ -16,7 +16,8 @@ class Festival extends Component {
       price: null,
       supply: null,
       date: null,
-      buyButtonText: "Pubblica evento"
+      buttonText: "Pubblica evento",
+      buttonEnabled: true
     };
     
     web3 = new Web3(window.ethereum);
@@ -24,18 +25,22 @@ class Festival extends Component {
 
   onCreateFestival = async (e) => {
     // indicazione di caricamento nel bottone
-    this.setState({buyButtonText: "Pubblico..."});
+    this.setState({buttonText: "Pubblico..."});
+    this.setState({ buttonEnabled: false });
 
+    console.log(this.state)
     try {
       e.preventDefault();
 
       // recupera indirizzo account organizzatore
       const organiser = await web3.eth.getCoinbase();
       const { name, symbol, price, supply, date } = this.state;
+      let eventPK = name + symbol + date;
+      console.log(eventPK)
 
       // invocazione del metodo dello smart contract
       const newEventAddress = await festivalFactory.methods
-        .createNewEvent(name, symbol, web3.utils.toWei(price, "ether"), supply, date)
+        .createNewEvent(name, symbol, web3.utils.toWei(price, "ether"), supply, date, eventPK)
         //.send({ from: organiser, gas: 450000 })
         .send({ from: organiser})
         .then((receipt) => {
@@ -46,11 +51,14 @@ class Festival extends Component {
       renderNotification('success', 'Successo', `Evento creato correttamente!`);
 
       // indicazione di caricamento nel bottone
-      this.setState({buyButtonText: "Pubblica evento"});
+      this.setState({buttonText: "Pubblica evento"});
+      this.setState({ buttonEnabled: true});
 
     } catch (err) {
-      console.log('Errore: ', err);
-      renderNotification('danger', 'Errore', 'Si è verificato un problema durante il caricamento del nuovo evento');
+      console.log(err);
+      renderNotification('danger', 'Errore: ', 'Evento probabilmente già creato');
+      this.setState({ buttonText: "Pubblica evento" });
+      this.setState({ buttonEnabled: true });
     }
   }
 
@@ -72,7 +80,7 @@ class Festival extends Component {
             <label class="left">Nr. di biglietti</label><input id="supply" placeholder="100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
             <label class="left">Data</label><input id="date" placeholder="101022" type="text" className="input-control" name="date" onChange={this.inputChangedHandler}></input><br /><br />
 
-            <button type="submit" className="custom-btn login-btn">{this.state.buyButtonText}</button>
+          <button type="submit" disabled={!this.state.buttonEnabled} className="btn waves-effect waves-light">{this.state.buttonText}</button>
           </form>
         </div>
     )

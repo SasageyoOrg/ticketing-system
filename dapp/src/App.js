@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch, Redirect} from "react-router-dom";
 import ReactNotification from "react-notifications-component";
-import renderNotification from './utils/notification-handler';
+import renderNotification from './utils/notification-handler';  
 import "./App.css";
 
 // Componenti
@@ -11,17 +11,12 @@ import MyTickets from "./components/Biglietti";
 import Guest from "./components/Visitatore";
 import Controllore from "./components/Controllore";
 
+import Reseller from './proxies/Reseller';
+
+
 
 import Web3 from 'web3';
 let web3;
-
-// stili
-
-
-// web3
-
-// const Web3 = require("web3");
-// const Web3Quorum = require("web3js-quorum");
 
 class App extends Component {
   state = {
@@ -35,7 +30,9 @@ class App extends Component {
 
   constructor() {
     super();
+    this.loadBlockChain = this.loadBlockChain.bind(this)
 
+    /* -------------------------- Blockchain connection ------------------------- */
     new Promise((resolve, reject) => {
       if (typeof window.ethereum !== "undefined") {
         web3 = new Web3(window.ethereum);
@@ -70,164 +67,191 @@ class App extends Component {
         window.location.reload();
       });
     }
-
   }
 
+  /* ------------------------- Blockchain data loading ------------------------ */
   async loadBlockChain() {
     // recupero account collegati
     const accounts = await web3.eth.getAccounts();
+    //dati account attuale
+    this.setAccountType(accounts);
 
+    //balance del rivenditore
+    this.setContractBalance();
+  }
+
+  setAccountType(accountsList) {
     // switching sull'account attivo per verificare i privilegi
-    switch (accounts[0]) {
+    switch (accountsList[0]) {
       case "0xed9d02e382b34818e88B88a309c7fe71E65f419d":
         this.setState((prevState) => ({
-          account: {...prevState.account, type: "organizzatore"},
+          account: { ...prevState.account, type: "organizzatore" },
         }));
         break;
       case "0x4d929E07c173ceA67f8008bb19A151e0564e1362":
         this.setState((prevState) => ({
-          account: {...prevState.account, type: "rivenditore"},
+          account: { ...prevState.account, type: "rivenditore" },
         }));
         break;
       case "0x81559247E62fDb78A43e9535f064ED62B11B6830":
         this.setState((prevState) => ({
-          account: {...prevState.account, type: "controllore"},
+          account: { ...prevState.account, type: "controllore" },
         }));
         break;
       case "0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001":
         this.setState((prevState) => ({
-          account: {...prevState.account, type: "cliente"},
+          account: { ...prevState.account, type: "cliente" },
         }));
         break;
       default:
         this.setState((prevState) => ({
-          account: {...prevState.account, type: "visitatore"},
+          account: { ...prevState.account, type: "visitatore" },
         }));
         break;
     }
-
     // valorizza 'this.state.account.address'
     this.setState((prevState) => ({
-      account: { ...prevState.account, address: accounts[0]}
+      account: { ...prevState.account, address: accountsList[0] }
     }));
+    this.setAccountBalance(accountsList)
+  }
 
+  async setAccountBalance(accountsList) {
     // valorizza 'this.state.account.balance'
     try {
-      var balance = await web3.eth.getBalance(accounts[0]);
+      var balance = await web3.eth.getBalance(accountsList[0]);
       this.setState((prevState) => ({
-        account: {...prevState.account, balance: web3.utils.fromWei(balance)}
+        account: { ...prevState.account, balance: web3.utils.fromWei(balance) }
       }));
-    } catch(err) {
+    } catch (err) {
       renderNotification('danger', 'Errore', 'Ops, qualcosa è andato storto. Controlla lo stato della rete.');
       console.log("Failed with error: " + err);
       console.log(err.message);
     }
-
-    var contractBalance = await web3.eth.getBalance("0x9d13C6D3aFE1721BEef56B55D303B09E021E27ab");
-    contractBalance = web3.utils.fromWei(contractBalance);
-    this.setState({contractBalance});
-
   }
 
+  async setContractBalance() {
+    var contractBalance = await web3.eth.getBalance(Reseller._address);
+    contractBalance = web3.utils.fromWei(contractBalance);
+    this.setState({ contractBalance });
+  }
+/* ---------------------- Nav rander and path setting --------------------- */
   render() {
     let nav;
     let path;
-    if (this.state.account.type === "organizzatore") {
-      nav = (
-        <div>
-          <li>
-            {" "}
-            <Link to="/createFestival">Crea evento</Link>{" "}
-          </li>
-          <li>
-            {" "}
-            <Link to="/market">Market</Link>{" "}
-          </li>
-          <li>
-            {" "}
-            <span class="user_addressbox">
-              Account: <b>{this.state.account.address.substring(0, 8)}...</b>
-            </span>
-          </li>
-          <li>
-            {" "}
-            <span class="user_balancebox">
-              Saldo: <b>{this.state.account.balance} ETH</b>
-            </span>
-          </li>
-        </div>
-      );
-      path = "/createFestival";
-    } else if(this.state.account.type === "controllore") {
-      nav = (
-        <div></div>
-      );
-      path = "/checkTickets";
+    switch(this.state.account.type){
+      /* -------------------------------------------------------------------------- */
+      case "organizzatore":
+        nav = (
+          <div>
+            <li>
+              {" "}
+              <Link to="/createFestival">Crea evento</Link>{" "}
+            </li>
+            <li>
+              {" "}
+              <Link to="/market">Market</Link>{" "}
+            </li>
+            <li>
+              {" "}
+              <span class="user_addressbox">
+                Account: <b>{this.state.account.address.substring(0, 8)}...</b>
+              </span>
+            </li>
+            <li>
+              {" "}
+              <span class="user_balancebox">
+                Saldo: <b>{this.state.account.balance} ETH</b>
+              </span>
+            </li>
+          </div>
+        );
+        path = "/createFestival";
+        break;
 
-    } else if(this.state.account.type === "cliente") {
-      nav = (
-        <div>
-          <li>
-            {" "}
-            <Link to="/market">Acquista biglietti</Link>{" "}
-          </li>
-          <li>
-            {" "}
-            <Link to="/tickets">I miei biglietti</Link>{" "}
-          </li>
-          <li>
-            {" "}
-            <span class="user_addressbox">
-              Account: <b>{this.state.account.address.substring(0, 8)}...</b>
-            </span>
-          </li>
-          <li>
-            {" "}
-            <span class="user_balancebox">
-              Saldo: <b>{this.state.account.balance.substring(0, 5)} ETH</b>
-            </span>
-          </li>
-        </div>
-      );
-      path = "/tickets";
-    } else {
-      nav = (
-        <div>
-          <li>
-            <span class="user_addressbox">Visitatore</span>
-          </li>
-        </div>
-      );
-      path = "/guest";
+      /* -------------------------------------------------------------------------- */
+      case "controllore":
+        nav = (
+          <div></div>
+        );
+        path = "/checkTickets";
+        break;
+
+      /* -------------------------------------------------------------------------- */
+      case "cliente":
+        nav = (
+          <div>
+            <li>
+              {" "}
+              <Link to="/market">Acquista biglietti</Link>{" "}
+            </li>
+            <li>
+              {" "}
+              <Link to="/tickets">I miei biglietti</Link>{" "}
+            </li>
+            <li>
+              {" "}
+              <span class="user_addressbox">
+                Account: <b>{this.state.account.address.substring(0, 8)}...</b>
+              </span>
+            </li>
+            <li>
+              {" "}
+              <span class="user_balancebox">
+                Saldo: <b>{this.state.account.balance.substring(0, 5)} ETH</b>
+              </span>
+            </li>
+          </div>
+        );
+        path = "/tickets";
+        break;
+      /* -------------------------------------------------------------------------- */
+      default:
+        nav = (
+          <div>
+            <li>
+              <span class="user_addressbox">Visitatore</span>
+            </li>
+          </div>
+        );
+        path = "/guest";
+        break;
     }
+
+/* ---------------------------- Components render --------------------------- */
     return (
       <Router>
         <div>
           <ReactNotification />
+
           <nav style={{ padding: "0px 30px 0px 30px" }}>
             <div class="nav-wrapper">
-              <a href="#" class="reseller_balancebox">
+              <span href="#" class="reseller_balancebox">
                 Saldo: <b>{this.state.contractBalance} ETH</b>
-              </a>
+              </span>
               <a href="/" class="brand-logo left">
                 Biglietteria Online
               </a>
               <ul class="right hide-on-med-and-down 10">{nav}</ul>
             </div>
           </nav>
+
           <Switch>
             <Route path="/createFestival" component={Festival} />
             <Route path="/guest" component={Guest} />
-            <Route
-              path="/market"
+            <Route path="/market"
               render={(props) => (
-                <Purchase {...props} acc={this.state.account} />
+                <Purchase {...props} 
+                acc={this.state.account} 
+                  loadBlockChain={this.loadBlockChain}/>
               )}
             />
             <Route path="/tickets" component={MyTickets} />
             <Route path="/checkTickets" component={Controllore} />
           </Switch>
+
           <Redirect to={path} />
+
         </div>
       </Router>
     );
