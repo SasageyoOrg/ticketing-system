@@ -6,42 +6,50 @@ normal=$(tput sgr0)
 startall() {
     # START ->
     echo "Starting the quorum network..."
-    cd network && docker-compose up -d
+    cd network && docker compose up -d
 
-    echo "Waiting Cakeshop to launch on 8999..."
-    wget -q --spider --proxy=off http://localhost:8999/actuator/health
-    echo "Cakeshop launched!"
+    if ! command -v wget &> /dev/null
+    then
+        echo "${bold}Warning:${normal} wget non è installato nel sistema. Riavviare in seguito truffle e dapp manualmente."
+        exit 
+    else
+        echo "Waiting Cakeshop to launch on 8999..."
+        wget -q --spider --proxy=off http://localhost:8999/actuator/health
+        echo "Cakeshop launched!"
+    fi
 
     echo "Starting the Truffle migration..."
-    cd ../truffle && docker-compose up 
+    cd ../truffle && docker compose up 
 
     echo "Starting the React application..."
-    cd  ../dapp && docker-compose up
+    cd  ../dapp && docker compose up
     # <- END START
 }
 
 startq() {
     # START ->
     echo "Starting the quorum network..."
-    cd network && docker-compose up -d
+    cd network && docker compose up -d
     # <- END START
 }
 
 starttr() {
     echo "Starting the Truffle migration..."
-    cd truffle && docker-compose up 
+    cd truffle && docker compose up 
 
     echo "Starting the React application..."
-    cd  ../dapp && docker-compose up
+    cd  ../dapp && docker compose up
 }
 
 stop() {
     # STOP ->
-    cd network && docker-compose down && docker-compose rm -sfv
+    cd network && docker compose down && docker compose rm -sfv
 
-    cd ../truffle && docker-compose down && docker-compose rm -sfv
+    cd ../truffle && docker compose down && docker compose rm -sfv
 
-    cd  ../dapp && docker-compose down && docker-compose rm -sfv
+    cd  ../dapp && docker compose down && docker compose rm -sfv
+
+    cd ../
     # <- END STOP 
 }
 
