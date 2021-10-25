@@ -1,0 +1,401 @@
+# The following environment variables are substituted if present
+# * QUORUM_CONSENSUS: default to istanbul
+# * QUORUM_DOCKER_IMAGE: default to quorumengineering/quorum:2.5.0
+# * QUORUM_TX_MANAGER_DOCKER_IMAGE: default to quorumengineering/tessera:0.10.2
+# * QUORUM_GETH_ARGS: extra geth arguments to be included when running geth
+# To use Constellation, set QUORUM_TX_MANAGER_DOCKER_IMAGE to Constellation docker image,
+# e.g.: QUORUM_TX_MANAGER_DOCKER_IMAGE=quorumengineering/constellation:0.3.2 docker-compose up -d
+# To use Remix, set QUORUM_GETH_ARGS="--rpccorsdomain https://remix.ethereum.org"
+version: "2.3"
+
+x-quorum-def:
+  &quorum-def
+  restart: "on-failure"
+  image: "${DOCKER_REGISTRY:-}${QUORUM_DOCKER_IMAGE:-quorumengineering/quorum:2.5.0}"
+  healthcheck:
+    test: ["CMD", "wget", "--spider", "--proxy", "off", "http://localhost:${QUORUM_RPC_PORT:-8545}"]
+    interval: 3s
+    timeout: 3s
+    retries: 10
+    start_period: 5s
+  labels:
+    com.quorum.consensus: ${QUORUM_CONSENSUS:-istanbul}
+  entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      UDS_WAIT=10
+      if [ "$${PRIVATE_CONFIG}" != "ignore" ]; then
+      for i in $$(seq 1 100)
+      do
+        set -e
+        if [ -S $${PRIVATE_CONFIG} ] && \
+          [ "I'm up!" == "$$(wget --timeout $${UDS_WAIT} -qO- --proxy off txmanager$${NODE_ID}:${TESSERA_P2P_PORT:-9000}/upcheck)" ];
+        then break
+        else
+          echo "Sleep $${UDS_WAIT} seconds. Waiting for TxManager."
+          sleep $${UDS_WAIT}
+        fi
+      done
+      fi
+      DDIR=/qdata/dd
+      rm -rf $${DDIR}
+      mkdir -p $${DDIR}
+      cp -r /examples/dd$${NODE_ID}/* $${DDIR}
+      cp /examples/dd$${NODE_ID}/permissioned-nodes.json $${DDIR}/static-nodes.json
+      cp $${DDIR}/static-nodes.json $${DDIR}/permissioned-nodes.json
+      cat $${DDIR}/static-nodes.json
+      GENESIS_FILE="/examples/dd$${NODE_ID}/genesis.json"
+      NETWORK_ID=$$(cat $${GENESIS_FILE} | grep chainId | awk -F " " '{print $$2}' | awk -F "," '{print $$1}')
+      GETH_ARGS_raft="--raft --raftport ${QUORUM_RAFT_PORT:-50400}"
+      GETH_ARGS_istanbul="--emitcheckpoints --istanbul.blockperiod 1 --mine --minerthreads 1 --syncmode full"
+      EXTRA_ARGS="${QUORUM_GETH_ARGS:-}"
+      geth --datadir $${DDIR} init $${GENESIS_FILE}
+      geth \
+        --identity node$${NODE_ID}-${QUORUM_CONSENSUS:-istanbul} \
+        --datadir $${DDIR} \
+        --permissioned \
+        --nodiscover \
+        --verbosity 5 \
+        --networkid $${NETWORK_ID} \
+        --rpc \
+        --rpccorsdomain "*" \
+        --rpcvhosts "*" \
+        --rpcaddr 0.0.0.0 \
+        --rpcport ${QUORUM_RPC_PORT:-8545} \
+        --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
+        --ws \
+        --wsaddr 0.0.0.0 \
+        --wsorigins "*" \
+        --wsport ${QUORUM_WS_PORT:-8546} \
+        --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
+        --port ${QUORUM_P2P_PORT:-21000} \
+        --allow-insecure-unlock \
+        --unlock 0 \
+        --password $${DDIR}/keystore/password.txt \
+        $${GETH_ARGS_${QUORUM_CONSENSUS:-istanbul}} \
+        $$EXTRA_ARGS
+  expose:
+    - "${QUORUM_P2P_PORT:-21000}"
+    - "${QUORUM_RAFT_PORT:-50400}"
+
+x-quorum-node1-def:
+  &quorum-node1-def
+  restart: "on-failure"
+  image: "${DOCKER_REGISTRY:-}${QUORUM_DOCKER_IMAGE:-quorumengineering/quorum:2.5.0}"
+  healthcheck:
+    test: ["CMD", "wget", "--spider", "--proxy", "off", "http://localhost:${QUORUM_RPC_PORT:-8545}"]
+    interval: 3s
+    timeout: 3s
+    retries: 10
+    start_period: 5s
+  labels:
+    com.quorum.consensus: ${QUORUM_CONSENSUS:-istanbul}
+  entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      UDS_WAIT=10
+      if [ "$${PRIVATE_CONFIG}" != "ignore" ]; then
+      for i in $$(seq 1 100)
+      do
+        set -e
+        if [ -S $${PRIVATE_CONFIG} ] && \
+          [ "I'm up!" == "$$(wget --timeout $${UDS_WAIT} -qO- --proxy off txmanager$${NODE_ID}:${TESSERA_P2P_PORT:-9000}/upcheck)" ];
+        then break
+        else
+          echo "Sleep $${UDS_WAIT} seconds. Waiting for TxManager."
+          sleep $${UDS_WAIT}
+        fi
+      done
+      fi
+      DDIR=/qdata/dd
+      rm -rf $${DDIR}
+      mkdir -p $${DDIR}
+      cp -r /examples/dd$${NODE_ID}/* $${DDIR}
+      cp /examples/dd$${NODE_ID}/permissioned-nodes.json $${DDIR}/static-nodes.json
+      cp $${DDIR}/static-nodes.json $${DDIR}/permissioned-nodes.json
+      cat $${DDIR}/static-nodes.json
+      GENESIS_FILE="/examples/dd$${NODE_ID}/genesis.json"
+      NETWORK_ID=$$(cat $${GENESIS_FILE} | grep chainId | awk -F " " '{print $$2}' | awk -F "," '{print $$1}')
+      GETH_ARGS_raft="--raft --raftport ${QUORUM_RAFT_PORT:-50400}"
+      GETH_ARGS_istanbul="--emitcheckpoints --istanbul.blockperiod 1 --mine --minerthreads 1 --syncmode full"
+      EXTRA_ARGS="${QUORUM_GETH_ARGS:-}"
+      geth --datadir $${DDIR} init $${GENESIS_FILE}
+      geth \
+        --identity node$${NODE_ID}-${QUORUM_CONSENSUS:-istanbul} \
+        --datadir $${DDIR} \
+        --permissioned \
+        --nodiscover \
+        --verbosity 5 \
+        --networkid $${NETWORK_ID} \
+        --rpc \
+        --rpccorsdomain "*" \
+        --rpcvhosts "*" \
+        --rpcaddr 0.0.0.0 \
+        --rpcport ${QUORUM_RPC_PORT:-8545} \
+        --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
+        --ws \
+        --wsaddr 0.0.0.0 \
+        --wsorigins "*" \
+        --wsport ${QUORUM_WS_PORT:-8546} \
+        --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
+        --port ${QUORUM_P2P_PORT:-21000} \
+        --allow-insecure-unlock \
+        --unlock "0,1,2,3" \
+        --password $${DDIR}/keystore/password.txt \
+        $${GETH_ARGS_${QUORUM_CONSENSUS:-istanbul}} \
+        $$EXTRA_ARGS
+  expose:
+    - "${QUORUM_P2P_PORT:-21000}"
+    - "${QUORUM_RAFT_PORT:-50400}"
+
+x-tx-manager-def:
+  &tx-manager-def
+  image: "${DOCKER_REGISTRY:-}${QUORUM_TX_MANAGER_DOCKER_IMAGE:-quorumengineering/tessera:0.10.2}"
+  restart: "no"
+  healthcheck:
+    test: ["CMD-SHELL", "[ -S /qdata/tm/tm.ipc ] || exit 1"]
+    interval: 3s
+    timeout: 3s
+    retries: 20
+    start_period: 5s
+  entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      DDIR=/qdata/tm
+      rm -rf $${DDIR}
+      mkdir -p $${DDIR}
+      DOCKER_IMAGE="${QUORUM_TX_MANAGER_DOCKER_IMAGE:-quorumengineering/tessera:0.10.2}"
+      TX_MANAGER=$$(echo $${DOCKER_IMAGE} | sed 's/^.*\/\(.*\):.*$$/\1/g')
+      echo "TxManager: $${TX_MANAGER}"
+      case $${TX_MANAGER}
+      in
+        tessera)
+          cp -r /examples/c$${NODE_ID}/* $${DDIR}
+          #extract the tessera version from the jar
+          TESSERA_VERSION=$$(unzip -p /tessera/tessera-app.jar META-INF/MANIFEST.MF | grep Tessera-Version | cut -d" " -f2)
+          echo "Tessera version (extracted from manifest file): $${TESSERA_VERSION}"
+          TESSERA_CONFIG_TYPE="-09"
+          echo Config type $${TESSERA_CONFIG_TYPE}
+          HOSTNAME=$$(hostname -i)
+          sed -i "s,%THIS_PRIV_KEY%,$${DDIR}/tm.key,g" $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+          sed -i "s,%THIS_PUB_KEY%,$${DDIR}/tm.pub,g" $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+          sed -i 's,etc/quorum/,,g' $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+          sed -i 's/%QUORUM-NODE\([0-9]\)_SERVICE_HOST%/txmanager\1/g' $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+          sed -i "s/%THIS_SERVICE_HOST%/$${HOSTNAME}/g" $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+          cat $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+          java -Xms128M -Xmx128M -jar /tessera/tessera-app.jar -configfile $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+          ;;
+        *)
+          echo "Invalid Transaction Manager"
+          exit 1
+          ;;
+      esac
+  expose:
+    - "${TESSERA_P2P_PORT:-9000}"
+    - "${TESSERA_3PARTY_PORT:-9080}"
+
+x-cakeshop-def:
+  &cakeshop-def
+  image: "${DOCKER_REGISTRY:-}${CAKESHOP_DOCKER_IMAGE:-quorumengineering/cakeshop:0.12.1}"
+  expose:
+    - "8999"
+  restart: "no"
+  healthcheck:
+    test: ["CMD", "wget", "--spider", "--proxy=off", "http://localhost:8999/actuator/health"]
+    interval: 5s
+    timeout: 5s
+    retries: 20
+    start_period: 5s
+  entrypoint:
+    - /bin/sh
+    - -c
+    - |
+      DDIR=/qdata/cakeshop/local
+      rm -rf $${DDIR}
+      mkdir -p $${DDIR}
+      cp /examples/cakeshop/local/application.properties $${DDIR}/application.properties
+      cp /examples/cakeshop/local/cakeshop.json $${DDIR}/cakeshop.json
+      java -Xms128M -Xmx128M -Dspring.config.additional-location=file:/qdata/cakeshop/local/ -Dcakeshop.config.dir=/qdata/cakeshop -jar /cakeshop/cakeshop.war
+      ;;
+
+services:
+  node1:
+    << : *quorum-node1-def
+    container_name: node1-blockchain-sc
+    restart: on-failure
+    hostname: node1
+    ports:
+      - "22000:8545"
+      - "23000:8546"
+      - "24000:8547"
+    volumes:
+      - vol1:/qdata
+      - ./qdata:/examples:ro
+    depends_on:
+      - txmanager1
+    environment:
+      - PRIVATE_CONFIG=/qdata/tm/tm.ipc
+      - NODE_ID=1
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.11
+
+  txmanager1:
+    << : *tx-manager-def
+    container_name: txmanager1-blockchain-sc
+    restart: on-failure
+    hostname: txmanager1
+    ports:
+      - "9081:9080"
+    volumes:
+      - vol1:/qdata
+      - ./qdata:/examples:ro
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.101
+    environment:
+      - NODE_ID=1
+
+  node2:
+    << : *quorum-def
+    container_name: node2-blockchain-sc
+    restart: on-failure
+    hostname: node2
+    ports:
+      - "22001:8545"
+      - "23001:8546"
+      - "24001:8547"
+    volumes:
+      - vol2:/qdata
+      - ./qdata:/examples:ro
+    depends_on:
+      - txmanager2
+    environment:
+      - PRIVATE_CONFIG=/qdata/tm/tm.ipc
+      - NODE_ID=2
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.12
+
+  txmanager2:
+    << : *tx-manager-def
+    container_name: txmanager2-blockchain-sc
+    restart: on-failure
+    hostname: txmanager2
+    ports:
+      - "9082:9080"
+    volumes:
+      - vol2:/qdata
+      - ./qdata:/examples:ro
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.102
+    environment:
+      - NODE_ID=2
+
+  node3:
+    << : *quorum-def
+    container_name: node3-blockchain-sc
+    restart: on-failure
+    hostname: node3
+    ports:
+      - "22002:8545"
+      - "23002:8546"
+      - "24002:8547"
+    volumes:
+      - vol3:/qdata
+      - ./qdata:/examples:ro
+    depends_on:
+      - txmanager3
+    environment:
+      - PRIVATE_CONFIG=/qdata/tm/tm.ipc
+      - NODE_ID=3
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.13
+
+  txmanager3:
+    << : *tx-manager-def
+    container_name: txmanager3-blockchain-sc
+    restart: on-failure
+    hostname: txmanager3
+    ports:
+      - "9083:9080"
+    volumes:
+      - vol3:/qdata
+      - ./qdata:/examples:ro
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.103
+    environment:
+      - NODE_ID=3
+
+  node4:
+    << : *quorum-def
+    container_name: node4-blockchain-sc
+    restart: on-failure
+    hostname: node4
+    ports:
+      - "22003:8545"
+      - "23003:8546"
+      - "24003:8547"
+    volumes:
+      - vol4:/qdata
+      - ./qdata:/examples:ro
+    depends_on:
+      - txmanager4
+    environment:
+      - PRIVATE_CONFIG=/qdata/tm/tm.ipc
+      - NODE_ID=4
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.14
+
+  txmanager4:
+    << : *tx-manager-def
+    container_name: txmanager4-blockchain-sc
+    restart: on-failure
+    hostname: txmanager4
+    ports:
+      - "9084:9080"
+    volumes:
+      - vol4:/qdata
+      - ./qdata:/examples:ro
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.104
+    environment:
+      - NODE_ID=4
+
+  cakeshop:
+    << : *cakeshop-def
+    container_name: cakeshop-blockchain-sc
+    restart: on-failure
+    hostname: cakeshop
+    ports:
+      - "8999:8999"
+    volumes:
+      - cakeshopvol:/qdata
+      - ./qdata:/examples:ro
+    networks:
+      blockchain-net:
+        ipv4_address: 172.16.162.75
+
+networks:
+  blockchain-net:
+    name: blockchain-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.162.0/24
+
+volumes:
+  "vol1":
+  "vol2":
+  "vol3":
+  "vol4":
+  "cakeshopvol":

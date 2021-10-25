@@ -1,13 +1,11 @@
 module.exports = {
   networks: {
-    development: {
-      // host: "172.16.239.15", // quorum rpcnode
+    quorum: {
       host: "127.0.0.1", // truffle test
-      port: 22000,
-      network_id: "*", // "*" -> Match any network id | "1337" -> quorum network id
+      port: 22000,  // node 1
+      network_id: "*", // "*" -> Match any network id | "10" -> quorum wizard network id
       type: "quorum",
       gasPrice: 0
-      // gas: "0x1ffffffffffffe"
       // gas: 8000000,
     },
   },

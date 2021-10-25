@@ -1,0 +1,10 @@
+version: '3.6'
+
+services:
+  truffle:
+    build:
+      context: .
+      dockerfile: dockerfile.truffle
+    volumes:
+      - ../dapp/src/abi:/app/build/
+    network_mode: "host"

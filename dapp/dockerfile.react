@@ -8,9 +8,10 @@ RUN apk update && apk upgrade
 RUN apk add --no-cache bash git openssh
 RUN apk add --update python3 krb5 krb5-libs gcc make g++ krb5-dev
 RUN npm install --no-package-lock --build-from-source --force
-RUN npm install web3 web3js-quorum
+#RUN npm install web3 web3js-quorum
 
-# COPY client directory folder
-COPY . .
+# COPY directories
+COPY public ./public/
+COPY src ./src/
 
 CMD ["npm", "start"]
