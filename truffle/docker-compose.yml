@@ -1,10 +1,21 @@
 version: '3.6'
 
 services:
-  truffle:
+  trufflemigrate:
+    profiles: ["trufflemigrate"]
     build:
       context: .
-      dockerfile: dockerfile.truffle
+      dockerfile: dockerfile.trufflemigrate
     volumes:
       - ../dapp/src/abi:/app/build/
     network_mode: "host"
+
+  truffletest:
+    profiles: ["truffletest"]
+    build:
+      context: .
+      dockerfile: dockerfile.truffletest
+    volumes:
+      - ../dapp/src/abi:/app/build/
+    network_mode: "host"
+  

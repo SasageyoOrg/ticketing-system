@@ -11,4 +11,4 @@ COPY test ./test/
 RUN npm i
 RUN npm install -g truffle@5.1.65
 
-CMD ["truffle", "migrate", "--network", "quorum", "--reset"]
+CMD ["truffle", "test", "--network", "quorum"]
