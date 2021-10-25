@@ -26,8 +26,9 @@ contract Reseller {
     function purchaseTicket(address evento) external payable {
         address buyer = msg.sender;                         // buyer account
         uint256 sentValue = msg.value;
-        // uint256 ticketPrice = Event(evento).getTicketPrice();
-        // require(sentValue == );
+        
+        uint eventSupply = Event(evento).getRemainingTickets();
+        require(eventSupply > 0, "Biglietti finiti");
 
         // calc the commissions (10%)
         uint256 commissions = (sentValue * 10) / 100;

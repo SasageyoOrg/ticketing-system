@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 import festivalFactory from '../proxies/EventFactory'
-import FestivalNFT from '../proxies/Event';
+// import FestivalNFT from '../proxies/Event';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -39,7 +39,8 @@ class Festival extends Component {
       console.log(eventPK)
 
       // invocazione del metodo dello smart contract
-      const newEventAddress = await festivalFactory.methods
+      // const newEventAddress = 
+      await festivalFactory.methods
         .createNewEvent(name, symbol, web3.utils.toWei(price, "ether"), supply, date, eventPK)
         //.send({ from: organiser, gas: 450000 })
         .send({ from: organiser})

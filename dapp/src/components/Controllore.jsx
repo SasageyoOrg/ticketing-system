@@ -4,7 +4,7 @@ import festivalFactory from "../proxies/EventFactory"
 import FestivalNFT from "../proxies/Event"
 import renderNotification from "../utils/notification-handler";
 
-import Reseller from '../proxies/Reseller';
+// import Reseller from '../proxies/Reseller';
 
 let web3;
 
@@ -48,7 +48,7 @@ class MyTickets extends Component {
         
             return (
               <option key={event} value={event}>
-                {eventDetails[1]}
+                {eventDetails[1] + " - " + eventDetails[5]}
               </option>
             );
           })
@@ -114,7 +114,8 @@ class MyTickets extends Component {
       await this.updateTickets(fest);
 
       const initiator = await web3.eth.getCoinbase();
-      const festDetails = await festivalFactory.methods
+      // const festDetails = 
+      await festivalFactory.methods
         .getEventDetails(fest)
         .call({ from: initiator });
 
@@ -144,7 +145,8 @@ class MyTickets extends Component {
       const initiator = await web3.eth.getCoinbase();
 
       const nftInstance = await FestivalNFT(event);
-      const isBuyer = await nftInstance.methods
+      // const isBuyer = 
+      await nftInstance.methods
         .checkTicket(ticketID)
         .send({ from: initiator });
 

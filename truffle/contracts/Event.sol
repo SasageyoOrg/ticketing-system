@@ -150,7 +150,7 @@ contract Event is Context, AccessControl, ERC721 {
         _ticketsToCheckAddresses[ticketID] = customer;
         _ticketsToCheckIds.push(ticketID);
         
-        _ticketDetails[ticketID].state = 'rifiutato';  //il bilgietto inizialmente è rifiutato
+        _ticketDetails[ticketID].state = 'esibito';  //il bilgietto inizialmente è rifiutato
     }
 
     // Customer shows ticket to the controller

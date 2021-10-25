@@ -77,7 +77,7 @@ class MyTickets extends Component {
 
             return (
               <option key={event} value={event}>
-                {eventDetails[1]}
+                {eventDetails[1] + " - " + eventDetails[5]}
               </option>
             );
           })
@@ -157,7 +157,8 @@ class MyTickets extends Component {
       await this.updateTickets(fest);
 
       const initiator = await web3.eth.getCoinbase();
-      const festDetails = await festivalFactory.methods
+      // const festDetails = 
+      await festivalFactory.methods
         .getEventDetails(fest)
         .call({ from: initiator });
 

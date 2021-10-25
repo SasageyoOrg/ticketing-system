@@ -42,7 +42,7 @@ class Purchase extends Component {
 
         // recupero dettagli evento
         const eventDetails = await festivalFactory.methods.getEventDetails(event).call({ from: initiator });
-        const [eventID, eventName, eventSymbol, eventPrice, eventSupply, eventDate] = Object.values(eventDetails);
+        const [eventID, eventName, eventSymbol, eventPrice, , eventDate] = Object.values(eventDetails);
         // istanza dell'evento
         const eventInstance = EventNFT(event);
         // console.log(eventInstance);
@@ -55,7 +55,7 @@ class Purchase extends Component {
             <td class="center">{eventName}</td>
             <td class="center">{eventSymbol}</td>
             <td class="center">{web3.utils.fromWei(eventPrice, "ether")}</td>
-            <td class="center">{remainingTickets}</td>
+            <td class="center">{(remainingTickets === "0")? "SOLD OUT" : remainingTickets}</td>
             <td class="center">{eventDate}</td>
 
             <td class="center">
@@ -182,35 +182,4 @@ class Purchase extends Component {
   }
 }
 
-export default Purchase;  
-
-
-
-
-      /*
-      const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
-      const fests = await Promise.all(activeFests.map(async fest => {
-        const festDetails = await festivalFactory.methods.getFestDetails(fest).call({ from: initiator });
-        //const [festName, festSymbol, eventPrice, totalSupply, marketplace] = Object.values(festDetails);
-        const [festName, eventPrice, totalSupply, marketplace] = Object.values(festDetails);
-        const nftInstance = await EventNFT(fest);
-        const saleId = await nftInstance.methods.getNextSaleTicketId().call({ from: initiator });
-
-        return (
-          <tr key={fest}>
-            <td class="center">{festName}</td>
-            <td class="center">{web3.utils.fromWei(eventPrice, 'ether')}</td>
-            <td class="center">{totalSupply - saleId}</td>
-
-            <td class="center">
-            {(this.state.account.type === "cliente")
-                ? <button type="submit" className="custom-btn login-btn" onClick={this.onPurchaseTicket.bind(this, marketplace, eventPrice, initiator)}>
-                    Acquista
-                  </button>
-                : <div></div>
-              }
-            </td>
-          </tr>
-        );
-      }));
-      */
+export default Purchase;
