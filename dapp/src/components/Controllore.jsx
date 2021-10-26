@@ -166,7 +166,7 @@ class MyTickets extends Component {
         <div class="row">
           <div class="container ">
             <div class="container ">
-              <h5 style={{ padding: "30px 0px 0px 10px" }}>Controllo biglietti</h5>
+              <h5 class="page-title" style={{ padding: "30px 0px 0px 10px" }}>Controllo biglietti</h5>
               <form class="" onSubmit={this.onListForSale}>
                 <label class="left">Evento</label>
                 <select
@@ -199,7 +199,7 @@ class MyTickets extends Component {
                 <br />
                 <button 
                   type="button" 
-                  className="custom-btn login-btn"
+                  className="custom-btn login-btn btn waves-effect waves-light button-submit-form"
                   onClick={this.checkIn.bind(
                     this,
                     this.state.fest,

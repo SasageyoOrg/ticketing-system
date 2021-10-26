@@ -28,6 +28,7 @@ class Purchase extends Component {
     await this.updateFestivals();
   }
 
+  
   // TODO: rinominare in updateEvents
   updateFestivals = async () => {
     try {
@@ -43,6 +44,9 @@ class Purchase extends Component {
         // recupero dettagli evento
         const eventDetails = await festivalFactory.methods.getEventDetails(event).call({ from: initiator });
         const [eventID, eventName, eventSymbol, eventPrice, , eventDate] = Object.values(eventDetails);
+
+        // var eventDate2 = Date(eventDate);
+
         // istanza dell'evento
         const eventInstance = EventNFT(event);
         // console.log(eventInstance);
@@ -149,11 +153,11 @@ class Purchase extends Component {
 
     if (this.state.account.type === "organizzatore") {
       pageTitle = (
-        <h4 class="center">Eventi disponibili</h4>
+        <h4 class="center page-title">Eventi disponibili</h4>
       );
     } else {
       pageTitle = (
-        <h4 class="center">Acquista biglietti</h4>
+        <h4 class="center page-title">Acquista biglietti</h4>
       );
     }
     return (

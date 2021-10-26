@@ -16,20 +16,26 @@ startq() {
 }
 
 starttr() {
-    echo "Starting the Truffle migration..."
+    if [ ! "$(docker ps -q -f name=blockchain-sc)" ]; then
+        startq
+        waitcs
+        cd ../
+    fi
+
+    echo "Starting the truffle migration..."
     cd truffle && docker compose --profile trufflemigrate up 
 
-    echo "Starting the React application..."
+    echo "Starting the react application..."
     cd  ../dapp && docker compose up
 }
 
 waitcs() {
     if ! command -v wget &> /dev/null
     then
-        echo "${bold}Warning:${normal} wget non è installato nel sistema. Riavviare in seguito truffle e dapp manualmente."
+        echo "${bold}Warning:${normal} wget isn't installed. Restart truffle e dapp manually once installed."
         exit 
     else
-        echo "Waiting Cakeshop to launch on 8999..."
+        echo "Waiting cakeshop to launch on 8999..."
         wget -q --spider --proxy=off http://localhost:8999/actuator/health
         echo "Cakeshop started successfully!"
     fi
@@ -42,7 +48,7 @@ truffletest() {
         cd ../
     fi
 
-    echo "Starting the Truffle test..."
+    echo "Starting the truffle test..."
     cd truffle && docker compose --profile truffletest up 
 }
 
@@ -80,7 +86,7 @@ stopall() {
 if [ $# -eq 0 ] 
 then
     # nessun argomento, comportamento default
-    echo "Errore, esecuzione senza parametri non permessa. Prova con \"./runme.sh --help\""
+    echo "Error, you can't launch this command without parameters. Try with: \"./runme.sh --help\""
 elif [ "$1" = "--start-all" ]; 
 then
     startall
@@ -102,6 +108,7 @@ then
 elif [ "$1" = "--restart" ]; 
 then
     stop
+    sleep 5
     startall
 elif [ "$1" = "--help" ]; 
 then
@@ -114,5 +121,5 @@ then
     echo -e "${bold}--restart${normal} \t -> restart the complete system (with --start-all method)"
     echo ""
 else
-    echo "Errore, il comando non esiste. Prova con \"./runme.sh --help\""
+    echo "Error, this option doesn't exist. Try with: \"./runme.sh --help\""
 fi

@@ -7,6 +7,92 @@
   pointer-events: none;
 }
 
+.form-create-event {
+  margin: 10%;
+  margin-top: 0;
+  background: rgba(0,0,0,.4);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0px 5px 10px rgb(0 0 0 / 33%);
+}
+
+.nav-page {
+  background: rgba(0,0,0,.4);
+}
+
+.page-title {
+  color: snow;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 70%);
+  font-size: 25px;
+}
+
+input:-internal-autofill-selected, select:-internal-autofill-selected {
+  background-color: black;
+}
+
+input, select {
+  color: white;
+  font-size: 20px !important;
+}
+
+input::placeholder, input[type="date"]::placeholder {
+  color: grey !important;
+  font-size: 16px !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover, 
+select:-webkit-autofill:focus, 
+select:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px rgba(0,0,0,.86) inset !important;
+    
+}
+
+input:-webkit-autofill, select:-webkit-autofill {
+  -webkit-text-fill-color: white !important;
+  background-color: black !important;
+  
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+body {
+  background: rgba(0,0,0,.8);
+}
+
+.button-submit-form {
+  font-weight: bold;
+  background: lightseagreen;
+}
+
+tr {
+  color: white;
+}
+
+tbody > tr, tbody > tr > td {
+  background-color: rgba(0,0,0,.8);
+}
+tbody {
+  background: rgba(0,0,0,.4);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0px 5px 10px rgb(0 0 0 / 33%);
+}
+
+select {
+  background: rgba(0,0,0,.4);
+  border: 1px solid rgba(255,255,255,.2);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -40,12 +126,12 @@
 
 /* custom */
 .user_addressbox {
-  background: rgba(255,255,255,0.4);
+  background: lightseagreen;
   padding: 8px;
   border-radius: 6px;
 }
 .user_balancebox {
-  background:rgba(0, 117, 155, 0.4); 
+  background: cornflowerblue;
   padding: 8px;
   border-radius: 6px;
   margin-left: 15px;
@@ -54,8 +140,9 @@
   padding-top: 100px;
 }
 .reseller_balancebox {
-  background: rgba(255,255,255,0.4);
+  background: blueviolet;
   padding: 8px;
   border-radius: 6px;
   margin-right: 10px;
+  font-size: 20px;
 }

@@ -172,7 +172,14 @@ class App extends Component {
       /* -------------------------------------------------------------------------- */
       case "controllore":
         nav = (
-          <div></div>
+          <div>
+            <li>
+              {" "}
+              <span class="user_addressbox">
+                Account: <b>{this.state.account.address.substring(0, 8)}...</b>
+              </span>
+            </li>
+          </div>
         );
         path = "/checkTickets";
         break;
@@ -224,14 +231,11 @@ class App extends Component {
         <div>
           <ReactNotification />
 
-          <nav style={{ padding: "0px 30px 0px 30px" }}>
+          <nav class="nav-page" style={{ padding: "0px 30px 0px 30px" }}>
             <div class="nav-wrapper">
               <span href="#" class="reseller_balancebox">
-                Saldo: <b>{this.state.contractBalance} ETH</b>
+              Biglietteria: <b>{this.state.contractBalance} ETH</b>
               </span>
-              <a href="/" class="brand-logo left">
-                Biglietteria Online
-              </a>
               <ul class="right hide-on-med-and-down 10">{nav}</ul>
             </div>
           </nav>
