@@ -31,13 +31,13 @@ waitcs() {
     else
         echo "Waiting Cakeshop to launch on 8999..."
         wget -q --spider --proxy=off http://localhost:8999/actuator/health
-        echo "Cakeshop launched!"
+        echo "Cakeshop started successfully!"
     fi
 }
 
 truffletest() {
     startq
-
+    
     waitcs
 
     echo "Starting the Truffle test..."

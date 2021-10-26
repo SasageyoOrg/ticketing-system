@@ -29,7 +29,7 @@ contract Reseller {
         
         uint eventSupply = Event(evento).getRemainingTickets();
         require(eventSupply > 0, "Biglietti finiti");
-
+        
         // calc the commissions (10%)
         uint256 commissions = (sentValue * 10) / 100;
         uint256 finalPrice = sentValue - commissions;
