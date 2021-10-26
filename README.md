@@ -1,19 +1,22 @@
 # ticketing-system
 1. Clone the project.
 2. Start the docker application.
-3. Run the command below from the root directory to run the quorum blockchain, deploy the smart contracts to the network and start the decentralized app:
+3. Run the command below from the root directory to run the blockchain (from Quorum Wizard with IBFT), deploy the smart contracts to the network and start the decentralized app:
     ```sh
-    ./runme.sh start
+    ./runme.sh --start-all
     ```
    - other commands available:
-       ```
-      ./runme.sh <command>
-      remove        Stop and remove the containers (blockchain + truffle + react)
-      stop          Stop the containers (same)
-      resume        Resume the containers (same)
-      restart       Launch commands "./runme.sh remove" and "./runme.sh start"
-        ``` 
-4. Configure Metamask with RPC url `http://localhost:8545`
+    ```
+    ./runme.sh <command>
+        --start-all     start the complete system (truffle and the dapp will wait cakeshop to start up)"
+        --start-q       start the quorum blockchain"
+        --start-tr      start the truffle migration and the dapp"
+        --truffle-test  start the quorum blockchain if it's not running and run the truffle tests"
+        --stop-q        stop the quorum blockchain"
+        --stop          stop the complete system (quorum|truffle|dapp)"
+        --restart       restart the complete system (with --start-all method)"
+    ``` 
+4. Configure Metamask with RPC url `http://localhost:22000`
 5. Import the accounts in Metamask by taking the private keys below:
     ```
     Event Manager          ->   Address: 0xed9d02e382b34818e88B88a309c7fe71E65f419d

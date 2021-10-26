@@ -206,7 +206,7 @@ class MyTickets extends Component {
                     this.state.ticket
                   )}
                 >
-                Accetta</button>
+                Controlla</button>
               </form>
             </div>
           </div>

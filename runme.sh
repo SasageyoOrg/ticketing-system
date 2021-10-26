@@ -36,12 +36,14 @@ waitcs() {
 }
 
 truffletest() {
-    startq
-    
-    waitcs
+    if [ ! "$(docker ps -q -f name=blockchain-sc)" ]; then
+        startq
+        waitcs
+        cd ../
+    fi
 
     echo "Starting the Truffle test..."
-    cd ../truffle && docker compose --profile truffletest up 
+    cd truffle && docker compose --profile truffletest up 
 }
 
 startall() {
@@ -103,10 +105,10 @@ then
     startall
 elif [ "$1" = "--help" ]; 
 then
+    echo -e "${bold}--start-all${normal} \t -> start the complete system (truffle and the dapp will wait cakeshop to start up)"
     echo -e "${bold}--start-q${normal} \t -> start the quorum blockchain"
     echo -e "${bold}--start-tr${normal} \t -> start the truffle migration and the dapp"
-    echo -e "${bold}--start-all${normal} \t -> start the complete system (truffle and the dapp will wait cakeshop to start up)"
-    echo -e "${bold}--truffle-test${normal} \t -> start the quorum blockchain and run the truffle tests"
+    echo -e "${bold}--truffle-test${normal} \t -> start the quorum blockchain if it's not running and run the truffle tests"
     echo -e "${bold}--stop-q${normal} \t -> stop the quorum blockchain"
     echo -e "${bold}--stop${normal} \t -> stop the complete system (quorum|truffle|dapp)"
     echo -e "${bold}--restart${normal} \t -> restart the complete system (with --start-all method)"

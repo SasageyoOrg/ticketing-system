@@ -69,7 +69,7 @@ contract("Reseller", async (accounts) => {
     
   }); 
   
-  it("Esibisci e Verifica Ticket", async () => {
+  it("Cliente esibisce ticket e il controllore lo verifica", async () => {
     const eventFactory = await EventFactory.deployed();
     const eventList = await eventFactory.getEventList();
 
