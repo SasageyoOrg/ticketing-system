@@ -1,3 +1,59 @@
+.tickets-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 10px;
+  row-gap: 1em;
+}
+
+.ticket {
+  background: rgba(0,0,0,.5);
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: inset 0 0px 2px rgb(0 0 0 / 10%), 0 4px 6px rgb(0 0 0 / 30%);
+  text-align: center;
+  height: 180px;
+  color: whitesmoke;
+}
+.ticket > * {
+  display: block;
+  margin: 5px;
+  text-align: start;
+  margin-left: 20%;
+}
+.ticket > button {
+  margin: 0 auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  width: 76%;
+    text-align: center;
+}
+.ticket-event-name {    
+  background: rgba(0,0,0,.5);
+  border-radius: 6px 6px 0px 0px;
+  border-bottom: 1px solid black;
+  margin: 0px;
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  padding: 5px;
+  font-size: 18px;
+  text-align: center;
+}
+.ticket-event-color {
+  width: 15%;
+  height: 176px;
+  float: left;
+  border-radius: 4px 0 0 4px;
+  margin: 1px;
+}
+.buy-button {
+  width: 150px;
+}
+
+tr[type="soldout"] {
+  background-color: red !important;
+}
+
 .App {
   text-align: center;
 }

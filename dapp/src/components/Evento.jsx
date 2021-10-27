@@ -70,20 +70,26 @@ class Festival extends Component {
   inputChangedHandler = (e) => {
     const state = this.state;
     state[e.target.name] = e.target.value;
+
+    if(e.target.name === "symbol") {
+      e.target.value = e.target.value.toUpperCase();
+    } else if(e.target.name === "name") {
+      e.target.value = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
+    }
+
     this.setState(state);
   }
 
-
   render() {
     return (
-      <div class="container" >
-        <h4 class="center page-title">Creazione Evento</h4>
-        <form class="form-create-event" onSubmit={this.onCreateFestival}>
-          <label class="left">Nome evento</label><input id="name" placeholder="Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
-          <label class="left">Simbolo evento</label><input id="symbol" placeholder="MSK" type="text" class="validate" name="symbol" onChange={this.inputChangedHandler} /><br /><br />
-          <label class="left">Prezzo del biglietto (ETH)</label><input id="price" placeholder="10" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
-          <label class="left">Numero di biglietti</label><input id="supply" placeholder="100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
-          <label class="left">Data</label><input id="date" type="date" className="input-control" name="date" onChange={this.inputChangedHandler}></input><br /><br />
+      <div className="container" >
+        <h4 className="center page-title">Creazione Evento</h4>
+        <form className="form-create-event" onSubmit={this.onCreateFestival}>
+          <label className="left validate">Nome evento</label><input id="name" placeholder="Maneskin" type="text" name="name" onChange={this.inputChangedHandler} /><br /><br />
+          <label className="left validate">Simbolo evento</label><input id="symbol" placeholder="MSK" type="text" name="symbol" maxlength="3" onChange={this.inputChangedHandler} /><br /><br />
+          <label className="left input-control">Prezzo del biglietto (ETH)</label><input id="price" placeholder="10" type="number" name="price" onChange={this.inputChangedHandler} /><br /><br />
+          <label className="left input-control">Numero di biglietti</label><input id="supply" placeholder="100" type="number" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
+          <label className="left input-control">Data</label><input id="date" type="date" name="date" onChange={this.inputChangedHandler}></input><br /><br />
 
         <button type="submit" disabled={!this.state.buttonEnabled} className="btn waves-effect waves-light button-submit-form">{this.state.buttonText}</button>
         </form>
