@@ -65,6 +65,7 @@ startall() {
 
 stopq() {
     # STOP ->
+
     cd network
     docker compose down
     docker compose rm -sfv
@@ -78,7 +79,7 @@ stopq() {
     elif [[ ! "$(docker images -q truffle_truffletest 2> /dev/null)" == "" ]]; then
         docker image rm truffle_truffletest:latest
     fi
-
+    
     cd ../
     # <- END STOP 
 }

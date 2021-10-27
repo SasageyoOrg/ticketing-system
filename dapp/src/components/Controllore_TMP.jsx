@@ -48,7 +48,7 @@ class Controllore extends Component {
           .getTicketsToCheck()
           .call({ from: initiator });
         
-        const ticketsToCheck = data.map(async ticket => {
+        let ticketsToCheck = data.map(async ticket => {
 
           // console.log(eventInstance);
 
