@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import festivalFactory from "../proxies/EventFactory"
-import FestivalNFT from "../proxies/Event"
+import festivalFactory from "../proxies/EventFactory";
+import FestivalNFT from "../proxies/Event";
 import renderNotification from "../utils/notification-handler";
 
-import Reseller from '../proxies/Reseller';
+import Reseller from "../proxies/Reseller";
 
 let web3;
 
@@ -21,50 +21,34 @@ class MyTickets extends Component {
       price: null,
       test: null,
 
-
       buttonText: "Esibisci",
-      buttonEnabled: true
+      buttonEnabled: true,
     };
 
     web3 = new Web3(window.ethereum);
   }
 
   async componentDidMount() {
-    this.updateFestivals();
+    await this.updateFestivals();
+		// console.log(this.state);
+		// const nftInstance = await FestivalNFT(this.state.fest);
+		// const ticketState = await nftInstance.methods
+    //         .getTicketState(this.state.ticket)
+    //         .call();
+		// console.log(ticketState)
+		// if(this.ticketState === 'esibito'){
+		// 	this.setState({buttonEnabled: false})
+		// }
   }
-
-  // onListForSale = async (e) => {
-  //   try {
-  //     e.preventDefault();
-  //     const initiator = await web3.eth.getCoinbase();
-  //     const { ticket, price, marketplace } = this.state;
-  //     const nftInstance = await FestivalNFT(this.state.fest);
-  //     await nftInstance.methods
-  //       .setSaleDetails(ticket, web3.utils.toWei(price, "ether"), marketplace)
-  //       .send({ from: initiator, gas: 6700000 });
-
-  //     renderNotification(
-  //       "success",
-  //       "Success",
-  //       `Ticket is listed for sale in secondary market!`
-  //     );
-  //   } catch (err) {
-  //     console.log("Error while lisitng for sale", err);
-  //     renderNotification(
-  //       "danger",
-  //       "Error",
-  //       err.message.split(" ").slice(8).join(" ")
-  //     );
-  //   }
-  // };
 
   updateFestivals = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
 
       // recupero lista degli eventi
-      let eventList = await festivalFactory.methods.getEventList().call({ from: initiator });
-      //const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
+      let eventList = await festivalFactory.methods
+        .getEventList()
+        .call({ from: initiator });
 
       // controllo quanti eventi sono stati ricavati e procedo se >= 1
       if (eventList.length > 0) {
@@ -75,21 +59,25 @@ class MyTickets extends Component {
               .getEventDetails(event)
               .call({ from: initiator });
 
+            var dd = eventDetails[5].substring(0,2);
+            var mm = eventDetails[5].substring(2,4);
+            var yyyy = eventDetails[5].substring(4,8);
+            var dateFormat = dd + '/' + mm + '/' + yyyy;
+            
             return (
               <option key={event} value={event}>
-                {eventDetails[1] + " - " + eventDetails[5]}
+                {eventDetails[1] + " - " + dateFormat}
               </option>
             );
           })
         );
-
         this.setState({
           fests: renderData,
-          fest: eventList[0]
+          fest: eventList[0],
         });
-
-        this.updateTickets();
       }
+
+      await this.updateTickets();
     } catch (err) {
       // TODO: bug da risolvere
       renderNotification("danger", "Error", "Error while updating the events");
@@ -105,11 +93,16 @@ class MyTickets extends Component {
       let tickets = await nftInstance.methods
         .getPurchasedTicketsOfCustomer(initiator)
         .call({ from: initiator });
-      
+
       const renderData = await Promise.all(
         tickets.map(async (ticket) => {
-          const ticketState = await nftInstance.methods.getTicketState(ticket).call({ from: initiator });
-          
+          const ticketState = await nftInstance.methods
+            .getTicketState(ticket)
+            .call({ from: initiator });
+            
+					// this.setState({buttonEnabled: true})
+					// if(ticketState !== 'comprato') 
+          //   this.setState( {buttonEnabled: false})
           return (
             <option key={ticket} value={ticket}>
               {ticket + " - " + ticketState}
@@ -118,31 +111,13 @@ class MyTickets extends Component {
         })
       );
 
-      // const renderData = tickets.map((ticket) => (
-      //   ticketState = await nftInstance.methods
-      //   .getTicketState(ticket);
-
-      //   <option key={ticket} value={ticket}>
-      //     {ticket} - {ticketState}
-      //   </option>
-      // ));
-
-
-      // // codice loro -->
-      // const nftInstance = await FestivalNFT(this.state.fest);
-      // const tickets = await nftInstance.methods
-      //   .getTicketsOfCustomer(initiator)
-      //   .call({ from: initiator });
-      // const renderData = tickets.map((ticket, i) => (
-      //   <option key={ticket} value={ticket}>
-      //     {ticket}
-      //   </option>
-      // ));
-
       this.setState({ tickets: renderData, ticket: tickets[0] });
     } catch (e) {
-      // TODO: bug da risolvere
-      renderNotification("danger", "Error", "Error in updating the ticket for the event");
+    //   renderNotification(
+    //     "danger",
+    //     "Error",
+    //     "Error in updating the ticket for the event"
+    //   );
       console.log("Error in updating the ticket", e);
     }
   };
@@ -157,12 +132,10 @@ class MyTickets extends Component {
       await this.updateTickets(fest);
 
       const initiator = await web3.eth.getCoinbase();
-      // const festDetails = 
+
       await festivalFactory.methods
         .getEventDetails(fest)
         .call({ from: initiator });
-
-      //this.setState({ marketplace: festDetails[4] });
     } catch (err) {
       console.log("Error while tickets for the event", err.message);
       renderNotification(
@@ -175,6 +148,12 @@ class MyTickets extends Component {
 
   selectHandler = (e) => {
     this.setState({ ticket: e.target.value });
+		// console.log(e.target.value);
+		// if(e.target.value.includes('esibito')){
+		// 	this.setState({buttonEnabled:false})
+		// } else {
+		// 	this.setState({buttonEnabled:true})
+		// }
   };
 
   inputChangedHandler = (e) => {
@@ -188,55 +167,30 @@ class MyTickets extends Component {
     this.setState({ buttonEnabled: false });
     try {
       const initiator = await web3.eth.getCoinbase();
-      
+
       console.log("event: ", event);
       console.log("tick: ", ticketID);
 
-      await Reseller.methods.checkIN(event, initiator, ticketID).send({ from: initiator });
-      
+      await Reseller.methods
+        .checkIN(event, initiator, ticketID)
+        .send({ from: initiator });
+
       await this.updateTickets();
 
-      renderNotification('success', 'Successo', `Biglietto dell'evento esibito correttamente.`);
-
-      // const ticketState = await nftInstance.methods.getTicketState(ticketID).call({ from: initiator });
-      // console.log(ticketState);
-
-      // console.log(result);
-
-      // const marketplaceInstance = await Reseller();
-
-      //await festToken.methods.approve(marketplace, eventPrice).send({ from: initiator, gas: 6700000 });
-      //await marketplaceInstance.methods.purchaseTicket().send({ from: initiator, gas: 6700000, value: eventPrice });
-
-      // // console.log(Reseller)
-      // await Reseller.methods
-      //   .purchaseTicket(this.state.eventAddrs[eventID - 1])
-      //   .send({
-      //     from: initiator,
-      //     value: eventPrice,
-      //   })
-      //   .once("receipt", (receipt) => {
-      //     // console.log(receipt);
-      //   })
-      //   .catch((err) => {
-      //     // console.log(err);
-      //   });
-
-
-      // await this.updateFestivals();
-
-      // renderNotification('success', 'Successo', `Biglietto dell'evento acquistato correttamente.`);
+      renderNotification(
+        "success",
+        "Successo",
+        "Biglietto dell'evento esibito correttamente."
+      );
       this.setState({ buttonText: "Esibito" });
-      this.setState({ buttonEnabled: true });
-
-      
+      this.setState({ buttonEnabled: false });
     } catch (err) {
       this.setState({ buttonText: "Esibisci" });
       this.setState({ buttonEnabled: true });
-      console.log('Error while showing the ticket', err);
-      renderNotification('danger', 'Error', err.message);
+      console.log("Error while showing the ticket", err);
+      renderNotification("danger", "Error", err.message);
     }
-  }
+  };
 
   render() {
     return (
@@ -244,8 +198,8 @@ class MyTickets extends Component {
         <div class="row">
           <div class="container ">
             <div class="container ">
-              <h5 style={{ padding: "30px 0px 0px 10px" }}>I miei biglietti</h5>
-              <form class="" onSubmit={this.onListForSale}>
+              <h5 class="page-title" style={{ padding: "30px 0px 0px 10px" }}>I miei biglietti</h5>
+              <form class="form-create-event" onSubmit={this.onListForSale}>
                 <label class="left">Evento</label>
                 <select
                   className="browser-default"
@@ -260,7 +214,6 @@ class MyTickets extends Component {
                 </select>
                 <br />
                 <br />
-
                 <label class="left">Biglietto</label>
                 <select
                   className="browser-default"
@@ -275,8 +228,8 @@ class MyTickets extends Component {
                 </select>
                 <br />
                 <br />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn waves-effect waves-light"
                   disabled={!this.state.buttonEnabled}
                   onClick={this.checkIn.bind(
@@ -285,7 +238,8 @@ class MyTickets extends Component {
                     this.state.ticket
                   )}
                 >
-                {this.state.buttonText}</button>
+                  {this.state.buttonText}
+                </button>
               </form>
             </div>
           </div>

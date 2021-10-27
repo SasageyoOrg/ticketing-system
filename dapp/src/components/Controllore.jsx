@@ -20,6 +20,8 @@ class MyTickets extends Component {
       marketplace: null,
       price: null,
       test: null,
+
+      buttonEnabled: true
     };
 
     web3 = new Web3(window.ethereum);
@@ -45,12 +47,17 @@ class MyTickets extends Component {
             const eventDetails = await festivalFactory.methods
               .getEventDetails(event)
               .call({ from: initiator });
-        
-            return (
-              <option key={event} value={event}>
-                {eventDetails[1] + " - " + eventDetails[5]}
-              </option>
-            );
+
+              var dd = eventDetails[5].substring(0,2);
+              var mm = eventDetails[5].substring(2,4);
+              var yyyy = eventDetails[5].substring(4,8);
+              var dateFormat = dd + '/' + mm + '/' + yyyy;
+              
+              return (
+                <option key={event} value={event}>
+                  {eventDetails[1] + " - " + dateFormat}
+                </option>
+              );
           })
         );
 
@@ -83,6 +90,8 @@ class MyTickets extends Component {
       const renderData = await Promise.all(
         tickets.map(async (ticket) => {
           const ticketState = await nftInstance.methods.getTicketState(ticket).call({ from: initiator });
+          if (ticketState !== 'comprato') this.setState(this.setState({buttonEnabled: false}))
+
           const ticketExposer = await nftInstance.methods
             .getTicketsToCheckExposer(ticket)
             .call({ from: initiator });
@@ -118,7 +127,7 @@ class MyTickets extends Component {
       await festivalFactory.methods
         .getEventDetails(fest)
         .call({ from: initiator });
-
+      
       //this.setState({ marketplace: festDetails[4] });
     } catch (err) {
       console.log("Error while tickets for the event", err.message);
@@ -167,7 +176,7 @@ class MyTickets extends Component {
           <div class="container ">
             <div class="container ">
               <h5 class="page-title" style={{ padding: "30px 0px 0px 10px" }}>Controllo biglietti</h5>
-              <form class="" onSubmit={this.onListForSale}>
+              <form class="form-create-event" onSubmit={this.onListForSale}>
                 <label class="left">Evento</label>
                 <select
                   className="browser-default"
@@ -200,6 +209,7 @@ class MyTickets extends Component {
                 <button 
                   type="button" 
                   className="custom-btn login-btn btn waves-effect waves-light button-submit-form"
+                  disabled={!this.state.buttonEnabled}
                   onClick={this.checkIn.bind(
                     this,
                     this.state.fest,

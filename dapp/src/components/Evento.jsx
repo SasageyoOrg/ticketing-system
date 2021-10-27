@@ -43,7 +43,7 @@ class Festival extends Component {
       let eventPK = name + symbol + date;
 
       // invocazione del metodo dello smart contract
-      const newEventAddress = 
+      //const newEventAddress = 
       await festivalFactory.methods
         .createNewEvent(name, symbol, web3.utils.toWei(price, "ether"), supply, date, eventPK)
         //.send({ from: organiser, gas: 450000 })
@@ -77,17 +77,17 @@ class Festival extends Component {
   render() {
     return (
       <div class="container" >
-          <h4 class="center page-title">Creazione Evento</h4>
-          <form class="form-create-event" onSubmit={this.onCreateFestival}>
-            <label class="left">Nome Evento</label><input id="name" placeholder="Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
-            <label class="left">Simbolo Evento</label><input id="symbol" placeholder="SK" type="text" class="validate" name="symbol" onChange={this.inputChangedHandler} /><br /><br />
-            <label class="left">Prezzo del biglietto (ETH)</label><input id="price" placeholder="10" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
-            <label class="left">Numero di biglietti</label><input id="supply" placeholder="100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
-            <label class="left">Data</label><input id="date" type="date" className="input-control" name="date" onChange={this.inputChangedHandler}></input><br /><br />
+        <h4 class="center page-title">Creazione Evento</h4>
+        <form class="form-create-event" onSubmit={this.onCreateFestival}>
+          <label class="left">Nome evento</label><input id="name" placeholder="Maneskin" type="text" class="validate" name="name" onChange={this.inputChangedHandler} /><br /><br />
+          <label class="left">Simbolo evento</label><input id="symbol" placeholder="MSK" type="text" class="validate" name="symbol" onChange={this.inputChangedHandler} /><br /><br />
+          <label class="left">Prezzo del biglietto (ETH)</label><input id="price" placeholder="10" type="text" className="input-control" name="price" onChange={this.inputChangedHandler} /><br /><br />
+          <label class="left">Numero di biglietti</label><input id="supply" placeholder="100" type="text" className="input-control" name="supply" onChange={this.inputChangedHandler}></input><br /><br />
+          <label class="left">Data</label><input id="date" type="date" className="input-control" name="date" onChange={this.inputChangedHandler}></input><br /><br />
 
-          <button type="submit" disabled={!this.state.buttonEnabled} className="btn waves-effect waves-light button-submit-form">{this.state.buttonText}</button>
-          </form>
-        </div>
+        <button type="submit" disabled={!this.state.buttonEnabled} className="btn waves-effect waves-light button-submit-form">{this.state.buttonText}</button>
+        </form>
+      </div>
     )
   }
 }

@@ -65,7 +65,7 @@ startall() {
 
 stopq() {
     # STOP ->
-    cd network && docker compose down && docker compose rm -sfv
+    cd network && docker compose down && docker compose rm -sfv && docker volume rm $(docker volume ls -q)
 
     cd ../
     # <- END STOP 
@@ -107,7 +107,7 @@ then
     stopall
 elif [ "$1" = "--restart" ]; 
 then
-    stop
+    stopall
     sleep 5
     startall
 elif [ "$1" = "--help" ]; 

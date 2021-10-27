@@ -28,7 +28,6 @@ contract Event is Context, AccessControl, ERC721 {
     uint256 private _totalSupply;                             // biglietti rimanenti
     uint256 private _eventDate;                               // data del evento
     address private _organizer;                               // organizzatore
-    // address[] private _soldTicketsList;                        // address biglietti acquistati
     
     mapping(uint256 => TicketDetails) private _ticketDetails; // dettagli dei biglietti
 
@@ -39,9 +38,6 @@ contract Event is Context, AccessControl, ERC721 {
     mapping(uint256 => address) public _ticketsToCheckAddresses;  // biglietti da verificare
     uint256[] private _ticketsToCheckIds;
 
-    //TODO: da valutare se serve...
-    //uint256[] private soldTickets;    //lista biglietti venduti
-    address[] private _customers;      //clienti
 
     constructor(
         uint eventID,
@@ -50,8 +46,8 @@ contract Event is Context, AccessControl, ERC721 {
         uint256 ticketPrice,        // prezzo di un biglietto
         uint256 totalSupply,        // biglietti disponibili alla creazione
         uint256 eventDate,          // data del evento
-        address organizer,            // indirizzo del rivenditore
-        address reseller
+        address organizer,          // indirizzo dell'organizzatore
+        address reseller            // indirizzo del rivenditore
     ) public ERC721(eventName, eventSymbol) {
 
       _setupRole(MINTER_ROLE, organizer);
@@ -63,6 +59,8 @@ contract Event is Context, AccessControl, ERC721 {
       _eventDate = eventDate;
       _organizer = organizer;
     }
+    
+    /* ===============================Functions=============================== */
 
     modifier isValidTicketCount {
       require(
@@ -81,9 +79,9 @@ contract Event is Context, AccessControl, ERC721 {
     }
 
     /*
-     * Mint new tickets and assign it to reseller
-     * Access controlled by minter only
-     * Returns new ticketId
+     * Minta nuovi biglietti
+     * Accesso riservato solo agli account con ruolo di minter
+     * Restituisce l'Id del ticket appena creato
      */
     function deployTicket(address reseller, address buyer) public virtual isMinterRole returns (bool) {
         _ticketIds.increment();
@@ -98,10 +96,9 @@ contract Event is Context, AccessControl, ERC721 {
     
         // definizioni per i ticket 
         // @state -> definisce lo stato attuale del ticket 
-        //           - buyed: appena acquistato 
-        //           - pending: check-in
-        //           - accepted: biglietto verificato dal controllore
-        //           - denied: biglietto regettato dal controllore
+        //           - comprato: appena acquistato 
+        //           - esibito: check-in
+        //           - accettato: biglietto verificato dal controllore
         _ticketDetails[newTicketId] = TicketDetails({
             state: "comprato",
             buyer: buyer
@@ -112,24 +109,16 @@ contract Event is Context, AccessControl, ERC721 {
         // trasferisce la proprietà del ticket dal reseller al cliente
         transferFrom(ownerOf(newTicketId), buyer, newTicketId);
 
-        // aggiungo cliente alla lista dei customers se non è già stato fatto
-        /*if (!isCustomerExist(buyer)) {
-            customers.push(buyer);
-        }*/
-
         return true;
     }
 
-    // Utility function to check if customer exists to avoid redundancy
-    /*function isCustomerExist(address buyer) internal view returns (bool) {
-        for (uint256 i = 0; i < customers.length; i++) {
-            if (customers[i] == buyer) {
-                return true;
-            }
-        }
-        return false;
-    }*/
-    // Inserisce il biglietto nella list dei biglietti da obliterare
+    /*  
+        * Inserisce il biglietto nella list dei biglietti da obliterare
+        * Vengono effettuati una serie di controlli:
+            - Se il bigliett e' stato acquistato
+            - Se e' gia' stato esibito
+            - Se chi esibisce il biglietto e' il compratore
+    */
     function setTTC(address customer, uint256 ticketID) public {
         bool isBuyer = false;
         uint256[] memory customerTickets = getPurchasedTicketsOfCustomer(customer);
@@ -146,14 +135,20 @@ contract Event is Context, AccessControl, ERC721 {
         }
         require(isBuyer, 'Non hai acquistato questo biglietto');
 
-
         _ticketsToCheckAddresses[ticketID] = customer;
         _ticketsToCheckIds.push(ticketID);
         
-        _ticketDetails[ticketID].state = 'esibito';  //il bilgietto inizialmente è rifiutato
+        // il bilgietto verrà settato in esibito nel momento in cui setTTC 
+        // termina superando tutti i require
+        _ticketDetails[ticketID].state = 'esibito';  
     }
 
-    // Customer shows ticket to the controller
+    /* 
+        * Il controllore verifica il biglietto esibito
+        * Il biglietto viene rifiutato se:
+            - Chi esibisce il biglietto non ha biglietti associati al suo indirizzo
+            - Il biglietto esibito e' stato acquistato da un altro address
+     */
     function checkTicket(uint256 ticketID) public returns (bool) { 
 
         address exposer = _ticketsToCheckAddresses[ticketID];
@@ -175,26 +170,9 @@ contract Event is Context, AccessControl, ERC721 {
         return isBuyer;
     }
 
-    // GETTERS ==================================================================
+    // UTILITY ==================================================================
 
-    // TODO: funzioni utility da controllare!
-    // Get ticket actual price
-
-    // // Get current ticketId
-    // function ticketCounts() public view returns (uint256) {
-    //     return _ticketIds.current();
-    // }
-
-    // // Get selling price for the ticket
-    // function getSellingPrice(uint256 ticketId) public view returns (uint256) {
-    //     return _ticketDetails[ticketId].sellingPrice;
-    // }
-
-    // // Get all tickets available for sale
-    // function getTicketsForSale() public view returns (uint256[] memory) {
-    //     return ticketsForSale;
-    // }
-
+    // Get prezzo del ticket
     function getTicketPrice() public view returns (uint256) {
         return _ticketPrice;
     }
@@ -204,22 +182,27 @@ contract Event is Context, AccessControl, ERC721 {
         return _ticketDetails[ticketID].state;
     }
 
+    // Get ticket comprati di un cliente
     function getPurchasedTicketsOfCustomer(address customer) public view returns (uint256[] memory) {
         return _purchasedTicketsMapping[customer];
     }
 
+    // Get numero di ticket rimanenti
     function getRemainingTickets() public view returns (uint){
         return _totalSupply - _ticketIds.current();
     }
     
+    // Get numero di ticket da esibire 
     function getTicketsToCheck() public view returns(uint256[] memory){
         return _ticketsToCheckIds;
     }
 
+    // Get indirizzo dell'exposer di un ticket
     function getTicketsToCheckExposer(uint256 ticketId) public view returns(address){
         return _ticketsToCheckAddresses[ticketId];
     }
 
+    // Get lista di ticket ID  comprati
     function getPurchasedTickets() public view returns(uint256[] memory){
         return _purchasedTicketsIds;
     }

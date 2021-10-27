@@ -7,22 +7,17 @@ import "./Event.sol";
 contract EventFactory is Ownable, AccessControl {
     
     bytes32 public constant ORGANIZER_ROLE = keccak256("ORGANIZER_ROLE");
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    // bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     address _reseller;
-    constructor(address organizer, address reseller) public {
-        _setupRole(ORGANIZER_ROLE, organizer);
-        _setupRole(MINTER_ROLE, reseller);
-        _reseller = reseller;
-    }
 
     struct EventStruct {
-        uint eventID;            // id dell'evento
-        string eventName;        // Nome Evento
-        string eventSymbol;
-        uint256 ticketPrice;    // Prezzo dei ticket dell'evento
+        uint eventID;           // id dell'Evento
+        string eventName;       // Nome Evento
+        string eventSymbol;     // Simbolo dell'Evento
+        uint256 ticketPrice;    // Prezzo dei ticket dell'Evento
         uint256 totalSupply;    // Numero di Ticket disponibili alla creazione
-        uint256 eventDate;      // Data di inizio dell'evento
+        uint256 eventDate;      // Data di inizio dell'Evento
     }
 
     address[] private eventList;    // Lista address degli eventi
@@ -30,26 +25,13 @@ contract EventFactory is Ownable, AccessControl {
 
     mapping(bytes32 => bool) private eventExists;
 
+    constructor(address organizer, address reseller) public {
+        _setupRole(ORGANIZER_ROLE, organizer);
+        // _setupRole(MINTER_ROLE, reseller);
+        _reseller = reseller;
+    }
+
     /* ===============================Functions=============================== */
-
-    // Get lista degli address degli eventi
-    function getEventList() public view returns (address[] memory) {
-        return eventList;
-    }
-
-    // Get dettagli evento
-    function getEventDetails(address eventAddress) public view returns (uint, string memory, string memory, uint256, uint256, uint256){
-        return (
-            eventListMapping[eventAddress].eventID,
-            eventListMapping[eventAddress].eventName,
-            eventListMapping[eventAddress].eventSymbol,
-            eventListMapping[eventAddress].ticketPrice,
-            eventListMapping[eventAddress].totalSupply,
-            eventListMapping[eventAddress].eventDate
-        );
-    }
-
-
 
     // Creazione nuovo evento
     event Created(address eventAddress);
@@ -94,6 +76,25 @@ contract EventFactory is Ownable, AccessControl {
         emit Created(newEventAddress);
 
         return newEventAddress;
+    }
+
+    // UTILITY ==================================================================
+
+    // Get lista degli indirizzi degli eventi
+    function getEventList() public view returns (address[] memory) {
+        return eventList;
+    }
+
+    // Get dettagli evento
+    function getEventDetails(address eventAddress) public view returns (uint, string memory, string memory, uint256, uint256, uint256){
+        return (
+            eventListMapping[eventAddress].eventID,
+            eventListMapping[eventAddress].eventName,
+            eventListMapping[eventAddress].eventSymbol,
+            eventListMapping[eventAddress].ticketPrice,
+            eventListMapping[eventAddress].totalSupply,
+            eventListMapping[eventAddress].eventDate
+        );
     }
 
 }
