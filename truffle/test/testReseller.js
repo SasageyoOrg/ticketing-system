@@ -13,37 +13,16 @@ contract("Reseller", async (accounts) => {
       from: organizer
     });
     const eventList = await eventFactory.getEventList();
+    console.log("\n\tEvento creato correttamente:");
+    console.log("\t\tManeskin 10/10/22");
 
     const reseller = await Reseller.deployed();
     await reseller.purchaseTicket(eventList[0], {
       from: client,
       value: 0.1 * 10,
     });
-    // let balance = await web3.eth.getBalance(reseller.address);
-    // console.log("balance Reseller: ", balance);
-  });
+    console.log("\n\tCliente 1 compra un ticket dell'evento di Maneskin");
 
-  it("Errore: Acquisto biglietto Sold Out", async () => {
-    const eventFactory = await EventFactory.deployed();
-    await eventFactory.createNewEvent("Linking Park", "LP", 1, 100, 101022, "LinkingParkLP101022",{
-      from: organizer
-    });
-    const eventList = await eventFactory.getEventList();
-
-    const reseller = await Reseller.deployed();
-    await reseller.purchaseTicket(eventList[1], {
-      from: client,
-      value: 0.1 * 10,
-    });
-    try {
-      await reseller.purchaseTicket(eventList[1], {
-        from: client,
-        value: 0.1 * 10,
-      });
-    } catch (error) {
-        // console.error("Errore: Evento SoldOut")
-    }
-    
   });
 
   it("Mostra tutti i biglietti dell'utente", async () => {
@@ -55,16 +34,21 @@ contract("Reseller", async (accounts) => {
       from: organizer,
     });
     const eventList = await eventFactory.getEventList();
+    console.log("\n\tEventi creati:");
+    console.log("\t\tUltimo 30/01/22");
+    console.log("\t\tCinqueminuti 09/01/22");
 
     const reseller = await Reseller.deployed();
-    await reseller.purchaseTicket(eventList[0], {
+    await reseller.purchaseTicket(eventList[1], {
       from: client,
       value: 0.1 * 10,
     });
-    await reseller.purchaseTicket(eventList[1], {
+    console.log("\n\tCliente 1 compra un ticket dell'evento di Ultimo");
+    await reseller.purchaseTicket(eventList[2], {
       from: client2,
       value: 0.2 * 10,
     });
+    console.log("\tCliente 2 compra un ticket dell'evento dei Cinqueminuti");
 
     const eventIstance = await Event.at(eventList[0]);
     const eventIstance2 = await Event.at(eventList[1]);
@@ -85,8 +69,14 @@ contract("Reseller", async (accounts) => {
     tickets2.push(tmp2_2);
     tickets2.push(tmp2_3);
 
-    // console.log('Cliente 1: ', tickets);
-    // console.log('Cliente 2: ', tickets2);
+    console.log("\n\tBiglietti Cliente 1: ");
+    console.log("\t\t->Ticket Evento Maneskin: " + tickets[0].length);
+    console.log("\t\t->Ticket Evento Ultimo: " + tickets[1].length);
+    console.log("\t\t->Ticket Evento Cinqueminuti: " + tickets[2].length);
+    console.log("\tBiglietti Cliente 2: ");
+    console.log("\t\t->Ticket Evento Maneskin: " + tickets2[0].length);
+    console.log("\t\t->Ticket Evento Ultimo: " + tickets2[1].length);
+    console.log("\t\t->Ticket Evento Cinqueminuti: " + tickets2[2].length);
     
   }); 
   
@@ -116,12 +106,36 @@ contract("Reseller", async (accounts) => {
     const reseller = await Reseller.deployed();
     
     // esibisco il ticket
+    console.log("\n\t1)Cliente 1 esibisce il ticket 1 dell'evento dei Maneskin con stato: " + (await eventIstance.getTicketState(1)))
     await reseller.checkIN(eventList[0], client, 1);
-    // console.log(await eventIstance.getTicketState(1));
+    console.log("\t2)Il controllore va ad accettare il ticket con stato: " + (await eventIstance.getTicketState(1)))
 
     // controllore verifica il ticket
     await eventIstance.checkTicket(1);
-    // console.log(await eventIstance.getTicketState(1));
+    console.log("\t3)CheckIn completo, lo stato del ticket è: " + (await eventIstance.getTicketState(1)))
+    
+  });
+
+  it("Errore: Acquisto biglietto Sold Out", async () => {
+    const eventFactory = await EventFactory.deployed();
+    await eventFactory.createNewEvent("Linking Park", "LP", 1, 100, 101022, "LinkingParkLP101022",{
+      from: organizer
+    });
+    const eventList = await eventFactory.getEventList();
+
+    const reseller = await Reseller.deployed();
+    await reseller.purchaseTicket(eventList[1], {
+      from: client,
+      value: 0.1 * 10,
+    });
+    try {
+      await reseller.purchaseTicket(eventList[1], {
+        from: client,
+        value: 0.1 * 10,
+      });
+    } catch (error) {
+        // console.error("Errore: Evento SoldOut")
+    }
     
   });
 
