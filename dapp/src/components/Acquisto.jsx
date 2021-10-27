@@ -47,9 +47,14 @@ class Purchase extends Component {
           const [eventID, eventName, eventSymbol, eventPrice, , eventDate] =
             Object.values(eventDetails);
 
-          var dd = eventDate.substring(0,2);
-          var mm = eventDate.substring(2,4);
-          var yyyy = eventDate.substring(4,8);
+          // correzzione data
+          let tmp_date = eventDate;
+          if(tmp_date.length == 7) {
+            tmp_date = "0" + tmp_date;
+          }
+          var dd = tmp_date.substring(0,2);
+          var mm = tmp_date.substring(2,4);
+          var yyyy = tmp_date.substring(4,8);
           var dateFormat = dd + '/' + mm + '/' + yyyy;
 
           // istanza dell'evento
@@ -57,24 +62,26 @@ class Purchase extends Component {
           const remainingTickets = await eventInstance.methods
             .getRemainingTickets()
             .call({ from: initiator });
+          
+          let supplyClassName = (remainingTickets !== "0") ? "available" : "soldout";
 
           // html rendering
           return (
-            <tr key={event}>
-              <td class="center">{eventName}</td>
-              <td class="center">{eventSymbol}</td>
-              <td class="center">{web3.utils.fromWei(eventPrice, "ether")}</td>
-              <td class="center">
+            <tr key={event} type={supplyClassName}>
+              <td className="center">{eventName}</td>
+              <td className="center">{eventSymbol}</td>
+              <td className="center">{web3.utils.fromWei(eventPrice, "ether")}</td>
+              <td className="center">
                 {remainingTickets === "0" ? "SOLD OUT" : remainingTickets}
               </td>
-              <td class="center">{dateFormat}</td>
+              <td className="center">{dateFormat}</td>
 
-              <td class="center">
+              <td className="center">
                 {this.state.account.type === "cliente" &&
                 remainingTickets !== "0" ? (
                   <button
                     type="submit"
-                    className="btn waves-effect waves-light"
+                    className="btn waves-effect waves-light buy-button"
                     disabled={!this.state.buttonEnabled}
                     onClick={this.onPurchaseTicket.bind(
                       this,
@@ -107,7 +114,7 @@ class Purchase extends Component {
 
   //Gestione dell'acquisto
   onPurchaseTicket = async (eventID, eventPrice, initiator) => {
-    this.setState({ buttonText: "Acquisto in corso..." });
+    this.setState({ buttonText: "..." });
     this.setState({ buttonEnabled: false });
     await this.updateEvents();
 
@@ -149,39 +156,39 @@ class Purchase extends Component {
     let pageTitle;
 
     if (this.state.account.type === "organizzatore") {
-      pageTitle = <h4 class="center page-title">Eventi disponibili</h4>;
+      pageTitle = <h4 className="page-title center">Eventi disponibili</h4>;
     } else {
-      pageTitle = <h4 class="center page-title">Acquista biglietti</h4>;
+      pageTitle = <h4 className="page-title center">Acquista biglietti</h4>;
     }
     return (
-      <div class="container">
+      <div className="container center">
         {pageTitle}
-        <table id="requests" class="responsive-table striped">
+        <table id="requests" className="responsive-table striped">
           <thead>
             <tr>
-              <th key="name" class="center">
+              <th key="name" className="center">
                 Evento
               </th>
-              <th key="symbol" class="center">
+              <th key="symbol" className="center">
                 Simbolo
               </th>
-              <th key="price" class="center">
+              <th key="price" className="center">
                 Prezzo (ETH)
               </th>
-              <th key="left" class="center">
+              <th key="left" className="center">
                 Biglietti rimanenti
               </th>
-              <th key="date" class="center">
+              <th key="date" className="center">
                 Data
               </th>
               {this.state.account.type === "cliente" ? (
-                <th key="purchase" class="center"></th>
+                <th key="purchase" className="center"></th>
               ) : (
                 <div></div>
               )}
             </tr>
           </thead>
-          <tbody class="striped highlight">{this.state.events}</tbody>
+          <tbody className="striped highlight">{this.state.events}</tbody>
         </table>
       </div>
     );

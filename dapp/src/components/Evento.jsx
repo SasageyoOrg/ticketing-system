@@ -73,6 +73,13 @@ class Festival extends Component {
   inputChangedHandler = (e) => {
     const state = this.state;
     state[e.target.name] = e.target.value;
+
+    if(e.target.name === "symbol") {
+      e.target.value = e.target.value.toUpperCase();
+    } else if(e.target.name === "name") {
+      e.target.value = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
+    }
+
     this.setState(state);
 
     let inputDate = new Date(this.state.date);
@@ -88,7 +95,6 @@ class Festival extends Component {
     }
   }
 
-
   render() {
     return (
       <div class="container" >
@@ -99,8 +105,7 @@ class Festival extends Component {
           <label class="left">Prezzo del biglietto (ETH)</label><input id="price" placeholder="10" type="number" className="input-control" name="price" value={this.state.price} onChange={this.inputChangedHandler} /><br /><br />
           <label class="left">Numero di biglietti</label><input id="supply" placeholder="100" type="number" className="input-control" name="supply" value={this.state.supply} onChange={this.inputChangedHandler}></input><br /><br />
           <label class="left">Data</label><input id="date" type="date" className="input-control" name="date" value={this.state.date} onChange={this.inputChangedHandler}></input><br /><br />
-
-        <button type="submit" disabled={!this.state.buttonEnabled} className="btn waves-effect waves-light button-submit-form">{this.state.buttonText}</button>
+          <button type="submit" disabled={!this.state.buttonEnabled} className="btn waves-effect waves-light button-submit-form">{this.state.buttonText}</button>
         </form>
       </div>
     )

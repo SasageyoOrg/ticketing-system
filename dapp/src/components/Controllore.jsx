@@ -171,13 +171,13 @@ class MyTickets extends Component {
 
   render() {
     return (
-      <div class="container center">
-        <div class="row">
-          <div class="container ">
-            <div class="container ">
-              <h5 class="page-title" style={{ padding: "30px 0px 0px 10px" }}>Controllo biglietti</h5>
-              <form class="form-create-event" onSubmit={this.onListForSale}>
-                <label class="left">Evento</label>
+      <div className="container center">
+        <div className="row">
+          <div className="container ">
+            <div className="container ">
+              <h5 className="page-title" style={{ padding: "30px 0px 0px 10px" }}>Controllo biglietti</h5>
+              <form className="form-create-event" onSubmit={this.onListForSale}>
+                <label className="left">Evento</label>
                 <select
                   className="browser-default"
                   name="fest"
@@ -192,7 +192,7 @@ class MyTickets extends Component {
                 <br />
                 <br />
 
-                <label class="left">Biglietto</label>
+                <label className="left">Biglietto</label>
                 <select
                   className="browser-default"
                   name="ticket"

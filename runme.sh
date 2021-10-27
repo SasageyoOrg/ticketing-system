@@ -65,7 +65,21 @@ startall() {
 
 stopq() {
     # STOP ->
-    cd network && docker compose down && docker compose rm -sf && docker volume rm $(docker volume ls -q)
+
+    cd network
+    docker compose down
+    docker compose rm -sfv
+
+    docker volume rm $(docker volume ls -q)
+
+    if [[ ! "$(docker images -q dapp_react 2> /dev/null)" == "" ]]; then
+        docker image rm dapp_react
+    elif [[ ! "$(docker images -q truffle_trufflemigrate 2> /dev/null)" == "" ]]; then
+        docker image rm truffle_trufflemigrate:latest
+    elif [[ ! "$(docker images -q truffle_truffletest 2> /dev/null)" == "" ]]; then
+        docker image rm truffle_truffletest:latest
+    fi
+    
     cd ../
     # <- END STOP 
 }
@@ -76,9 +90,20 @@ stopall() {
 
     cd ../truffle && docker compose down && docker compose rm -sfv
 
-    cd  ../dapp && docker compose down && docker compose rm -sfv && docker volume rm $(docker volume ls -q)
+    cd ../dapp && docker compose down && docker compose rm -sfv
 
     cd ../
+
+    docker volume rm $(docker volume ls -q)
+
+    if [[ ! "$(docker images -q dapp_react 2> /dev/null)" == "" ]]; then
+        docker image rm dapp_react
+    elif [[ ! "$(docker images -q truffle_trufflemigrate 2> /dev/null)" == "" ]]; then
+        docker image rm truffle_trufflemigrate
+    elif [[ ! "$(docker images -q truffle_truffletest 2> /dev/null)" == "" ]]; then
+        docker image rm truffle_truffletest
+    fi
+
     # <- END STOP 
 }
 
@@ -107,6 +132,7 @@ then
 elif [ "$1" = "--restart" ]; 
 then
     stopall
+    echo "Waiting 5 seconds..."
     sleep 5
     startall
 elif [ "$1" = "--help" ]; 
@@ -115,7 +141,7 @@ then
     echo -e "${bold}--start-q${normal} \t -> start the quorum blockchain"
     echo -e "${bold}--start-tr${normal} \t -> start the truffle migration and the dapp"
     echo -e "${bold}--truffle-test${normal} \t -> start the quorum blockchain if it's not running and run the truffle tests"
-    echo -e "${bold}--stop-q${normal} \t -> stop the quorum blockchain"
+    echo -e "${bold}--stop-q${normal} \t\t -> stop the quorum blockchain"
     echo -e "${bold}--stop${normal} \t -> stop the complete system (quorum|truffle|dapp)"
     echo -e "${bold}--restart${normal} \t -> restart the complete system (with --start-all method)"
     echo ""

@@ -30,8 +30,8 @@ class App extends Component {
 
   constructor() {
     super();
-    this.loadBlockChain = this.loadBlockChain.bind(this)
-
+    this.loadBlockChain = this.loadBlockChain.bind(this);
+    
     /* -------------------------- Blockchain connection ------------------------- */
     new Promise((resolve, reject) => {
       if (typeof window.ethereum !== "undefined") {
@@ -55,6 +55,8 @@ class App extends Component {
       }
       //resolve(new Web3Quorum(new Web3("http://127.0.0.1:8545")));
       resolve(new Web3('http://127.0.0.1:8545'));
+
+      // this.loadBlockChain = this.loadBlockChain.bind(this);
     });
 
     // check if there's web3 and window.ethereum
@@ -138,7 +140,8 @@ class App extends Component {
 /* ---------------------- Nav rander and path setting --------------------- */
   render() {
     let nav;
-    let path;
+    let path = "/"
+
     switch(this.state.account.type){
       /* -------------------------------------------------------------------------- */
       case "organizzatore":
@@ -154,13 +157,13 @@ class App extends Component {
             </li>
             <li>
               {" "}
-              <span class="user_addressbox">
+              <span className="user_addressbox">
                 Account: <b>{this.state.account.address.substring(0, 8)}...</b>
               </span>
             </li>
             <li>
               {" "}
-              <span class="user_balancebox">
+              <span className="user_balancebox">
                 Saldo: <b>{this.state.account.balance} ETH</b>
               </span>
             </li>
@@ -175,7 +178,7 @@ class App extends Component {
           <div>
             <li>
               {" "}
-              <span class="user_addressbox">
+              <span className="user_addressbox">
                 Account: <b>{this.state.account.address.substring(0, 8)}...</b>
               </span>
             </li>
@@ -198,13 +201,13 @@ class App extends Component {
             </li>
             <li>
               {" "}
-              <span class="user_addressbox">
+              <span className="user_addressbox">
                 Account: <b>{this.state.account.address.substring(0, 8)}...</b>
               </span>
             </li>
             <li>
               {" "}
-              <span class="user_balancebox">
+              <span className="user_balancebox">
                 Saldo: <b>{this.state.account.balance.substring(0, 5)} ETH</b>
               </span>
             </li>
@@ -217,11 +220,11 @@ class App extends Component {
         nav = (
           <div>
             <li>
-              <span class="user_addressbox">Visitatore</span>
+              <span className="user_addressbox">Visitatore</span>
             </li>
           </div>
         );
-        path = "/guest";
+        // path = "/guest";
         break;
     }
 
@@ -231,12 +234,12 @@ class App extends Component {
         <div>
           <ReactNotification />
 
-          <nav class="nav-page" style={{ padding: "0px 30px 0px 30px" }}>
-            <div class="nav-wrapper">
-              <span href="#" class="reseller_balancebox">
+          <nav className="nav-page" style={{ padding: "0px 30px 0px 30px" }}>
+            <div className="nav-wrapper">
+              <span href="#" className="reseller_balancebox">
               Biglietteria: <b>{this.state.contractBalance} ETH</b>
               </span>
-              <ul class="right hide-on-med-and-down 10">{nav}</ul>
+              <ul className="right hide-on-med-and-down 10">{nav}</ul>
             </div>
           </nav>
 
