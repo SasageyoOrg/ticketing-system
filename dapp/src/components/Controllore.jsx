@@ -70,7 +70,7 @@ class MyTickets extends Component {
       }
     } catch (err) {
       // TODO: bug da risolvere
-      renderNotification("danger", "Error", "Error while updating the events");
+      // renderNotification("danger", "Error", "Error while updating the events");
       console.log("Error while updating the events", err);
     }
   };

@@ -65,19 +65,18 @@ startall() {
 
 stopq() {
     # STOP ->
-    cd network && docker compose down && docker compose rm -sfv && docker volume rm $(docker volume ls -q)
-
+    cd network && docker compose down && docker compose rm -sf && docker volume rm $(docker volume ls -q)
     cd ../
     # <- END STOP 
 }
 
 stopall() {
     # STOP ->
-    cd network && docker compose down && docker compose rm -sfv
+    cd network && docker compose down && docker compose rm -sfv 
 
     cd ../truffle && docker compose down && docker compose rm -sfv
 
-    cd  ../dapp && docker compose down && docker compose rm -sfv
+    cd  ../dapp && docker compose down && docker compose rm -sfv && docker volume rm $(docker volume ls -q)
 
     cd ../
     # <- END STOP 

@@ -80,7 +80,7 @@ class MyTickets extends Component {
       await this.updateTickets();
     } catch (err) {
       // TODO: bug da risolvere
-      renderNotification("danger", "Error", "Error while updating the events");
+      // renderNotification("danger", "Error", "Error while updating the events");
       console.log("Error while updating the events", err);
     }
   };
