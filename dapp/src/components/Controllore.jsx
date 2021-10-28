@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import festivalFactory from "../proxies/EventFactory"
-import FestivalNFT from "../proxies/Event"
+import festivalFactory from "../proxies/EventFactory";
+import FestivalNFT from "../proxies/Event";
 import renderNotification from "../utils/notification-handler";
 
 // import Reseller from '../proxies/Reseller';
@@ -13,140 +13,136 @@ class MyTickets extends Component {
     super();
 
     this.state = {
-      tickets: [],
-      fests: [],
-      ticket: null,
-      fest: null,
-      marketplace: null,
-      price: null,
-      test: null,
-
-      buttonEnabled: true
+      tickets: []
     };
 
     web3 = new Web3(window.ethereum);
   }
 
   async componentDidMount() {
-    this.updateFestivals();
+    this.loadTicketsToCheck();
   }
 
-  updateFestivals = async () => {
+  stringToColour = function (str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    var colour = "#";
+    for (var i = 0; i < 3; i++) {
+      var value = (hash >> (i * 8)) & 0xff;
+      colour += ("00" + value.toString(16)).substr(-2);
+    }
+    return colour;
+  };
+
+  loadTicketsToCheck = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
 
-      // recupero lista degli eventi
-      let eventList = await festivalFactory.methods.getEventList().call({ from: initiator });
-      //const activeFests = await festivalFactory.methods.getActiveFests().call({ from: initiator });
+      // popolata per il rendering dei tickets
+      let renderData = [];
+      let buttonText = "Controlla";
 
-      // controllo quanti eventi sono stati ricavati e procedo se >= 1
+      // recupero lista degli eventi
+      let eventList = await festivalFactory.methods
+        .getEventList()
+        .call({ from: initiator });
+
+      // verifico che esista almeno 1 evento
       if (eventList.length > 0) {
-        // recupero dettagli evento
-        const renderData = await Promise.all(
-          eventList.map(async (event) => {
-            const eventDetails = await festivalFactory.methods
+        eventList.map(async (event) => {
+          // recupero dettagli evento
+          const eventDetails = await festivalFactory.methods
               .getEventDetails(event)
               .call({ from: initiator });
 
-              var dd = eventDetails[5].substring(0,2);
-              var mm = eventDetails[5].substring(2,4);
-              var yyyy = eventDetails[5].substring(4,8);
-              var dateFormat = dd + '/' + mm + '/' + yyyy;
-              
-              return (
-                <option key={event} value={event}>
-                  {eventDetails[1] + " - " + dateFormat}
-                </option>
-              );
-          })
-        );
+          // creo istanza NFT dell'evento
+          const nftInstance = await FestivalNFT(event);
 
-        this.setState({
-          fests: renderData,
-          fest: eventList[0]
+          // recupero i ticket esibiti da controllare
+          let ticketsToCheck = await nftInstance.methods
+            .getTicketsToCheck()
+            .call({ from: initiator });
+
+          // verifico se è stato esibito almeno un biglietto per ogni evento
+          if (ticketsToCheck.length > 0) {
+            const renderTickets = await Promise.all(
+              ticketsToCheck.map(async (ticket) => {
+                // recupero lo stato del biglietto
+                const ticketState = await nftInstance.methods
+                .getTicketState(ticket)
+                .call({ from: initiator });
+                
+                // recupero l'indirizzo dell'account (wallet) che ha esibito il biglietto
+                const ticketExposer = await nftInstance.methods
+                .getTicketsToCheckExposer(ticket)
+                .call({ from: initiator });
+
+                // correzzione data
+                let tmp_date = eventDetails[5];
+                if (tmp_date.length == 7) {
+                  tmp_date = "0" + tmp_date;
+                }
+                var dateFormat =
+                  tmp_date.substring(0, 2) +
+                  "/" +
+                  tmp_date.substring(2, 4) +
+                  "/" +
+                  tmp_date.substring(4, 8);
+                
+                let buttonState = (ticketState === "accettato" || ticketState === "rifiutato") ? true : false;
+                let ticketColor = this.stringToColour(eventDetails[1]);
+
+                return (
+                  <div className="ticket tickettocheck" key={ticket}>
+                    <div
+                      className="ticket-event-color tectocheck"
+                      style={{ background: ticketColor }}
+                    ></div>
+                    <span className="ticket-event-name">{eventDetails[1]}</span>
+                    <span className="ticket-event-date">
+                      Data: <b>{dateFormat}</b>
+                    </span>
+                    <span className="ticket-id">
+                      Ticket ID: <b>{ticket}</b>
+                    </span>
+                    <span className="ticket-exposer">
+                      Exposer: <b>{ticketExposer.substring(0, 12)}...</b>
+                    </span>
+                    <span className="ticket-state">
+                      Stato: <b>{ticketState}</b>
+                    </span>
+                    <button
+                      type="button"
+                      className="btn waves-effect waves-light"
+                      disabled={buttonState}
+                      onClick={this.checkIn.bind(this, event, ticket)}
+                    >
+                      {buttonText}
+                    </button>
+                  </div>
+                );
+              })
+            );
+
+            // salvo i dati dei ticket esibiti nel React state
+            renderData.push(renderTickets);
+            this.setState({ tickets: renderData });
+          }
         });
-
-        this.updateTickets();
       }
     } catch (err) {
-      // TODO: bug da risolvere
-      // renderNotification("danger", "Error", "Error while updating the events");
-      console.log("Error while updating the events", err);
-    }
-  };
-
-  updateTickets = async () => {
-    try {
-      const initiator = await web3.eth.getCoinbase();
-
-      const nftInstance = await FestivalNFT(this.state.fest);
-    //   let tickets = await nftInstance.methods
-    //     .getPurchasedTicketsOfCustomer(initiator)
-    //     .call({ from: initiator });
-      let tickets = await nftInstance.methods
-        .getTicketsToCheck()
-        .call({ from: initiator });
-      
-      const renderData = await Promise.all(
-        tickets.map(async (ticket) => {
-          const ticketState = await nftInstance.methods.getTicketState(ticket).call({ from: initiator });
-          if (ticketState !== 'comprato') this.setState(this.setState({buttonEnabled: false}))
-
-          const ticketExposer = await nftInstance.methods
-            .getTicketsToCheckExposer(ticket)
-            .call({ from: initiator });
-          
-          return (
-            <option key={ticket} value={ticket}>
-              {ticket + " - " + ticketExposer.substring(0, 8)+"... : " + ticketState}
-            </option>
-          );
-        })
-      );
-
-
-      this.setState({ tickets: renderData, ticket: tickets[0] });
-    } catch (e) {
-      // TODO: bug da risolvere
-      renderNotification("danger", "Error", "Error in updating the ticket for the event");
-      console.log("Error in updating the ticket", e);
-    }
-  };
-  
-  onFestivalChangeHandler = async (e) => {
-    try {
-      const state = this.state;
-      state[e.target.name] = e.target.value;
-      this.setState(state);
-
-      const { fest } = this.state;
-      await this.updateTickets(fest);
-
-      const initiator = await web3.eth.getCoinbase();
-      // const festDetails = 
-      await festivalFactory.methods
-        .getEventDetails(fest)
-        .call({ from: initiator });
-      
-      //this.setState({ marketplace: festDetails[4] });
-    } catch (err) {
-      console.log("Error while tickets for the event", err.message);
       renderNotification(
         "danger",
         "Error",
-        "Error while tickets for the event"
+        "Si è verificato un problema durante il caricamento dei ticket"
+      );
+      console.log(
+        "Si è verificato un problema durante il caricamento dei ticket",
+        err
       );
     }
-  };
-
-  selectHandler = (e) => {
-    this.setState({ ticket: e.target.value });
-  };
-
-  inputChangedHandler = (e) => {
-    const state = this.state;
-    state[e.target.name] = e.target.value;
-    this.setState(state);
   };
 
   checkIn = async (event, ticketID) => {
@@ -154,73 +150,31 @@ class MyTickets extends Component {
       const initiator = await web3.eth.getCoinbase();
 
       const nftInstance = await FestivalNFT(event);
-      // const isBuyer = 
-      await nftInstance.methods
-        .checkTicket(ticketID)
-        .send({ from: initiator });
+      // const isBuyer =
+      await nftInstance.methods.checkTicket(ticketID).send({ from: initiator });
 
       await this.updateTickets();
 
-      renderNotification('success', 'Successo', `Biglietto dell'evento esibito correttamente.`);
-      
+      renderNotification(
+        "success",
+        "Successo",
+        `Biglietto dell'evento accettato.`
+      );
     } catch (err) {
-      console.log('Error while showing the ticket', err);
-      renderNotification('danger', 'Error', err.message);
+      console.log("Errore durante la verifica del biglietto.", err);
+      renderNotification("danger", "Error", err.message);
     }
-  }
+  };
 
   render() {
     return (
       <div className="container center">
-        <div className="row">
-          <div className="container ">
-            <div className="container ">
-              <h5 className="page-title" style={{ padding: "30px 0px 0px 10px" }}>Controllo biglietti</h5>
-              <form className="form-create-event" onSubmit={this.onListForSale}>
-                <label className="left">Evento</label>
-                <select
-                  className="browser-default"
-                  name="fest"
-                  value={this.state.fest || undefined}
-                  onChange={this.onFestivalChangeHandler}
-                >
-                  <option value="" disabled>
-                    Seleziona l'evento
-                  </option>
-                  {this.state.fests}
-                </select>
-                <br />
-                <br />
-
-                <label className="left">Biglietto</label>
-                <select
-                  className="browser-default"
-                  name="ticket"
-                  value={this.state.ticket || undefined}
-                  onChange={this.selectHandler}
-                >
-                  <option value="" disabled>
-                    Seleziona il biglietto
-                  </option>
-                  {this.state.tickets}
-                </select>
-                <br />
-                <br />
-                <button 
-                  type="button" 
-                  className="custom-btn login-btn btn waves-effect waves-light button-submit-form"
-                  disabled={!this.state.buttonEnabled}
-                  onClick={this.checkIn.bind(
-                    this,
-                    this.state.fest,
-                    this.state.ticket
-                  )}
-                >
-                Controlla</button>
-              </form>
-            </div>
-          </div>
-        </div>
+        <h4 className="page-title center">Controllo biglietti</h4>
+        {this.state.empty ? (
+          <div className="emptyMessage">Nessun biglietto esibito da controllare</div>
+        ) : (
+          <div className="tickets-wrapper">{this.state.tickets}</div>
+        )}
       </div>
     );
   }

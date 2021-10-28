@@ -18,6 +18,7 @@ class Purchase extends Component {
       eventAddrs: [],
       buttonText: "Acquista",
       buttonEnabled: true,
+      empty: false,
     };
     web3 = new Web3(window.ethereum);
   }
@@ -38,70 +39,77 @@ class Purchase extends Component {
       this.setState({ eventAddrs: eventList });
 
       // mappo ciascun evento
-      const events = await Promise.all(
-        eventList.map(async (event) => {
-          // recupero dettagli evento
-          const eventDetails = await eventFactory.methods
-            .getEventDetails(event)
-            .call({ from: initiator });
-          const [eventID, eventName, eventSymbol, eventPrice, , eventDate] =
-            Object.values(eventDetails);
+      if (eventList.length > 0) {
+        const events = await Promise.all(
+          eventList.map(async (event) => {
+            // recupero dettagli evento
+            const eventDetails = await eventFactory.methods
+              .getEventDetails(event)
+              .call({ from: initiator });
+            const [eventID, eventName, eventSymbol, eventPrice, , eventDate] =
+              Object.values(eventDetails);
 
-          // correzzione data
-          let tmp_date = eventDate;
-          if(tmp_date.length == 7) {
-            tmp_date = "0" + tmp_date;
-          }
-          var dd = tmp_date.substring(0,2);
-          var mm = tmp_date.substring(2,4);
-          var yyyy = tmp_date.substring(4,8);
-          var dateFormat = dd + '/' + mm + '/' + yyyy;
+            // correzzione data
+            let tmp_date = eventDate;
+            if (tmp_date.length === 7) {
+              tmp_date = "0" + tmp_date;
+            }
+            var dd = tmp_date.substring(0, 2);
+            var mm = tmp_date.substring(2, 4);
+            var yyyy = tmp_date.substring(4, 8);
+            var dateFormat = dd + "/" + mm + "/" + yyyy;
 
-          // istanza dell'evento
-          const eventInstance = EventNFT(event);
-          const remainingTickets = await eventInstance.methods
-            .getRemainingTickets()
-            .call({ from: initiator });
-          
-          let supplyClassName = (remainingTickets !== "0") ? "available" : "soldout";
+            // istanza dell'evento
+            const eventInstance = EventNFT(event);
+            const remainingTickets = await eventInstance.methods
+              .getRemainingTickets()
+              .call({ from: initiator });
 
-          // html rendering
-          return (
-            <tr key={event} type={supplyClassName}>
-              <td className="center">{eventName}</td>
-              <td className="center">{eventSymbol}</td>
-              <td className="center">{web3.utils.fromWei(eventPrice, "ether")}</td>
-              <td className="center">
-                {remainingTickets === "0" ? "SOLD OUT" : remainingTickets}
-              </td>
-              <td className="center">{dateFormat}</td>
+            let supplyClassName =
+              remainingTickets !== "0" ? "available" : "soldout";
 
-              <td className="center">
-                {this.state.account.type === "cliente" &&
-                remainingTickets !== "0" ? (
-                  <button
-                    type="submit"
-                    className="btn waves-effect waves-light buy-button"
-                    disabled={!this.state.buttonEnabled}
-                    onClick={this.onPurchaseTicket.bind(
-                      this,
-                      eventID,
-                      eventPrice,
-                      initiator
-                    )}
-                  >
-                    {this.state.buttonText}
-                  </button>
-                ) : (
-                  <div></div>
-                )}
-              </td>
-            </tr>
-          );
-        })
-      );
+            // html rendering
+            return (
+              <tr key={event} type={supplyClassName}>
+                <td className="center" style={{textTransform: 'capitalize', fontWeight: 'bold'}}>{eventName}</td>
+                <td className="center" style={{textTransform: 'uppercase'}}>{eventSymbol}</td>
+                <td className="center">
+                  {web3.utils.fromWei(eventPrice, "ether")}
+                </td>
+                <td className="center">
+                  {remainingTickets === "0" ? "SOLD OUT" : remainingTickets}
+                </td>
+                <td className="center">{dateFormat}</td>
 
-      this.setState({ events: events });
+                <td className="center">
+                  {this.state.account.type === "cliente" &&
+                  remainingTickets !== "0" ? (
+                    <button
+                      type="submit"
+                      className="btn waves-effect waves-light buy-button"
+                      disabled={!this.state.buttonEnabled}
+                      onClick={this.onPurchaseTicket.bind(
+                        this,
+                        eventID,
+                        eventPrice,
+                        initiator
+                      )}
+                    >
+                      {this.state.buttonText}
+                    </button>
+                  ) : (
+                    <div></div>
+                  )}
+                </td>
+              </tr>
+            );
+          })
+        );
+        
+        this.setState({ events: events });
+      } else {
+        this.setState({ empty: false });
+      }
     } catch (err) {
       renderNotification(
         "danger",
@@ -163,7 +171,10 @@ class Purchase extends Component {
     return (
       <div className="container center">
         {pageTitle}
-        <table id="requests" className="responsive-table striped">
+        {this.state.empty ? (
+          <div className="emptyMessage">Nessun evento disponibile</div>
+        ) : (
+          <table id="requests" className="responsive-table striped">
           <thead>
             <tr>
               <th key="name" className="center">
@@ -184,12 +195,13 @@ class Purchase extends Component {
               {this.state.account.type === "cliente" ? (
                 <th key="purchase" className="center"></th>
               ) : (
-                <div></div>
+                null
               )}
             </tr>
           </thead>
           <tbody className="striped highlight">{this.state.events}</tbody>
         </table>
+        )}
       </div>
     );
   }
