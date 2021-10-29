@@ -14,6 +14,7 @@ class MyTickets extends Component {
 
     this.state = {
       tickets: [],
+      empty: false
     };
 
     web3 = new Web3(window.ethereum);
@@ -100,7 +101,7 @@ class MyTickets extends Component {
                   tmp_date.substring(4, 8);
 
                 // controllo se il biglietto è stato esibito
-                let buttonState = ticketState === "esibito" ? true : false;
+                let buttonState = (ticketState === "esibito" || ticketState === "accettato") ? true : false;
                 let ticketColor = this.stringToColour(eventDetails[1]);
 
                 return (
@@ -139,6 +140,10 @@ class MyTickets extends Component {
         });
       }
 
+      // if(this.state.tickets.length === 0)  {
+      //   this.setState({ empty: true });
+      // }
+
       // this.setState({ tickets: renderData });
     } catch (err) {
       // TODO: bug da risolvere
@@ -154,7 +159,7 @@ class MyTickets extends Component {
   checkIn = async (event, ticketID) => {
     document.querySelectorAll("button").forEach((elem) => {
       if (elem.disabled === false) {
-        elem.childNodes[0].nodeValue = "...";
+        elem.childNodes[0].nodeValue = "Esibisco..."
         elem.disabled = true;
       }
     });
@@ -194,7 +199,11 @@ class MyTickets extends Component {
     return (
       <div className="container center">
         <h4 className="page-title center">I miei biglietti</h4>
-        <div className="tickets-wrapper">{this.state.tickets}</div>
+        {this.state.empty ? (
+          <div className="emptyMessage">Acquista un biglietto per visualizzarlo qui</div>
+        ) : (
+          <div className="tickets-wrapper">{this.state.tickets}</div>
+        )}
       </div>
     );
   }

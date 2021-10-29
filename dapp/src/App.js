@@ -1,7 +1,13 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Link, Switch, Redirect} from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import ReactNotification from "react-notifications-component";
-import renderNotification from './utils/notification-handler';  
+import renderNotification from "./utils/notification-handler";
 import "./App.css";
 
 // Componenti
@@ -11,40 +17,41 @@ import MyTickets from "./components/Biglietti";
 import Guest from "./components/Visitatore";
 import Controllore from "./components/Controllore";
 
-import Reseller from './proxies/Reseller';
+import Reseller from "./proxies/Reseller";
 
-
-
-import Web3 from 'web3';
+import Web3 from "web3";
 let web3;
 
 class App extends Component {
   state = {
     account: {
-      type: "",  
-      address: "0xXXXXXXXX",   
-      balance: "000", 
+      type: "",
+      address: "0xXXXXXXXX",
+      balance: "000",
     },
-    contractBalance: 0
+    contractBalance: 0,
   };
 
   constructor() {
     super();
     this.loadBlockChain = this.loadBlockChain.bind(this);
-    
+
     /* -------------------------- Blockchain connection ------------------------- */
     new Promise((resolve, reject) => {
       if (typeof window.ethereum !== "undefined") {
         web3 = new Web3(window.ethereum);
         //web3 = new Web3Quorum(new Web3(window.ethereum));
-        window.ethereum.enable()
+        window.ethereum
+          .enable()
           .then(() => {
             resolve(
               // new Web3Quorum(new Web3(window.ethereum))
               new Web3(window.ethereum)
             );
           })
-          .catch((e) => { reject(e) });
+          .catch((e) => {
+            reject(e);
+          });
         return;
       }
       if (typeof window.web3 !== "undefined") {
@@ -54,13 +61,13 @@ class App extends Component {
         );
       }
       //resolve(new Web3Quorum(new Web3("http://127.0.0.1:8545")));
-      resolve(new Web3('http://127.0.0.1:8545'));
+      resolve(new Web3("http://127.0.0.1:8545"));
 
       // this.loadBlockChain = this.loadBlockChain.bind(this);
     });
 
     // check if there's web3 and window.ethereum
-    if(window.ethereum !== undefined && web3 !== undefined) {
+    if (window.ethereum !== undefined && web3 !== undefined) {
       // funzione async di gestione della blockchain
       this.loadBlockChain();
 
@@ -113,9 +120,10 @@ class App extends Component {
     }
     // valorizza 'this.state.account.address'
     this.setState((prevState) => ({
-      account: { ...prevState.account, address: accountsList[0] }
+      account: { ...prevState.account, address: accountsList[0] },
     }));
-    this.setAccountBalance(accountsList)
+
+    this.setAccountBalance(accountsList);
   }
 
   async setAccountBalance(accountsList) {
@@ -123,26 +131,39 @@ class App extends Component {
     try {
       var balance = await web3.eth.getBalance(accountsList[0]);
       this.setState((prevState) => ({
-        account: { ...prevState.account, balance: web3.utils.fromWei(balance) }
+        account: { ...prevState.account, balance: web3.utils.fromWei(balance) },
       }));
     } catch (err) {
-      renderNotification('danger', 'Errore', 'Ops, qualcosa è andato storto. Controlla lo stato della rete.');
-      console.log("Failed with error: " + err);
+      renderNotification(
+        "danger",
+        "Errore",
+        "Qualcosa è andato storto nel caricare il saldo del portafoglio."
+      );
       console.log(err.message);
     }
   }
 
   async setContractBalance() {
-    var contractBalance = await web3.eth.getBalance(Reseller._address);
-    contractBalance = web3.utils.fromWei(contractBalance);
-    this.setState({ contractBalance });
+    try {
+      var contractBalance = await web3.eth.getBalance(Reseller._address);
+      contractBalance = web3.utils.fromWei(contractBalance);
+      this.setState({ contractBalance });
+    } catch (err) {
+      renderNotification(
+        "danger",
+        "Errore",
+        "Qualcosa è andato storto nel caricare il saldo della biglietteria."
+      );
+      console.log(err.message);
+    }
   }
-/* ---------------------- Nav rander and path setting --------------------- */
+
+  /* ---------------------- Nav rander and path setting --------------------- */
   render() {
     let nav;
-    let path = "/"
+    let path = "/";
 
-    switch(this.state.account.type){
+    switch (this.state.account.type) {
       /* -------------------------------------------------------------------------- */
       case "organizzatore":
         nav = (
@@ -228,7 +249,7 @@ class App extends Component {
         break;
     }
 
-/* ---------------------------- Components render --------------------------- */
+    /* ---------------------------- Components render --------------------------- */
     return (
       <Router>
         <div>
@@ -237,7 +258,7 @@ class App extends Component {
           <nav className="nav-page" style={{ padding: "0px 30px 0px 30px" }}>
             <div className="nav-wrapper">
               <span href="#" className="reseller_balancebox">
-              Biglietteria: <b>{this.state.contractBalance} ETH</b>
+                Biglietteria: <b>{this.state.contractBalance} ETH</b>
               </span>
               <ul className="right hide-on-med-and-down 10">{nav}</ul>
             </div>
@@ -246,11 +267,14 @@ class App extends Component {
           <Switch>
             <Route path="/createFestival" component={Festival} />
             <Route path="/guest" component={Guest} />
-            <Route path="/market"
+            <Route
+              path="/market"
               render={(props) => (
-                <Purchase {...props} 
-                acc={this.state.account} 
-                  loadBlockChain={this.loadBlockChain}/>
+                <Purchase
+                  {...props}
+                  acc={this.state.account}
+                  loadBlockChain={this.loadBlockChain}
+                />
               )}
             />
             <Route path="/tickets" component={MyTickets} />
@@ -258,7 +282,6 @@ class App extends Component {
           </Switch>
 
           <Redirect to={path} />
-
         </div>
       </Router>
     );

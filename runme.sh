@@ -29,6 +29,18 @@ starttr() {
     cd  ../dapp && docker compose up
 }
 
+startr() {
+    cd dapp
+
+    if [[ ! "$(docker images -q dapp_react 2> /dev/null)" == "" ]]; then
+        docker compose down
+        docker image rm dapp_react
+    fi
+
+    echo "Starting the react application..."
+    docker compose up
+}
+
 waitcs() {
     if ! command -v wget &> /dev/null
     then
@@ -120,6 +132,9 @@ then
 elif [ "$1" = "--start-tr" ]; 
 then
     starttr
+elif [ "$1" = "--start-r" ]; 
+then
+    startr
 elif [ "$1" = "--truffle-test" ]; 
 then
     truffletest
@@ -140,6 +155,7 @@ then
     echo -e "${bold}--start-all${normal} \t -> start the complete system (truffle and the dapp will wait cakeshop to start up)"
     echo -e "${bold}--start-q${normal} \t -> start the quorum blockchain"
     echo -e "${bold}--start-tr${normal} \t -> start the truffle migration and the dapp"
+    echo -e "${bold}--start-r${normal} \t -> start the react application"
     echo -e "${bold}--truffle-test${normal} \t -> start the quorum blockchain if it's not running and run the truffle tests"
     echo -e "${bold}--stop-q${normal} \t\t -> stop the quorum blockchain"
     echo -e "${bold}--stop${normal} \t -> stop the complete system (quorum|truffle|dapp)"

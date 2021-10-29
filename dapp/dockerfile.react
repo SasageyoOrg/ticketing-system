@@ -10,6 +10,9 @@ RUN apk add --update python3 krb5 krb5-libs gcc make g++ krb5-dev
 RUN npm install --no-package-lock --build-from-source --force
 #RUN npm install web3 web3js-quorum
 
+# temp workaround -> digital envelope routines::unsupported
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 # COPY directories
 COPY public ./public/
 COPY src ./src/
