@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import festivalFactory from "../proxies/EventFactory";
-import FestivalNFT from "../proxies/Event";
+import eventFactory from "../proxies/EventFactory";
+import EventNFT from "../proxies/Event";
 import renderNotification from "../utils/notification-handler";
 
 import Reseller from "../proxies/Reseller";
@@ -21,13 +21,13 @@ class MyTickets extends Component {
   }
 
   async componentDidMount() {
-    // await this.updateFestivals();
+    // await this.updateEvents();
 
     // WIP
     await this.loadTickets();
 
     // console.log(this.state);
-    // const nftInstance = await FestivalNFT(this.state.fest);
+    // const nftInstance = await EventNFT(this.state.fest);
     // const ticketState = await nftInstance.methods
     //         .getTicketState(this.state.ticket)
     //         .call();
@@ -55,7 +55,7 @@ class MyTickets extends Component {
       const initiator = await web3.eth.getCoinbase();
 
       // recupero lista degli eventi
-      let eventList = await festivalFactory.methods
+      let eventList = await eventFactory.methods
         .getEventList()
         .call({ from: initiator });
 
@@ -67,7 +67,7 @@ class MyTickets extends Component {
       if (eventList.length > 0) {
         eventList.map(async (event) => {
           // creo istanza NFT dell'evento
-          const nftInstance = await FestivalNFT(event);
+          const nftInstance = await EventNFT(event);
 
           // recupero i biglietti del cliente per ogni evento
           let tickets = await nftInstance.methods
@@ -79,7 +79,7 @@ class MyTickets extends Component {
             const renderTicket = await Promise.all(
               tickets.map(async (ticket) => {
                 // recupero info dell'evento
-                const eventDetails = await festivalFactory.methods
+                const eventDetails = await eventFactory.methods
                   .getEventDetails(event)
                   .call({ from: initiator });
 
@@ -102,6 +102,8 @@ class MyTickets extends Component {
 
                 // controllo se il biglietto è stato esibito
                 let buttonState = (ticketState === "esibito" || ticketState === "accettato") ? true : false;
+                buttonText = (ticketState === "esibito") ? "Esibito" : "Esibisci";
+                buttonText = ticketState === "accettato" ? "Accettato" : "Esibisci";
                 let ticketColor = this.stringToColour(eventDetails[1]);
 
                 return (

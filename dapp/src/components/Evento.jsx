@@ -5,7 +5,7 @@ import renderNotification from '../utils/notification-handler';
 
 let web3;
 
-class Festival extends Component {
+class Event extends Component {
   constructor() {
     super();
     
@@ -25,7 +25,7 @@ class Festival extends Component {
     web3 = new Web3(window.ethereum);
   }
 
-  onCreateFestival = async (e) => {
+  onCreateEvent = async (e) => {
 
     // indicazione di caricamento nel bottone
     this.setState({buttonText: "Pubblico..."});
@@ -97,19 +97,76 @@ class Festival extends Component {
 
   render() {
     return (
-      <div className="container" >
+      <div className="container">
         <h4 className="center page-title">Creazione Evento</h4>
-        <form className="form-create-event" onSubmit={this.onCreateFestival}>
-          <label className="left">Nome evento</label><input id="name" placeholder="Maneskin" type="text" className="validate" name="name"  onChange={this.inputChangedHandler} /><br /><br />
-          <label className="left">Simbolo evento</label><input id="symbol" placeholder="MSK" type="text" className="validate" name="symbol" maxLength="3"  onChange={this.inputChangedHandler} /><br /><br />
-          <label className="left">Prezzo del biglietto (ETH)</label><input id="price" placeholder="10" type="number" className="input-control" name="price"  onChange={this.inputChangedHandler} /><br /><br />
-          <label className="left">Numero di biglietti</label><input id="supply" placeholder="100" type="number" className="input-control" name="supply"  onChange={this.inputChangedHandler}></input><br /><br />
-          <label className="left">Data</label><input id="date" type="date" className="input-control" name="date"  onChange={this.inputChangedHandler}></input><br /><br />
-          <button type="submit" disabled={!this.state.buttonEnabled} className="btn waves-effect waves-light button-submit-form">{this.state.buttonText}</button>
+        <form className="form-create-event" onSubmit={this.onCreateEvent}>
+          <label className="left">Nome evento</label>
+          <input
+            id="name"
+            placeholder="Maneskin"
+            type="text"
+            className="validate"
+            name="name"
+            onChange={this.inputChangedHandler}
+          />
+          <br />
+          <br />
+          <label className="left">Simbolo evento</label>
+          <input
+            id="symbol"
+            placeholder="MSK"
+            type="text"
+            className="validate"
+            name="symbol"
+            maxLength="3"
+            onChange={this.inputChangedHandler}
+          />
+          <br />
+          <br />
+          <label className="left">Prezzo del biglietto (ETH)</label>
+          <input
+            id="price"
+            placeholder="10"
+            type="number"
+            step="any"
+            className="input-control"
+            name="price"
+            onChange={this.inputChangedHandler}
+          />
+          <br />
+          <br />
+          <label className="left">Numero di biglietti</label>
+          <input
+            id="supply"
+            placeholder="100"
+            type="number"
+            className="input-control"
+            name="supply"
+            onChange={this.inputChangedHandler}
+          ></input>
+          <br />
+          <br />
+          <label className="left">Data</label>
+          <input
+            id="date"
+            type="date"
+            className="input-control"
+            name="date"
+            onChange={this.inputChangedHandler}
+          ></input>
+          <br />
+          <br />
+          <button
+            type="submit"
+            disabled={!this.state.buttonEnabled}
+            className="btn waves-effect waves-light button-submit-form"
+          >
+            {this.state.buttonText}
+          </button>
         </form>
       </div>
-    )
+    );
   }
 }
 
-export default Festival;
+export default Event;

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import festivalFactory from "../proxies/EventFactory";
-import FestivalNFT from "../proxies/Event";
+import eventFactory from "../proxies/EventFactory";
+import EventNFT from "../proxies/Event";
 import renderNotification from "../utils/notification-handler";
 
 // import Reseller from '../proxies/Reseller';
@@ -46,7 +46,7 @@ class MyTickets extends Component {
       // let buttonText = "Controlla";
 
       // recupero lista degli eventi
-      let eventList = await festivalFactory.methods
+      let eventList = await eventFactory.methods
         .getEventList()
         .call({ from: initiator });
 
@@ -54,12 +54,12 @@ class MyTickets extends Component {
       if (eventList.length > 0) {
         eventList.map(async (event) => {
           // recupero dettagli evento
-          const eventDetails = await festivalFactory.methods
+          const eventDetails = await eventFactory.methods
               .getEventDetails(event)
               .call({ from: initiator });
 
           // creo istanza NFT dell'evento
-          const nftInstance = await FestivalNFT(event);
+          const nftInstance = await EventNFT(event);
 
           // recupero i ticket esibiti da controllare
           let ticketsToCheck = await nftInstance.methods
@@ -162,7 +162,7 @@ class MyTickets extends Component {
 
       const initiator = await web3.eth.getCoinbase();
 
-      const nftInstance = await FestivalNFT(event);
+      const nftInstance = await EventNFT(event);
       // const isBuyer =
       await nftInstance.methods.checkTicket(ticketID).send({ from: initiator });
       

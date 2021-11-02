@@ -11,7 +11,7 @@ import renderNotification from "./utils/notification-handler";
 import "./App.css";
 
 // Componenti
-import Festival from "./components/Evento";
+import Event from "./components/Evento";
 import Purchase from "./components/Acquisto";
 import MyTickets from "./components/Biglietti";
 import Guest from "./components/Visitatore";
@@ -166,7 +166,7 @@ class App extends Component {
           <div>
             <li>
               {" "}
-              <Link to="/createFestival">Crea evento</Link>{" "}
+              <Link to="/createEvent">Crea evento</Link>{" "}
             </li>
             <li>
               {" "}
@@ -186,7 +186,7 @@ class App extends Component {
             </li>
           </div>
         );
-        path = "/createFestival";
+        path = "/createEvent";
         break;
 
       /* -------------------------------------------------------------------------- */
@@ -262,7 +262,7 @@ class App extends Component {
           </nav>
 
           <Switch>
-            <Route path="/createFestival" component={Festival} />
+            <Route path="/createEvent" component={Event} />
             <Route path="/guest" component={Guest} />
             <Route
               path="/market"

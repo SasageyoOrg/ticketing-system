@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import renderNotification from '../utils/notification-handler.js';
 
-import festivalFactory from '../proxies/EventFactory';
+import eventFactory from '../proxies/EventFactory';
 import EventNFT from '../proxies/Event';
 import Reseller from '../proxies/Reseller';
 
@@ -23,16 +23,16 @@ class Controllore extends Component {
 
 
   async componentDidMount() {
-    await this.updateFestivals();
+    await this.updateEvents();
   }
 
   // TODO: rinominare in updateEvents
-  updateFestivals = async () => {
+  updateEvents = async () => {
     try {
       const initiator = await web3.eth.getCoinbase();
 
       // recupero lista degli eventi
-      const eventList = await festivalFactory.methods.getEventList().call({ from: initiator });
+      const eventList = await eventFactory.methods.getEventList().call({ from: initiator });
       this.setState({ eventAddrs: eventList });
 
       // mappo ciascun evento
@@ -40,7 +40,7 @@ class Controllore extends Component {
         // istanza dell'evento
         const eventInstance = EventNFT(event);
 
-        const eventDetails = await festivalFactory.methods.getEventDetails(event).call({ from: initiator });
+        const eventDetails = await eventFactory.methods.getEventDetails(event).call({ from: initiator });
         const [eventID, eventName, eventSymbol, eventPrice, eventSupply, eventDate] = Object.values(eventDetails);
 
         // recupero dettagli evento
@@ -120,7 +120,7 @@ class Controllore extends Component {
         });
 
 
-      await this.updateFestivals();
+      await this.updateEvents();
 
       renderNotification('success', 'Successo', `Biglietto dell'evento acquistato correttamente.`);
 
