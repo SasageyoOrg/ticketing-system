@@ -27,7 +27,7 @@ class App extends Component {
     account: {
       type: "",
       address: "0xXXXXXXXX",
-      balance: "000",
+      balance: "000"
     },
     contractBalance: 0,
   };
@@ -97,16 +97,12 @@ class App extends Component {
           account: { ...prevState.account, type: "organizzatore" },
         }));
         break;
-      case "0x4d929E07c173ceA67f8008bb19A151e0564e1362":
-        this.setState((prevState) => ({
-          account: { ...prevState.account, type: "rivenditore" },
-        }));
-        break;
       case "0x81559247E62fDb78A43e9535f064ED62B11B6830":
         this.setState((prevState) => ({
           account: { ...prevState.account, type: "controllore" },
         }));
         break;
+      case "0x4d929E07c173ceA67f8008bb19A151e0564e1362":
       case "0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001":
         this.setState((prevState) => ({
           account: { ...prevState.account, type: "cliente" },
@@ -179,7 +175,7 @@ class App extends Component {
             <li>
               {" "}
               <span className="user_addressbox">
-                Account: <b>{this.state.account.address.substring(0, 8)}...</b>
+                Organizzatore: <b>{this.state.account.address.substring(0, 8)}...</b>
               </span>
             </li>
             <li>
@@ -200,7 +196,7 @@ class App extends Component {
             <li>
               {" "}
               <span className="user_addressbox">
-                Account: <b>{this.state.account.address.substring(0, 8)}...</b>
+                Controllore: <b>{this.state.account.address.substring(0, 8)}...</b>
               </span>
             </li>
           </div>
@@ -210,6 +206,7 @@ class App extends Component {
 
       /* -------------------------------------------------------------------------- */
       case "cliente":
+        let accountTag = (this.state.account.address === "0x4d929E07c173ceA67f8008bb19A151e0564e1362") ? "Cliente 2" : "Cliente 1";
         nav = (
           <div>
             <li>
@@ -223,7 +220,7 @@ class App extends Component {
             <li>
               {" "}
               <span className="user_addressbox">
-                Account: <b>{this.state.account.address.substring(0, 8)}...</b>
+                {accountTag}: <b>{this.state.account.address.substring(0, 8)}...</b>
               </span>
             </li>
             <li>

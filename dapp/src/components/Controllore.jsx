@@ -13,7 +13,8 @@ class MyTickets extends Component {
     super();
 
     this.state = {
-      tickets: []
+      tickets: [],
+      buttonText: "Controlla",
     };
 
     web3 = new Web3(window.ethereum);
@@ -29,7 +30,7 @@ class MyTickets extends Component {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
     var colour = "#";
-    for (var i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++) {
       var value = (hash >> (i * 8)) & 0xff;
       colour += ("00" + value.toString(16)).substr(-2);
     }
@@ -42,7 +43,7 @@ class MyTickets extends Component {
 
       // popolata per il rendering dei tickets
       let renderData = [];
-      let buttonText = "Controlla";
+      // let buttonText = "Controlla";
 
       // recupero lista degli eventi
       let eventList = await festivalFactory.methods
@@ -81,7 +82,7 @@ class MyTickets extends Component {
 
                 // correzzione data
                 let tmp_date = eventDetails[5];
-                if (tmp_date.length == 7) {
+                if (tmp_date.length === 7) {
                   tmp_date = "0" + tmp_date;
                 }
                 var dateFormat =
@@ -91,9 +92,17 @@ class MyTickets extends Component {
                   "/" +
                   tmp_date.substring(4, 8);
                 
-                let buttonState = (ticketState === "accettato" || ticketState === "rifiutato") ? true : false;
-                let ticketColor = this.stringToColour(eventDetails[1]);
+                // let buttonState = () ? true : false;
 
+                let buttonState = false;
+                if(ticketState === "accettato" || ticketState === "rifiutato") {
+                  buttonState = true;
+                } else if(this.state.buttonText === "...") {
+                  buttonState = true;
+                }
+
+                let ticketColor = this.stringToColour(eventDetails[1]);
+                
                 return (
                   <div className="ticket tickettocheck" key={ticket}>
                     <div
@@ -108,7 +117,7 @@ class MyTickets extends Component {
                       Ticket ID: <b>{ticket}</b>
                     </span>
                     <span className="ticket-exposer">
-                      Exposer: <b>{ticketExposer.substring(0, 12)}...</b>
+                      Utente: <b>{ticketExposer.substring(0, 12)}...</b>
                     </span>
                     <span className="ticket-state">
                       Stato: <b>{ticketState}</b>
@@ -119,7 +128,7 @@ class MyTickets extends Component {
                       disabled={buttonState}
                       onClick={this.checkIn.bind(this, event, ticket)}
                     >
-                      {buttonText}
+                      {this.state.buttonText}
                     </button>
                   </div>
                 );
@@ -146,13 +155,19 @@ class MyTickets extends Component {
   };
 
   checkIn = async (event, ticketID) => {
+    this.setState({ buttonText: "..." });
+
     try {
+      await this.loadTicketsToCheck();
+
       const initiator = await web3.eth.getCoinbase();
 
       const nftInstance = await FestivalNFT(event);
       // const isBuyer =
       await nftInstance.methods.checkTicket(ticketID).send({ from: initiator });
       
+      this.setState({ buttonText: "Controlla" });
+
       await this.loadTicketsToCheck();
 
       renderNotification(
@@ -161,8 +176,11 @@ class MyTickets extends Component {
         `Biglietto dell'evento accettato.`
       );
     } catch (err) {
-      console.log("Errore durante la verifica del biglietto.", err);
-      renderNotification("danger", "Error", err.message);
+      if (err.code === 4001) {
+        setTimeout(window.location.reload(), 1000);
+      } else {
+        renderNotification("danger", "Errore", err.message);
+      }
     }
   };
 

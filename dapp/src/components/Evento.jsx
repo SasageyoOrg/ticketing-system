@@ -76,11 +76,11 @@ class Festival extends Component {
     this.setState(state);
 
     let inputDate = new Date(this.state.date);
-    if(this.state.name != '' && 
-       this.state.symbol != '' &&
+    if(this.state.name !== '' && 
+       this.state.symbol !== '' &&
        this.state.price >= 0 &&
        this.state.supply >= 0 &&
-       this.state.date != '' &&
+       this.state.date !== '' &&
        inputDate > this.state.today) {
         this.setState({buttonEnabled: true})
     } else {

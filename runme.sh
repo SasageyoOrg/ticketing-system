@@ -157,8 +157,8 @@ then
     echo -e "${bold}--start-tr${normal} \t -> start the truffle migration and the dapp"
     echo -e "${bold}--start-r${normal} \t -> start the react application"
     echo -e "${bold}--truffle-test${normal} \t -> start the quorum blockchain if it's not running and run the truffle tests"
-    echo -e "${bold}--stop-q${normal} \t\t -> stop the quorum blockchain"
-    echo -e "${bold}--stop${normal} \t -> stop the complete system (quorum|truffle|dapp)"
+    echo -e "${bold}--stop-q${normal} \t -> stop the quorum blockchain"
+    echo -e "${bold}--stop${normal} \t\t -> stop the complete system (quorum|truffle|dapp)"
     echo -e "${bold}--restart${normal} \t -> restart the complete system (with --start-all method)"
     echo ""
 else

@@ -27,14 +27,13 @@
                              Private Key: 0xde405e2f3cea4da31ea886d9f93f8855f8925b35f39f8d01ddc08b588be118fe
 
 
-    Ticket Buyer        ->   Address: 0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001
+    Ticket Buyer #1     ->   Address: 0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001
                              Private Key: 0xeccc28aa6410da0d6bd19efdef33b5b7b9e2c5adcd9e8ab899d3369aaa386e72
                                 
 
-    Visitor (*)         ->   Address: 0x4d929E07c173ceA67f8008bb19A151e0564e1362
+    Ticket Buyer #2     ->   Address: 0x4d929E07c173ceA67f8008bb19A151e0564e1362
                              Private Key: 0x526ba301ffd7369d010a07c2d44167e4e7c1b7ff1dd85b475b708a1078d04450
     
-    *: account not used
     ```
 6. Cakeshop will be accessible at `http://localhost:8999/`
 8. React application will be accessible at `http://localhost:3000/`

@@ -59,6 +59,9 @@
 tr[type="soldout"] {
   background-color: red !important;
 }
+tr[type="soldout"] td:nth-child(1), tr[type="soldout"] td:nth-child(2), tr[type="soldout"] td:nth-child(3), tr[type="soldout"] td:nth-child(5) {
+  text-decoration: line-through;
+}
 
 .emptyMessage {
   background: rgba(140,0,0,.4);

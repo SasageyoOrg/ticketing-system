@@ -124,9 +124,10 @@ class Purchase extends Component {
   onPurchaseTicket = async (eventID, eventPrice, initiator) => {
     this.setState({ buttonText: "..." });
     this.setState({ buttonEnabled: false });
-    await this.updateEvents();
-
+    
     try {
+      await this.updateEvents();
+
       await Reseller.methods
         .purchaseTicket(this.state.eventAddrs[eventID - 1])
         .send({
