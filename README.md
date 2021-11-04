@@ -35,5 +35,9 @@
                              Private Key: 0x526ba301ffd7369d010a07c2d44167e4e7c1b7ff1dd85b475b708a1078d04450
     
     ```
+    ATTENTION: it's necessary to reset each account, once imported:
+    ```
+    account -> settings -> advanced -> reset-account
+    ```
 6. Cakeshop will be accessible at `http://localhost:8999/`
 8. React application will be accessible at `http://localhost:3000/`
