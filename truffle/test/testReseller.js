@@ -1,6 +1,6 @@
 const organizer = "0xed9d02e382b34818e88B88a309c7fe71E65f419d";
 const client  = "0xB4dc6aE681Fa6D5433e68D76aC9318b734F49001";
-const client2 = "0x81559247E62fDb78A43e9535f064ED62B11B6830"; //ticket inspector
+const client2 = "0x4d929E07c173ceA67f8008bb19A151e0564e1362";
 
 const Event = artifacts.require("Event");
 const EventFactory = artifacts.require("EventFactory");
@@ -9,7 +9,7 @@ const Reseller = artifacts.require("Reseller");
 contract("Reseller", async (accounts) => {
   it("Acquisto biglietto da parte di un utente", async () => {
     const eventFactory = await EventFactory.deployed();
-    await eventFactory.createNewEvent("Maneskin", "MSK", 10, 100, 101022, "ManeskinMSK101022",{
+    await eventFactory.createNewEvent("Maneskin", "MSK", 10, 20, 101022, "ManeskinMSK101022",{
       from: organizer
     });
     const eventList = await eventFactory.getEventList();
@@ -19,7 +19,7 @@ contract("Reseller", async (accounts) => {
     const reseller = await Reseller.deployed();
     await reseller.purchaseTicket(eventList[0], {
       from: client,
-      value: 0.1 * 10,
+      value: 10^18 * 20,
     });
     console.log("\n\tCliente 1 compra un ticket dell'evento di Maneskin");
 
@@ -27,10 +27,10 @@ contract("Reseller", async (accounts) => {
 
   it("Mostra tutti i biglietti dell'utente", async () => {
     const eventFactory = await EventFactory.deployed();
-    await eventFactory.createNewEvent("Ultimo", "Ult", 1, 2, 300122, "UltimoUlt300122", {
+    await eventFactory.createNewEvent("Ultimo", "Ult", 1, 15, 300122, "UltimoUlt300122", {
       from: organizer,
     });
-    await eventFactory.createNewEvent("Cinqueminuti", "5m", 2, 9, 090122, "Cinqueminuti5m090122", {
+    await eventFactory.createNewEvent("Cinqueminuti", "5m", 2, 10, 090122, "Cinqueminuti5m090122", {
       from: organizer,
     });
     const eventList = await eventFactory.getEventList();
@@ -41,12 +41,12 @@ contract("Reseller", async (accounts) => {
     const reseller = await Reseller.deployed();
     await reseller.purchaseTicket(eventList[1], {
       from: client,
-      value: 0.1 * 10,
+      value: 10^18 * 15,
     });
     console.log("\n\tCliente 1 compra un ticket dell'evento di Ultimo");
     await reseller.purchaseTicket(eventList[2], {
       from: client2,
-      value: 0.2 * 10,
+      value: 10^18 * 10,
     });
     console.log("\tCliente 2 compra un ticket dell'evento dei Cinqueminuti");
 
@@ -118,20 +118,20 @@ contract("Reseller", async (accounts) => {
 
   it("Errore: Acquisto biglietto Sold Out", async () => {
     const eventFactory = await EventFactory.deployed();
-    await eventFactory.createNewEvent("Linking Park", "LP", 1, 100, 101022, "LinkingParkLP101022",{
+    await eventFactory.createNewEvent("Linking Park", "LP", 1, 15, 101022, "LinkingParkLP101022",{
       from: organizer
     });
     const eventList = await eventFactory.getEventList();
 
     const reseller = await Reseller.deployed();
-    await reseller.purchaseTicket(eventList[1], {
+    await reseller.purchaseTicket(eventList[3], {
       from: client,
-      value: 0.1 * 10,
+      value: 10^18 * 15,
     });
     try {
-      await reseller.purchaseTicket(eventList[1], {
+      await reseller.purchaseTicket(eventList[3], {
         from: client,
-        value: 0.1 * 10,
+        value: 10^18 * 15,
       });
     } catch (error) {
         // console.error("Errore: Evento SoldOut")
@@ -198,5 +198,4 @@ contract("Reseller", async (accounts) => {
         // console.error("Errore: biglietto/evento non esistente") 
     }
   });
-
 });

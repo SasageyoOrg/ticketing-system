@@ -7,7 +7,6 @@ import "./Event.sol";
 contract EventFactory is Ownable, AccessControl {
     
     bytes32 public constant ORGANIZER_ROLE = keccak256("ORGANIZER_ROLE");
-    // bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     address _reseller;
 
@@ -27,7 +26,6 @@ contract EventFactory is Ownable, AccessControl {
 
     constructor(address organizer, address reseller) public {
         _setupRole(ORGANIZER_ROLE, organizer);
-        // _setupRole(MINTER_ROLE, reseller);
         _reseller = reseller;
     }
 

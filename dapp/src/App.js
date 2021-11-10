@@ -40,12 +40,10 @@ class App extends Component {
     new Promise((resolve, reject) => {
       if (typeof window.ethereum !== "undefined") {
         web3 = new Web3(window.ethereum);
-        //web3 = new Web3Quorum(new Web3(window.ethereum));
         window.ethereum
           .enable()
           .then(() => {
             resolve(
-              // new Web3Quorum(new Web3(window.ethereum))
               new Web3(window.ethereum)
             );
           })
@@ -57,13 +55,9 @@ class App extends Component {
       if (typeof window.web3 !== "undefined") {
         return resolve(
           new Web3(window.web3.currentProvider)
-          //new Web3Quorum(new Web3(window.web3.currentProvider))
         );
       }
-      //resolve(new Web3Quorum(new Web3("http://127.0.0.1:8545")));
       resolve(new Web3("http://127.0.0.1:8545"));
-
-      // this.loadBlockChain = this.loadBlockChain.bind(this);
     });
 
     // check if there's web3 and window.ethereum

@@ -4,8 +4,6 @@ import eventFactory from "../proxies/EventFactory";
 import EventNFT from "../proxies/Event";
 import renderNotification from "../utils/notification-handler";
 
-// import Reseller from '../proxies/Reseller';
-
 let web3;
 
 class MyTickets extends Component {
@@ -43,7 +41,6 @@ class MyTickets extends Component {
 
       // popolata per il rendering dei tickets
       let renderData = [];
-      // let buttonText = "Controlla";
 
       // recupero lista degli eventi
       let eventList = await eventFactory.methods
@@ -91,8 +88,6 @@ class MyTickets extends Component {
                   tmp_date.substring(2, 4) +
                   "/" +
                   tmp_date.substring(4, 8);
-                
-                // let buttonState = () ? true : false;
 
                 let buttonState = false;
                 if(ticketState === "accettato" || ticketState === "rifiutato") {
@@ -163,7 +158,6 @@ class MyTickets extends Component {
       const initiator = await web3.eth.getCoinbase();
 
       const nftInstance = await EventNFT(event);
-      // const isBuyer =
       await nftInstance.methods.checkTicket(ticketID).send({ from: initiator });
       
       this.setState({ buttonText: "Controlla" });

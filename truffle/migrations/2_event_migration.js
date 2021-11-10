@@ -7,7 +7,4 @@ module.exports = async function (deployer) {
   await deployer.deploy(Reseller, organizer).then(function () {
     return deployer.deploy(EventFactory, organizer, Reseller.address);
   })
-  // const resellerAddress = await Reseller.deployed().address;
-
-  // await deployer.deploy(EventFactory, "0x711D7d4Bec29fC7fB1dabB03BCB9eA216262FbAf", resellerAddress);
 };

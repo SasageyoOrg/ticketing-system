@@ -84,6 +84,11 @@ contract Event is Context, AccessControl, ERC721 {
      * Restituisce l'Id del ticket appena creato
      */
     function deployTicket(address reseller, address buyer) public virtual isMinterRole returns (bool) {
+        require(
+            hasRole(MINTER_ROLE, reseller),
+            "L'utente deve avere il ruolo di minter per poter minare!"
+        );
+
         _ticketIds.increment();
         uint256 newTicketId = _ticketIds.current();
 

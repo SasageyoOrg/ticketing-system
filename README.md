@@ -1,4 +1,55 @@
-# ticketing-system
+<p align="center">
+  <a href="" rel="noopener">
+  <img width=320px height=240px src="https://www.digitalberry.fr/wp-content/uploads/2019/07/Blockchain-traçabilité-des-données-et-archivage-à-valeur-probante.jpg" alt="Project logo"></a>
+</p>
+
+<h1 align="center">Ticketing System</br><sub></sub></h1>
+
+## 📝 Table of Contents
+- [About](#about)
+- [Project Topology](#project-topology)
+- [Usage](#usage)
+- [Authors](#authors)
+- [Acknowledgments](#acknowledgement)
+
+## 📋About <a name = "about"></a>
+Ticketing system based on the blockchain technology made with Quorum Wizard and Truffle, with a decentralized application written in React.
+
+## 🗂 Project Topology <a name="project-topology"></a>
+
+```
+.
+├── LICENSE
+├── README.md
+├── common.sh
+├── dapp
+│   ├── docker-compose.yml
+│   ├── dockerfile.react
+│   ├── node_modules
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   └── src
+├── network
+│   ├── attach.sh
+│   ├── docker-compose.yml
+│   └── qdata
+├── runme.sh
+└── truffle
+    ├── build
+    ├── contracts
+    ├── docker-compose.yml
+    ├── dockerfile.trufflemigrate
+    ├── dockerfile.truffletest
+    ├── migrations
+    ├── node_modules
+    ├── package-lock.json
+    ├── package.json
+    ├── test
+    └── truffle-config.js
+```
+
+## 👩‍💻Usage <a name="usage"></a>
 1. Clone the project.
 2. Start the docker application.
 3. Run the command below from the root directory to run the blockchain (from Quorum Wizard with IBFT), deploy the smart contracts to the network and start the decentralized app:
@@ -41,3 +92,13 @@
     ```
 6. Cakeshop will be accessible at `http://localhost:8999/`
 8. React application will be accessible at `http://localhost:3000/`
+
+## ✍️ Authors <a name = "authors"></a>
+
+- Conti Edoardo [@edoardo-conti](https://github.com/edoardo-conti)
+- Federici Lorenzo [@lorenzo-federici](https://github.com/lorenzo-federici)
+- Melnic Andrian [@andrian-melnic](https://github.com/andrian-melnic)
+
+## 🎉 Acknowledgements <a name = "acknowledgement"></a>
+
+- [51188] Software Cybersecurity Class - Professor <a href="https://www.univpm.it/Entra/Engine/RAServePG.php/P/320710010421/idsel/299/docname/LUCA%20SPALAZZI"><i>Luca Spalazzi</i></a>

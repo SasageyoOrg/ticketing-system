@@ -21,20 +21,8 @@ class MyTickets extends Component {
   }
 
   async componentDidMount() {
-    // await this.updateEvents();
-
     // WIP
     await this.loadTickets();
-
-    // console.log(this.state);
-    // const nftInstance = await EventNFT(this.state.fest);
-    // const ticketState = await nftInstance.methods
-    //         .getTicketState(this.state.ticket)
-    //         .call();
-    // console.log(ticketState)
-    // if(this.ticketState === 'esibito'){
-    // 	this.setState({buttonEnabled: false})
-    // }
   }
 
   stringToColour = function (str) {
@@ -142,11 +130,6 @@ class MyTickets extends Component {
         });
       }
 
-      // if(this.state.tickets.length === 0)  {
-      //   this.setState({ empty: true });
-      // }
-
-      // this.setState({ tickets: renderData });
     } catch (err) {
       // TODO: bug da risolvere
       renderNotification(
