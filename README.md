@@ -19,34 +19,23 @@ Ticketing system based on the blockchain technology made with Quorum Wizard and 
 
 ```
 .
-├── LICENSE
-├── README.md
-├── common.sh
 ├── dapp
+│   ├── src/
 │   ├── docker-compose.yml
-│   ├── dockerfile.react
-│   ├── node_modules
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── public
-│   └── src
+│   └── dockerfile.react
 ├── network
-│   ├── attach.sh
-│   ├── docker-compose.yml
-│   └── qdata
+|   ├── qdata/
+│   └── docker-compose.yml
+|── truffle
+|   ├── build/
+|   ├── contracts/
+|   ├── migrations/
+|   ├── test/
+|   ├── docker-compose.yml
+|   ├── dockerfile.trufflemigrate
+|   ├── dockerfile.truffletest
+|   └── truffle-config.js
 ├── runme.sh
-└── truffle
-    ├── build
-    ├── contracts
-    ├── docker-compose.yml
-    ├── dockerfile.trufflemigrate
-    ├── dockerfile.truffletest
-    ├── migrations
-    ├── node_modules
-    ├── package-lock.json
-    ├── package.json
-    ├── test
-    └── truffle-config.js
 ```
 
 ## 👩‍💻Usage <a name="usage"></a>
