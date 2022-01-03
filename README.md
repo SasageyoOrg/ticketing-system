@@ -13,7 +13,10 @@
 - [Acknowledgments](#acknowledgement)
 
 ## 📋About <a name = "about"></a>
-Ticketing system based on the blockchain technology made with Quorum Wizard and Truffle, with a decentralized application written in React.
+Ticketing decentralized application made with Truffle Framework on IBFT 2.0 GoQuorum local network, which was setted up using Quorum Wizard. Frontend UI built with ReactJS. The dapp implements ERC721 NFT token and allows:
+ * Event Organizers to create events with details like name, date, number of tickets, ticket price...
+ * Buyers can buy tickets and "show" them to the controller.
+ * Controller can verify and validate pending tickets.
 
 ## 🗂 Project Topology <a name="project-topology"></a>
 
